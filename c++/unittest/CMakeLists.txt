@@ -30,6 +30,9 @@ add_definitions( -Wno-unused-value )
 # Compiler flag needed for using CPPUNIT.
 add_definitions( -Wno-deprecated )
 
+# use C++ 11
+add_definitions( -std=c++11 )
+
 # Includsion from the source.
 include_directories( ${KMCLibUnittest_SOURCE_DIR}/../src )
 include_directories( ${KMCLibUnittest_SOURCE_DIR}/../externals/include )
