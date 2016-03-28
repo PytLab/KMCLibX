@@ -180,7 +180,7 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
     // Perform the process
     // if there is no enough space in moved_atom_ids_ or recent_moved_vectors_,
     // segmentation fault(core dumped) will be caused
-    configuration.performProcess(p, 1, lattice_map);
+    configuration.performProcess(p, 1);
 
     // Test entries in moved_atom_ids_
     const int atom_ids[12] = {1, 0, 2, 4, 10, 3, 5, 9, 11, 13, 12, 14};
@@ -320,7 +320,7 @@ void Test_Configuration::testPerformProcess()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performProcess(p, 1434);
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
@@ -476,7 +476,7 @@ void Test_Configuration::testPerformProcessVectors()
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.recentMoveVectors().size()), 0);
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performProcess(p, 1434);
 
     // This move changes place on atom IDs 1434 and 350.
     CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1434],  350 );
@@ -744,7 +744,7 @@ void Test_Configuration::testMatchLists()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performProcess(p, 1434);
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
@@ -993,7 +993,7 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     p.addSite(1434, 0.0);
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performProcess(p, 1434);
 
     // Get the moved atom_id:s out.
     const std::vector<int> moved_atom_ids1 = configuration.movedAtomIDs();
@@ -1098,7 +1098,7 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
 
     // Peform the process.
     configuration.updateMatchList(1434);
-    configuration.performProcess(p2, 1434, lattice_map);
+    configuration.performProcess(p2, 1434);
 
     // Get the moved atom_id:s out.
     const std::vector<int> moved_atom_ids2 = configuration.movedAtomIDs();

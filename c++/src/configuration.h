@@ -114,8 +114,7 @@ public:
      *  \param lattice_map : The lattice map needed for proper move vector indexing.
      */
     void performProcess(Process & process,
-                        const int site_index,
-                        const LatticeMap & lattice_map);
+                        const int site_index);
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.

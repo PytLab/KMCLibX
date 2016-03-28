@@ -241,8 +241,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
 // -----------------------------------------------------------------------------
 //
 void Configuration::performProcess(Process & process,
-                                   const int site_index,
-                                   const LatticeMap & lattice_map)
+                                   const int site_index)
 {
     // PERFORMME
     // Need to time and optimize the new parts of the routine.
