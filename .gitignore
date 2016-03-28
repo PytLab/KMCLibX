@@ -26,3 +26,22 @@
 *.exe
 *.out
 *.app
+
+# Vim temporary files
+*.swp
+
+# Compiled files in externals
+/c++/externals/
+!/c++/externals/include/externals/README
+!/c++/externals/lib/README
+!/c++/externals/obj/README
+!/c++/externals/src/README
+!/c++/externals/zip/README
+!/c++/externals/zip/*.tar.gz
+!/c++/externals/Makefile
+!/c++/externals/README.md
+
+# Compiled files in src and unittest
+/c++/src/build
+/c++/unittest/build
+
