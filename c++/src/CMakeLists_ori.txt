@@ -4,15 +4,9 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required(VERSION 2.8)
-project(KMCLibSrc)
-
 file( GLOB CppSources *.cpp )
-file( GLOB ExternalObj ${KMCLibSrc_SOURCE_DIR}/../externals/obj/*.o )
 
-include_directories(${KMCLibSrc_SOURCE_DIR})
-
-add_definitions(-std=c++11)
+file( GLOB ExternalObj ${KMCLib_SOURCE_DIR}/externals/obj/*.o )
 
 add_library( src ${CppSources} ${ExternalObj} )
 
