@@ -29,6 +29,7 @@
 
 # Vim temporary files
 *.swp
+*.swo
 
 # Compiled files in externals
 /c++/externals/
