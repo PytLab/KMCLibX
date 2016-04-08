@@ -48,3 +48,6 @@
 
 # Python compiled files
 *.pyc
+
+# ctag files for Vim plugin
+tags
