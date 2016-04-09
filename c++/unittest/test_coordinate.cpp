@@ -6,6 +6,19 @@
 */
 
 
+/*  ****************************************************************
+ *  file   : test_coordinate.cpp
+ *  brief  : All unit test funtions for Coordinate class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ---------------------------------------------------------------------
+ *  zjshao     2016-04-09   1.2          Add unittest toString() function.
+ *
+ *  ---------------------------------------------------------------------
+ * ******************************************************************
+ */
+
 // Include the test definition.
 #include "test_coordinate.h"
 
@@ -304,4 +317,18 @@ void Test_Coordinate::testDotProduct()
     // Check against the reference.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( dot1, ref1, 1.0e-12 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL( dot2, ref2, 1.0e-12 );
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Coordinate::testToString()
+{
+    const Coordinate c(0.1, -1.2, 3.3);
+    const std::string str("(    0.100,   -1.200,    3.300 )");
+    std::string coord_str;
+    coord_str = c.toString();
+
+    // Check string.
+    CPPUNIT_ASSERT(str == coord_str);
 }
