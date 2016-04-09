@@ -1,6 +1,4 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
-
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
@@ -24,8 +22,24 @@
 #ifndef __MATCHLISTENTRY__
 #define __MATCHLISTENTRY__
 
-#include "coordinate.h"
 #include <cmath>
+#include <stdexcept>
+
+#include "coordinate.h"
+
+// Exception class for position unmatch.
+class coordinates_unmatched_error : public std::logic_error {
+
+public:
+    // Constructor.
+    inline coordinates_unmatched_error(const std::string & what_arg) :
+        std::logic_error(what_arg)
+    {
+        // NOTHING HERE
+    }
+
+};
+
 
 /// The base class for the match list entries.
 class MinimalMatchListEntry {
@@ -41,7 +55,7 @@ public:
     Coordinate coordinate;
 
     /// The match type integer.
-    int match_types;
+    int match_type;
 
     /* Class functions. */
     
@@ -55,8 +69,10 @@ public:
     virtual bool operator==(const MinimalMatchListEntry & other) const;
 
     /*! \brief 'not equal' operator overloading.
+     *  NOTE: This function compare type firstly,
+     *        then compare distance and coordinate
      */
-    virtual bool operator==(const MinimalMatchListEntry & other) const;
+    virtual bool operator!=(const MinimalMatchListEntry & other) const;
 };
 
 #endif // __MATCHLISTENTRY__

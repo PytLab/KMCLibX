@@ -61,9 +61,22 @@ bool MinimalMatchListEntry::operator==(const MinimalMatchListEntry & other) cons
 bool MinimalMatchListEntry::operator!=(const MinimalMatchListEntry & other) const
 {
     // Handle the wildcard case.
-    if (other.match_type == 0)
+    if (match_type == 0)
     {
-        return false;
+        // Check the coordinate.
+        // NOTE: if a wildcard is in them, but the positons are different,
+        //       a exception would be thrown.
+        if (!(*this == other))
+        {
+            std::string msg = "Wildcard exists, position different\n" + \
+                              coordinate.toString() + " and " + \
+                              other.coordinate.toString();
+            throw coordinates_unmatched_error(msg);
+        }
+        else
+        {
+            return false;
+        }
     }
     // Check the type.
     else if (match_type != other.match_type)
@@ -75,23 +88,20 @@ bool MinimalMatchListEntry::operator!=(const MinimalMatchListEntry & other) cons
         return !(*this == other);
     }
 }
-
-
 /*! \brief 'less than' for sorting matchlists.
  */
-bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other)
+bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other) const
 {
-
     // Sort along distance and coordinate.
     if (std::fabs(distance - other.distance) < epsi__)
     {
         // If the distances are practically the same,
         // check the coordinate.
-        return (other.coordinate < coordinate);
+        return (coordinate < other.coordinate);
     }
     else
     {
         // Sort wrt. distance.
-        return (other.distance < distance);
+        return (distance < other.distance);
     }
 }
