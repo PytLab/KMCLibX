@@ -7,8 +7,19 @@
 
 
 
-/*! \file  coordinate.h
- *  \brief File for the coordinate class definition.
+/*  ****************************************************************
+ *  file   : coordinate.h
+ *  brief  : File for the coordinate class definition.
+ *  author : zjshao
+ *  date   : 2016-04-09
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ---------------------------------------------------------------------
+ *  zjshao     2016-04-09   1.2          Add insertion overload function.
+ *
+ *  ---------------------------------------------------------------------
+ * ******************************************************************
  */
 
 #ifndef __COORDINATE__
@@ -16,6 +27,7 @@
 
 #include <cmath>
 #include <vector>
+#include <iostream>
 
 /*! \brief Class for representing a coordinate.
  */
@@ -117,6 +129,14 @@ public:
      */
     inline
     double & operator[](const int i);
+
+    /*! \brief  function for overloading 'insertion' operator.
+     *  \author zjshao
+     *  \date   2016-04-09
+     */
+    inline
+    std::ostream operator<<(std::ostream os, const Coordinate & c);
+
 
     /*! \brief Query for the x component.
      *  \return : The x component.
@@ -323,6 +343,29 @@ double & Coordinate::operator[](const int index)
     {
         return z_;
     }
+}
+
+
+// -----------------------------------------------------------------------------
+//
+std::ostream operater<<(std::ostream os, const Coordinate & c)
+{
+    os.precision(3);
+
+    // Use scienfic notation.
+    os << std::scientific;
+
+    // Show coordinate.
+    os << "( ";
+    os.width(8);
+    os << c.x() << ", ";
+    os.width(8);
+    os << c.y() << ", ";
+    os.width(8);
+    os << c.z() << ", ";
+    os << " )";
+
+    return os;
 }
 
 
