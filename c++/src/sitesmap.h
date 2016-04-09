@@ -24,14 +24,18 @@
 #include "coordinate.h"
 
 /* ****************************************************************************
- * \file  sitesmap.h
- * \brief Class for defining the sites information used in a KMC simulation to
- *         use for communicating site types and positions to and from python.
- * \author zjshao <shaozhengjiang@gmail.com>
- * \date   2016-04-08
- * \history
+ * file   : sitesmap.h
+ * brief  : Class for defining the sites information used in a KMC simulation to
+ *          use for communicating site types and positions to and from python.
+ * author : zjshao <shaozhengjiang@gmail.com>
+ * date   : 2016-04-08
+ *
+ * history:
  * <author>   <time>       <version>    <desc>
+ * ------------------------------------------------------
  * zjshao     2016-04-08   2.0          Initial creation.
+ *
+ * ------------------------------------------------------
  * ****************************************************************************/
 
 class SitesMap 

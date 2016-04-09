@@ -7,13 +7,17 @@
 
 
 /*  ***************************************************************
- *  \file    sitesmap.cpp
- *  \brief   File for the implementation code of the SitesMap class.
- *  \author  zjshao <shaozhengjiang@gmail.com>
- *  \date    2016-04-08
- *  \history
+ *  file   : sitesmap.cpp
+ *  brief  : File for the implementation code of the SitesMap class.
+ *  author : zjshao <shaozhengjiang@gmail.com>
+ *  date   : 2016-04-08
+ *
+ *  history:
  *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------
  *  zjshao     2016-04-08   2.0          Initial creation.
+ *
+ *  ------------------------------------------------------
  *  ****************************************************************/
 
 #include "sitesmap.h"
