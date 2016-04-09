@@ -24,16 +24,16 @@ class Test_MatchListEntry : public CppUnit::TestCase {
 public:
 
     CPPUNIT_TEST_SUITE( Test_MatchListEntry );
-    CPPUNIT_TEST( testConstruction );
-    CPPUNIT_TEST( testNotEqualOperator );
-    CPPUNIT_TEST( testLessOperator );
-    CPPUNIT_TEST( testQuery );
+    CPPUNIT_TEST( testMinimalMatchListEntryConstruction );
+    CPPUNIT_TEST( testMinimalMatchListEntryNotEqualOperator );
+    CPPUNIT_TEST( testMinimalMatchListEntryLessOperator );
+    CPPUNIT_TEST( testMinimalMatchListEntryEqualOperator );
     CPPUNIT_TEST_SUITE_END();
 
-    void testConstruction();
-    void testNotEqualOperator();
-    void testLessOperator();
-    void testQuery();
+    void testMinimalMatchListEntryConstruction();
+    void testMinimalMatchListEntryNotEqualOperator();
+    void testMinimalMatchListEntryLessOperator();
+    void testMinimalMatchListEntryEqualOperator(); 
 
 };
 
