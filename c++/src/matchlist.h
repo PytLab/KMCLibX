@@ -41,13 +41,17 @@ typedef std::vector<ConfigMatchListEntry> ConfigMatchList;
  *  \param cutoff           : (in/out) The cutoff of the process.
  *  \param match_list       : (in/out) The matchlist to construct.
  *  \param affected_indices : (in/out) The affected indices to set the size of.
+ *  \param move_origins     : (in/out) The local indices from which move vectors originate.
+ *  \param move_vector      : (in/out) The vector for each moved atom.
  */
 void configurationsToMatchList(const Configuration & first,
                                const Configuration & second,
                                int & range,
                                double & cutoff,
                                ProcessMatchList & match_list,
-                               std::vector<int> & affected_indices);
+                               std::vector<int> & affected_indices,
+                               const std::vector<int> & move_origins = {},
+                               const std::vector<Coordinate> & move_vectors = {});
 
 #endif  // __MATCHLIST__
 

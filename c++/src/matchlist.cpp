@@ -30,7 +30,9 @@ void configurationsToMatchList(const Configuration & first,
                                int & range,
                                double & cutoff,
                                ProcessMatchList & match_list,
-                               std::vector<int> & affected_indices)
+                               std::vector<int> & affected_indices,
+                               const std::vector<int> & move_origins,
+                               const std::vector<Coordinate> & move_vectors)
 {
     // Get a handle to the coordinates and elements.
     const std::vector<Coordinate> & coords  = first.coordinates();
@@ -85,8 +87,17 @@ void configurationsToMatchList(const Configuration & first,
         {
             affected_indices.push_back(0);
         }
-
-        // Sort the match list.
-        std::sort(match_list.begin(), match_list.end());
     }
+
+    // Loop over the move vector origins and place the move vectors
+    // on the match list entries before sorting.
+    for (size_t i = 0; i < move_origins.size(); ++i)
+    {
+        const int move_origin = move_origins[i];
+        match_list[move_origin].move_coordinate = move_vectors[i];
+        match_list[move_origin].has_move_coordinate = true;
+    }
+
+    // Sort the match list.
+    std::sort(match_list.begin(), match_list.end());
 }
