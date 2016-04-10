@@ -77,6 +77,14 @@ public:
 };
 
 
+/// Match list entry for configuration match list.
+class ConfigMatchListEntry : public MinimalMatchListEntry {
+
+public:
+    // Same as MinimalMatchListEntry right now.
+};
+
+
 /// Match list entry for process match list.
 class ProcessMatchListEntry : public MinimalMatchListEntry {
 
