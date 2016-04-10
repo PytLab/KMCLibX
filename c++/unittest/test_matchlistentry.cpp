@@ -566,3 +566,23 @@ void Test_MatchListEntry::testProcessMatchListEntryConstruction()
     CPPUNIT_ASSERT_EQUAL(m.coordinate, Coordinate(0.1, 0.2, 0.34));
 
 }
+
+
+// --------------------------------------------------------------------------
+//
+void Test_MatchListEntry::testConfigMatchListEntryConstruction()
+{
+    // Construct.
+    ConfigMatchListEntry m;
+    m.match_type = 1324;
+    m.distance = 1.2;
+    m.coordinate = Coordinate(0.1,0.2,0.34);
+    m.index = 123;
+
+    // Check the member data.
+    CPPUNIT_ASSERT_EQUAL(m.match_type, 1324);
+    CPPUNIT_ASSERT_EQUAL(m.index, 123);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(m.distance, 1.2, 1.0e-12);
+    CPPUNIT_ASSERT_EQUAL(m.coordinate, Coordinate(0.1, 0.2, 0.34));
+
+}

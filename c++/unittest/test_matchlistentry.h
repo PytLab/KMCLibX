@@ -29,6 +29,7 @@ public:
     CPPUNIT_TEST( testMinimalMatchListEntryLessOperator );
     CPPUNIT_TEST( testMinimalMatchListEntryEqualOperator );
     CPPUNIT_TEST( testProcessMatchListEntryConstruction );
+    CPPUNIT_TEST( testConfigMatchListEntryConstruction );
     CPPUNIT_TEST_SUITE_END();
 
     void testMinimalMatchListEntryConstruction();
@@ -36,6 +37,7 @@ public:
     void testMinimalMatchListEntryLessOperator();
     void testMinimalMatchListEntryEqualOperator(); 
     void testProcessMatchListEntryConstruction();
+    void testConfigMatchListEntryConstruction();
 
 };
 
