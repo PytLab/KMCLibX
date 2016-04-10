@@ -4,6 +4,19 @@
 */
 
 
+/* ******************************************************************
+ *  file   : test_matchlist.cpp
+ *  brief  : File for the unit test functions of the MatchList class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------
+ *  zjshao     2016-04-10   1.2          Initial creation.
+ *
+ *  -----------------------------------------------------
+ * ******************************************************************
+ */
+
 // Include the test definition.
 #include "test_matchlist.h"
 
