@@ -95,12 +95,42 @@ void Test_MatchListEntry::testMinimalMatchListEntryEqualOperator()
         CPPUNIT_ASSERT( !(m1 == m2) );
     }
     
-    // Different coordinate, same type and distance, should be unequal.
+    // Different coordinate(x), same type and distance, should be unequal.
     {
         MinimalMatchListEntry m1;
         m1.match_type = 1324;
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.3,0.2,0.34);
+
+        MinimalMatchListEntry m2;
+        m2.match_type = 1324;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT( !(m1 == m2) );
+    }
+
+    // Different coordinate(y), same type and distance, should be unequal.
+    {
+        MinimalMatchListEntry m1;
+        m1.match_type = 1324;
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.3,0.34);
+
+        MinimalMatchListEntry m2;
+        m2.match_type = 1324;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT( !(m1 == m2) );
+    }
+
+    // Different coordinate(z), same type and distance, should be unequal.
+    {
+        MinimalMatchListEntry m1;
+        m1.match_type = 1324;
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.37);
 
         MinimalMatchListEntry m2;
         m2.match_type = 1324;
