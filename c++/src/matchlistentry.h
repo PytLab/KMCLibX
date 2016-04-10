@@ -27,12 +27,13 @@
 
 #include "coordinate.h"
 
-// Exception class for position unmatch.
+
+/// Exception class for position unmatch.
 class coordinates_unmatched_error : public std::logic_error {
 
 public:
-    // Constructor.
-    inline coordinates_unmatched_error(const std::string & what_arg) :
+    // Inline constructor.
+    coordinates_unmatched_error(const std::string & what_arg) :
         std::logic_error(what_arg)
     {
         // NOTHING HERE
@@ -75,5 +76,33 @@ public:
     virtual bool operator!=(const MinimalMatchListEntry & other) const;
 };
 
-#endif // __MATCHLISTENTRY__
+
+/// Match list entry for process match list.
+class ProcessMatchListEntry : public MinimalMatchListEntry {
+
+public:
+
+    /// Flag for indicating if we have a move coordinate.
+    bool has_move_coordinate;
+
+    /// The move vector cell component in the a direction.
+    int move_cell_i;
+
+    /// The move vector cell component in the b direction.
+    int move_cell_j;
+
+    /// The move vector cell component in the c direction.
+    int move_cell_k;
+
+    /// The basis component of the move vector.
+    int move_basis;
+
+    /// The move coordinate.
+    Coordinate move_coordinate;
+
+    /// The update type.
+    int update_type;
+};
+
+#endif
 
