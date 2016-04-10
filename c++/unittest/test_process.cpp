@@ -467,15 +467,14 @@ void Test_Process::testMatchList()
     Process process(config1, config2, rate, basis_sites);
 
     // Get the match list out.
-    const std::vector<MinimalMatchListEntry> & match_list = process.minimalMatchList();
+    const ProcessMatchList & match_list = process.MatchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
 
     // Get the first entry out and check.
     {
-        const MinimalMatchListEntry entry = match_list[0];
-        CPPUNIT_ASSERT_EQUAL(entry.index, -1);
+        const ProcessMatchListEntry entry = match_list[0];
         CPPUNIT_ASSERT_EQUAL(entry.match_type, 123);
         CPPUNIT_ASSERT_EQUAL(entry.update_type, 0);
 
@@ -491,8 +490,7 @@ void Test_Process::testMatchList()
 
     // Get the third entry out and check.
     {
-        const MinimalMatchListEntry entry = match_list[2];
-        CPPUNIT_ASSERT_EQUAL(entry.index, -1);
+        const ProcessMatchListEntry entry = match_list[2];
         CPPUNIT_ASSERT_EQUAL(entry.match_type, 24);
         CPPUNIT_ASSERT_EQUAL(entry.update_type, 24);
 
@@ -508,8 +506,7 @@ void Test_Process::testMatchList()
 
     // Get the second entry out and check.
     {
-        const MinimalMatchListEntry entry = match_list[1];
-        CPPUNIT_ASSERT_EQUAL(entry.index, -1);
+        const ProcessMatchListEntry entry = match_list[1];
         CPPUNIT_ASSERT_EQUAL(entry.match_type, 0);
         CPPUNIT_ASSERT_EQUAL(entry.update_type, 123);
 
@@ -609,7 +606,7 @@ void Test_Process::testMatchListLong()
     Process process(config1, config2, rate, basis_sites);
 
     // Get the match list out.
-    const std::vector<MinimalMatchListEntry> match_list = process.minimalMatchList();
+    const ProcessMatchList match_list = process.MatchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(process_coords.size()),
