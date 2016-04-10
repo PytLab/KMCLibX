@@ -46,9 +46,6 @@ public:
 class MinimalMatchListEntry {
 
 public:
-    /// The index in the global structure.
-    int index;
-
     /// The distance.
     double distance;
 
@@ -81,7 +78,8 @@ public:
 class ConfigMatchListEntry : public MinimalMatchListEntry {
 
 public:
-    // Same as MinimalMatchListEntry right now.
+    /// The index in the global structure.
+    int index;
 };
 
 
@@ -112,5 +110,5 @@ public:
     int update_type;
 };
 
-#endif
+#endif  // __MATHCLISTENTRY__
 
