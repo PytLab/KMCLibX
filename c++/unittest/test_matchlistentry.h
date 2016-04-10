@@ -28,14 +28,16 @@ public:
     CPPUNIT_TEST( testMinimalMatchListEntryNotEqualOperator );
     CPPUNIT_TEST( testMinimalMatchListEntryLessOperator );
     CPPUNIT_TEST( testMinimalMatchListEntryEqualOperator );
+    CPPUNIT_TEST( testProcessMatchListEntryConstruction );
     CPPUNIT_TEST_SUITE_END();
 
     void testMinimalMatchListEntryConstruction();
     void testMinimalMatchListEntryNotEqualOperator();
     void testMinimalMatchListEntryLessOperator();
     void testMinimalMatchListEntryEqualOperator(); 
+    void testProcessMatchListEntryConstruction();
 
 };
 
-#endif
+#endif  // __TEST_MATCHLISTENTRY__
 

@@ -534,3 +534,35 @@ void Test_MatchListEntry::testMinimalMatchListEntryLessOperator()
     }
 }
 
+
+// ---------------------------------------------------------------------------
+//
+void Test_MatchListEntry::testProcessMatchListEntryConstruction()
+{
+    // Construct.
+    ProcessMatchListEntry m;
+
+    m.has_move_coordinate = true;
+    m.move_cell_i = 1;
+    m.move_cell_j = 2;
+    m.move_cell_k = 8;
+    m.move_basis = 1;
+    m.match_type = 1324;
+    m.update_type = 123;
+    m.distance = 1.2;
+    m.coordinate = Coordinate(0.1,0.2,0.34);
+    m.index = 123;
+
+    // Check the member data.
+    CPPUNIT_ASSERT(m.has_move_coordinate);
+    CPPUNIT_ASSERT_EQUAL(m.match_type, 1324);
+    CPPUNIT_ASSERT_EQUAL(m.update_type, 123);
+    CPPUNIT_ASSERT_EQUAL(m.move_cell_i, 1);
+    CPPUNIT_ASSERT_EQUAL(m.move_cell_j, 2);
+    CPPUNIT_ASSERT_EQUAL(m.move_cell_k, 8);
+    CPPUNIT_ASSERT_EQUAL(m.move_basis, 1);
+    CPPUNIT_ASSERT_EQUAL(m.index, 123);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(m.distance, 1.2, 1.0e-12);
+    CPPUNIT_ASSERT_EQUAL(m.coordinate, Coordinate(0.1, 0.2, 0.34));
+
+}
