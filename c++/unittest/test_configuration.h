@@ -25,23 +25,23 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_Configuration );
     CPPUNIT_TEST( testConstruction );
-    CPPUNIT_TEST( testMovedAtomIDsRecentMoveVectorsSize );
-    CPPUNIT_TEST( testPerformProcess );
-    CPPUNIT_TEST( testPerformProcessVectors );
-    CPPUNIT_TEST( testAtomID );
-    CPPUNIT_TEST( testMatchLists );
-    CPPUNIT_TEST( testTypeNameQuery );
-    CPPUNIT_TEST( testAtomIDElementsCoordinatesMovedIDs );
+//    CPPUNIT_TEST( testMovedAtomIDsRecentMoveVectorsSize );
+//    CPPUNIT_TEST( testPerformProcess );
+//    CPPUNIT_TEST( testPerformProcessVectors );
+//    CPPUNIT_TEST( testAtomID );
+//    CPPUNIT_TEST( testMatchLists );
+//    CPPUNIT_TEST( testTypeNameQuery );
+//    CPPUNIT_TEST( testAtomIDElementsCoordinatesMovedIDs );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
-    void testMovedAtomIDsRecentMoveVectorsSize();
-    void testPerformProcess();
-    void testPerformProcessVectors();
-    void testAtomID();
-    void testMatchLists();
-    void testAtomIDElementsCoordinatesMovedIDs();
-    void testTypeNameQuery();
+//    void testMovedAtomIDsRecentMoveVectorsSize();
+//    void testPerformProcess();
+//    void testPerformProcessVectors();
+//    void testAtomID();
+//    void testMatchLists();
+//    void testAtomIDElementsCoordinatesMovedIDs();
+//    void testTypeNameQuery();
 
 };
 

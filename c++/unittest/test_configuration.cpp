@@ -86,7 +86,7 @@ void Test_Configuration::testConstruction()
 
 }
 
-
+/*
 // ---------------------------------------------------------------------------//
 // Description: Test moved_atom_id_ and recent_move_vector 
 //              lengths and memories allocation.
@@ -1164,3 +1164,4 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
                                  configuration.atomIDCoordinates()[1453].z(),
                                  1.0e-12);
 }
+*/
