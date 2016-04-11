@@ -212,6 +212,10 @@ void Test_Process::testConstructionMoveVectors()
     possible_types["A"] = 1;
     possible_types["B"] = 2;
     possible_types["C"] = 0;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+    possible_types["G"] = 7;
 
     // Setup the two configurations.
     std::vector<std::string> elements1;
@@ -324,6 +328,10 @@ void Test_Process::testConstructionMoveVectors2()
     possible_types["A"] = 1;
     possible_types["B"] = 2;
     possible_types["C"] = 0;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+    possible_types["G"] = 7;
 
     // Setup the two configurations.
     std::vector<std::string> elements1;
