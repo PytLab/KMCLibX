@@ -17,9 +17,10 @@
 #include "configuration.h"
 #include "latticemap.h"
 #include "process.h"
+#include "exceptions.h"
 
 // Temporary data for the match list return.
-static std::vector<MinimalMatchListEntry> tmp_minimal_match_list__(0);
+static ConfigMatchList tmp_minimal_match_list__(0);
 
 // -----------------------------------------------------------------------------
 //
@@ -65,17 +66,28 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
      }
 
     // Setup the types from the elements strings.
-    for (size_t i = 0; i < elements_.size(); ++i)
+    for (const std::string & element : elements)
     {
-        const std::string element = elements_[i];
-        const int type = possible_types.find(element)->second;
-        types_.push_back(type);
-     }
+        std::map<std::string, int>::const_iterator it = possible_types.find(element);
+
+        // If an impossible element is detected, throw an exception.
+        if (it == possible_types.end())
+        {
+            const std::string msg("Element '" + element + \
+                                  "' not found in possible_types.");
+            throw element_type_error(msg);
+        }
+        else
+        {
+            types_.push_back(it->second);
+        }
+    }
 }
 
 
 // -----------------------------------------------------------------------------
 //
+/*
 void Configuration::initMatchLists( const LatticeMap & lattice_map,
                                     const int range )
 {
@@ -106,10 +118,12 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
     moved_atom_ids_.resize(max_size);
     recent_move_vectors_.resize(max_size);
 }
+*/
 
 
 // -----------------------------------------------------------------------------
 //
+/*
 void Configuration::updateMatchList(const int index)
 {
     // Update the match list's types information.
@@ -120,13 +134,14 @@ void Configuration::updateMatchList(const int index)
         (*it1).match_type = types_[(*it1).index];
     }
 }
+*/
 
 
 // -----------------------------------------------------------------------------
 //
-const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const int origin_index,
-                                                                           const std::vector<int> & indices,
-                                                                           const LatticeMap & lattice_map) const
+const ConfigMatchList & Configuration::MatchList(const int origin_index,
+                                                 const std::vector<int> & indices,
+                                                 const LatticeMap & lattice_map) const
 {
     // Setup the return data.
     tmp_minimal_match_list__.resize(indices.size());
@@ -240,6 +255,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
 
 // -----------------------------------------------------------------------------
 //
+/*
 void Configuration::performProcess(Process & process,
                                    const int site_index)
 {
@@ -336,4 +352,5 @@ void Configuration::performProcess(Process & process,
 
     }
 }
+*/
 
