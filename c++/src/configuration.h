@@ -5,8 +5,17 @@
 
 
 
-/*! \file  configuration.h
- *  \brief File for the Configuration class definition.
+/* ******************************************************************
+ *  file   : configuration.cpp
+ *  brief  : File for the implementation code of the Configuration class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-04-11   1.2          Modify match list presentation.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
 
 #ifndef __CONFIGURATION__
@@ -75,14 +84,14 @@ public:
     /*! \brief Const query for the moved atom ids.
      *  \return : A copy of the moved atom ids, resized to correct length.
      */
-    //inline
-    //std::vector<int> movedAtomIDs() const;
+    inline
+    std::vector<int> movedAtomIDs() const;
 
     /*! \brief Const query for the moved atoms move vectors, in the same order as the id's.
      *  \return : A copy of the recent move vectors, resized to correct length.
      */
-    //inline
-    //std::vector<Coordinate> recentMoveVectors() const;
+    inline
+    std::vector<Coordinate> recentMoveVectors() const;
 
     /*! \brief Construct and return the match list for the given list of
      *         indices.
@@ -99,7 +108,7 @@ public:
     /*! \brief Update the cached match list for the given index.
      *  \param index : The index to update the match list for.
      */
-    //void updateMatchList(const int index);
+    void updateMatchList(const int index);
 
     /*! \brief Return the cached match list without update.
      *  \param index : The index to get the match list for.
@@ -113,10 +122,8 @@ public:
      *  \param site_index : The index of the site where the process should be performed.
      *  \param lattice_map : The lattice map needed for proper move vector indexing.
      */
-    /*
     void performProcess(Process & process,
                         const int site_index);
-                        */
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
@@ -181,7 +188,6 @@ private:
 
 // -----------------------------------------------------------------------------
 //
-/*
 std::vector<int> Configuration::movedAtomIDs() const
 {
     // PERFORMME
@@ -200,7 +206,6 @@ std::vector<Coordinate> Configuration::recentMoveVectors() const
     move_vectors.resize(n_moved_);
     return move_vectors;
 }
-*/
 
 
 
