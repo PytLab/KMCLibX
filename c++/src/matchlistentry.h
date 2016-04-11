@@ -61,12 +61,27 @@ public:
 };
 
 
+/// Forward declaration.
+class ProcessMatchListEntry;
+
 /// Match list entry for configuration match list.
 class ConfigMatchListEntry : public MinimalMatchListEntry {
 
 public:
     /// The index in the global structure.
     int index;
+
+    /* Class functions.*/
+
+    /* \brief Default constructor.
+     */
+    ConfigMatchListEntry() {};
+    
+    /*! \brief explicit type coversion
+     *         ProcessMatchListEntry -> ConfigMatchListEntry.
+     */
+    explicit ConfigMatchListEntry(const ProcessMatchListEntry & pe);
+
 };
 
 
@@ -95,6 +110,18 @@ public:
 
     /// The update type.
     int update_type;
+
+    /* Class functions.*/
+    
+    /* \brief Default constructor.
+     */
+    ProcessMatchListEntry() {};
+
+    /*! \brief explicit type coversion
+     *         ConfigMatchListEntry -> ProcessMatchListEntry.
+     */
+    explicit ProcessMatchListEntry(const ConfigMatchListEntry & ce);
+
 };
 
 #endif  // __MATHCLISTENTRY__

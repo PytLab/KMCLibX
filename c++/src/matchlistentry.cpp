@@ -28,7 +28,7 @@
  */
 static double epsi__ = 1.0e-5;
 
-/*! \brief operator overloading inline funtion implementation.
+/*! \brief operator overloading funtion implementation.
  */
 
 // -------------------------------------------------------------------------
@@ -88,6 +88,7 @@ bool MinimalMatchListEntry::operator!=(const MinimalMatchListEntry & other) cons
         return !(*this == other);
     }
 }
+
 /*! \brief 'less than' for sorting matchlists.
  */
 bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other) const
@@ -105,3 +106,28 @@ bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other) const
         return (distance < other.distance);
     }
 }
+
+
+/* ConfigMatchListEntry member funtions implementation.
+ */
+
+// ------------------------------------------------------------------------
+//
+ConfigMatchListEntry::ConfigMatchListEntry(const ProcessMatchListEntry & pe) :
+    MinimalMatchListEntry(pe)
+{
+    // NOTHING HERE.
+}
+
+
+/* ProcessMatchListEntry member funtions implementation.
+ */
+
+// --------------------------------------------------------------------------
+//
+ProcessMatchListEntry::ProcessMatchListEntry(const ConfigMatchListEntry & ce) :
+    MinimalMatchListEntry(ce)
+{
+    // NOTHING HERE.
+}
+
