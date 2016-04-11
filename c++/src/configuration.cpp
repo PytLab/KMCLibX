@@ -20,7 +20,7 @@
 #include "exceptions.h"
 
 // Temporary data for the match list return.
-static ConfigMatchList tmp_minimal_match_list__(0);
+static ConfigMatchList tmp_config_match_list__(0);
 
 // -----------------------------------------------------------------------------
 //
@@ -144,7 +144,7 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
                                                  const LatticeMap & lattice_map) const
 {
     // Setup the return data.
-    tmp_minimal_match_list__.resize(indices.size());
+    tmp_config_match_list__.resize(indices.size());
 
     // Extract the coordinate of the first index.
     const Coordinate center = coordinates_[origin_index];
@@ -152,7 +152,7 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
     // Setup the needed iterators.
     std::vector<int>::const_iterator it_index  = indices.begin();
     const std::vector<int>::const_iterator end = indices.end();
-    std::vector<MinimalMatchListEntry>::iterator it_match_list = tmp_minimal_match_list__.begin();
+    std::vector<MinimalMatchListEntry>::iterator it_match_list = tmp_config_match_list__.begin();
 
     const bool periodic_a = lattice_map.periodicA();
     const bool periodic_b = lattice_map.periodicB();
@@ -248,8 +248,8 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
     }
 
     // Sort and return.
-    std::sort(tmp_minimal_match_list__.begin(), tmp_minimal_match_list__.end());
-    return tmp_minimal_match_list__;
+    std::sort(tmp_config_match_list__.begin(), tmp_config_match_list__.end());
+    return tmp_config_match_list__;
 }
 
 
