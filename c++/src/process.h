@@ -122,12 +122,12 @@ public:
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : The stored match list.
      */
-    const ProcessMatchList & MatchList() const { return match_list_; }
+    const ProcessMatchList & matchList() const { return match_list_; }
 
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : A reference to the stored match list.
      */
-    ProcessMatchList & MatchList() { return match_list_; }
+    ProcessMatchList & matchList() { return match_list_; }
 
     /*! \brief Query for the latest affected indices.
      *  \return : The affected indices from the last time the process was

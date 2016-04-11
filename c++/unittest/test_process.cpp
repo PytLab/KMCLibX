@@ -475,7 +475,7 @@ void Test_Process::testMatchList()
     Process process(config1, config2, rate, basis_sites);
 
     // Get the match list out.
-    const ProcessMatchList & match_list = process.MatchList();
+    const ProcessMatchList & match_list = process.matchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
@@ -614,7 +614,7 @@ void Test_Process::testMatchListLong()
     Process process(config1, config2, rate, basis_sites);
 
     // Get the match list out.
-    const ProcessMatchList match_list = process.MatchList();
+    const ProcessMatchList match_list = process.matchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(process_coords.size()),
