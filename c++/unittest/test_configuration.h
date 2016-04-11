@@ -29,7 +29,7 @@ public:
 //    CPPUNIT_TEST( testPerformProcess );
 //    CPPUNIT_TEST( testPerformProcessVectors );
 //    CPPUNIT_TEST( testAtomID );
-//    CPPUNIT_TEST( testMatchLists );
+    CPPUNIT_TEST( testMatchLists );
 //    CPPUNIT_TEST( testTypeNameQuery );
 //    CPPUNIT_TEST( testAtomIDElementsCoordinatesMovedIDs );
     CPPUNIT_TEST_SUITE_END();
@@ -39,7 +39,7 @@ public:
 //    void testPerformProcess();
 //    void testPerformProcessVectors();
 //    void testAtomID();
-//    void testMatchLists();
+    void testMatchLists();
 //    void testAtomIDElementsCoordinatesMovedIDs();
 //    void testTypeNameQuery();
 
