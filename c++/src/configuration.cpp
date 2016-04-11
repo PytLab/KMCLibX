@@ -87,7 +87,6 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
 
 // -----------------------------------------------------------------------------
 //
-/*
 void Configuration::initMatchLists( const LatticeMap & lattice_map,
                                     const int range )
 {
@@ -101,9 +100,7 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
         // Calculate and store the match list.
         const int origin_index = i;
         const std::vector<int> neighbourhood = lattice_map.neighbourIndices(origin_index, range);
-        match_lists_[i] = minimalMatchList(origin_index,
-                                           neighbourhood,
-                                           lattice_map);
+        match_lists_[i] = matchList(origin_index, neighbourhood, lattice_map);
 
         // Store the maximum size
         tmp_size = match_lists_[i].size();
@@ -118,7 +115,6 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
     moved_atom_ids_.resize(max_size);
     recent_move_vectors_.resize(max_size);
 }
-*/
 
 
 // -----------------------------------------------------------------------------
@@ -139,7 +135,7 @@ void Configuration::updateMatchList(const int index)
 
 // -----------------------------------------------------------------------------
 //
-const ConfigMatchList & Configuration::MatchList(const int origin_index,
+const ConfigMatchList & Configuration::matchList(const int origin_index,
                                                  const std::vector<int> & indices,
                                                  const LatticeMap & lattice_map) const
 {
@@ -152,7 +148,7 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
     // Setup the needed iterators.
     std::vector<int>::const_iterator it_index  = indices.begin();
     const std::vector<int>::const_iterator end = indices.end();
-    std::vector<MinimalMatchListEntry>::iterator it_match_list = tmp_config_match_list__.begin();
+    ConfigMatchList::iterator it_match_list = tmp_config_match_list__.begin();
 
     const bool periodic_a = lattice_map.periodicA();
     const bool periodic_b = lattice_map.periodicB();
@@ -167,7 +163,7 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
         // Loop, calculate and add to the return list.
         for ( ; it_index != end; ++it_index, ++it_match_list)
         {
-            // Center.
+            // All coordinates in match list are relative to origin.
             Coordinate c = coordinates_[(*it_index)] - center;
 
             // Wrap with coorect periodicity.
@@ -183,7 +179,6 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
 
             // Save in the match list.
             (*it_match_list).match_type  = match_type;
-            (*it_match_list).update_type = -1;
             (*it_match_list).distance    = distance;
             (*it_match_list).coordinate  = c;
             (*it_match_list).index       = (*it_index);
@@ -195,10 +190,10 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
         // Loop, calculate and add to the return list.
         for ( ; it_index != end; ++it_index, ++it_match_list)
         {
-            // Center.
+            // All coordinates in match list are relative to origin.
             Coordinate c = coordinates_[(*it_index)] - center;
 
-            // Wrap with coorect periodicity.
+            // Wrap with correct periodicity.
             lattice_map.wrap(c, 0);
             lattice_map.wrap(c, 1);
 
@@ -210,7 +205,6 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
 
             // Save in the match list.
             (*it_match_list).match_type  = match_type;
-            (*it_match_list).update_type = -1;
             (*it_match_list).distance    = distance;
             (*it_match_list).coordinate  = c;
             (*it_match_list).index       = (*it_index);
@@ -227,10 +221,10 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
         // Loop, calculate and add to the return list.
         for ( ; it_index != end; ++it_index, ++it_match_list)
         {
-            // Center.
+            // All coordinates in match list are relative to origin.
             Coordinate c = coordinates_[(*it_index)] - center;
 
-            // Wrap with coorect periodicity.
+            // Wrap with correct periodicity.
             lattice_map.wrap(c);
 
             const double distance = c.distanceToOrigin();
@@ -240,7 +234,6 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
 
             // Save in the match list.
             (*it_match_list).match_type  = match_type;
-            (*it_match_list).update_type = -1;
             (*it_match_list).distance    = distance;
             (*it_match_list).coordinate  = c;
             (*it_match_list).index       = (*it_index);
@@ -249,6 +242,7 @@ const ConfigMatchList & Configuration::MatchList(const int origin_index,
 
     // Sort and return.
     std::sort(tmp_config_match_list__.begin(), tmp_config_match_list__.end());
+
     return tmp_config_match_list__;
 }
 

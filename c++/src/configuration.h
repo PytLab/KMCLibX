@@ -45,7 +45,7 @@ public:
      *  \param lattice_map : The lattice map needed to get coordinates wrapped.
      *  \param range       : The number of shells to include.
      */
-    //void initMatchLists(const LatticeMap & lattice_map, const int range);
+    void initMatchLists(const LatticeMap & lattice_map, const int range);
 
     /*! \brief Const query for the coordinates.
      *  \return : The coordinates of the configuration.
@@ -92,9 +92,9 @@ public:
      *                        using correct boundaries.
      *  \return : The match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int origin_index,
-                                                                const std::vector<int> & indices,
-                                                                const LatticeMap & lattice_map) const;
+    const ConfigMatchList & matchList(const int origin_index,
+                                      const std::vector<int> & indices,
+                                      const LatticeMap & lattice_map) const;
 
     /*! \brief Update the cached match list for the given index.
      *  \param index : The index to update the match list for.
@@ -105,7 +105,7 @@ public:
      *  \param index : The index to get the match list for.
      *  \return : The match list.
      */
-    //const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index) const { return match_lists_[index]; }
+    const ConfigMatchList & matchList(const int index) const { return match_lists_[index]; }
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
@@ -160,16 +160,16 @@ private:
     std::vector<int> atom_id_;
 
     /// The first n_moved_ elements hold the moved atom ids.
-    //std::vector<int> moved_atom_ids_;
+    std::vector<int> moved_atom_ids_;
 
     /// The first n_moved_ elements hold the moved atoms move vectors (listed on id).
-    //std::vector<Coordinate> recent_move_vectors_;
+    std::vector<Coordinate> recent_move_vectors_;
 
     /// The mapping from type integers to names.
     std::vector<std::string> type_names_;
 
     /// The match lists for all indices.
-    std::vector< std::vector<MinimalMatchListEntry> > match_lists_;
+    std::vector<ConfigMatchList> match_lists_;
 
 };
 
