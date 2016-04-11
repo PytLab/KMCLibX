@@ -1,6 +1,4 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
-
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
@@ -18,8 +16,10 @@
 #include <vector>
 #include <string>
 #include <map>
+
 #include "matchlistentry.h"
 #include "coordinate.h"
+#include "matchlist.h"
 
 // Forward declarations.
 class LatticeMap;
@@ -45,7 +45,7 @@ public:
      *  \param lattice_map : The lattice map needed to get coordinates wrapped.
      *  \param range       : The number of shells to include.
      */
-    void initMatchLists(const LatticeMap & lattice_map, const int range);
+    //void initMatchLists(const LatticeMap & lattice_map, const int range);
 
     /*! \brief Const query for the coordinates.
      *  \return : The coordinates of the configuration.
@@ -75,14 +75,14 @@ public:
     /*! \brief Const query for the moved atom ids.
      *  \return : A copy of the moved atom ids, resized to correct length.
      */
-    inline
-    std::vector<int> movedAtomIDs() const;
+    //inline
+    //std::vector<int> movedAtomIDs() const;
 
     /*! \brief Const query for the moved atoms move vectors, in the same order as the id's.
      *  \return : A copy of the recent move vectors, resized to correct length.
      */
-    inline
-    std::vector<Coordinate> recentMoveVectors() const;
+    //inline
+    //std::vector<Coordinate> recentMoveVectors() const;
 
     /*! \brief Construct and return the match list for the given list of
      *         indices.
@@ -99,13 +99,13 @@ public:
     /*! \brief Update the cached match list for the given index.
      *  \param index : The index to update the match list for.
      */
-    void updateMatchList(const int index);
+    //void updateMatchList(const int index);
 
     /*! \brief Return the cached match list without update.
      *  \param index : The index to get the match list for.
      *  \return : The match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index) const { return match_lists_[index]; }
+    //const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index) const { return match_lists_[index]; }
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
@@ -113,8 +113,10 @@ public:
      *  \param site_index : The index of the site where the process should be performed.
      *  \param lattice_map : The lattice map needed for proper move vector indexing.
      */
+    /*
     void performProcess(Process & process,
                         const int site_index);
+                        */
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
@@ -158,10 +160,10 @@ private:
     std::vector<int> atom_id_;
 
     /// The first n_moved_ elements hold the moved atom ids.
-    std::vector<int> moved_atom_ids_;
+    //std::vector<int> moved_atom_ids_;
 
     /// The first n_moved_ elements hold the moved atoms move vectors (listed on id).
-    std::vector<Coordinate> recent_move_vectors_;
+    //std::vector<Coordinate> recent_move_vectors_;
 
     /// The mapping from type integers to names.
     std::vector<std::string> type_names_;
@@ -179,6 +181,7 @@ private:
 
 // -----------------------------------------------------------------------------
 //
+/*
 std::vector<int> Configuration::movedAtomIDs() const
 {
     // PERFORMME
@@ -197,6 +200,7 @@ std::vector<Coordinate> Configuration::recentMoveVectors() const
     move_vectors.resize(n_moved_);
     return move_vectors;
 }
+*/
 
 
 
