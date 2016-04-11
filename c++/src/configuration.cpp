@@ -27,6 +27,7 @@
 #include "latticemap.h"
 #include "process.h"
 #include "exceptions.h"
+#include "coordinate.h"
 
 // Temporary data for the match list return.
 static ConfigMatchList tmp_config_match_list__(0);

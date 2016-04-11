@@ -24,9 +24,10 @@
 #include <map>
 #include <string>
 
-#include "matchlistentry.h"
+//#include "matchlistentry.h"
 #include "matchlist.h"
 
+// Forward declarations.
 class Configuration;
 
 /*! \brief Class for defining a possible process int the system.

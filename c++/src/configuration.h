@@ -26,13 +26,12 @@
 #include <string>
 #include <map>
 
-#include "matchlistentry.h"
-#include "coordinate.h"
 #include "matchlist.h"
 
 // Forward declarations.
 class LatticeMap;
 class Process;
+class Coordinate;
 
 /*! \brief Class for defining the configuration used in a KMC simulation to
  *         use for communicating elements and positions to and from python.
