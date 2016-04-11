@@ -26,20 +26,7 @@
 #include <stdexcept>
 
 #include "coordinate.h"
-
-
-/// Exception class for position unmatch.
-class coordinates_unmatched_error : public std::logic_error {
-
-public:
-    // Inline constructor.
-    coordinates_unmatched_error(const std::string & what_arg) :
-        std::logic_error(what_arg)
-    {
-        // NOTHING HERE
-    }
-
-};
+#include "exceptions.h"
 
 
 /// The base class for the match list entries.
