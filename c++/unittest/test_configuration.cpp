@@ -86,7 +86,6 @@ void Test_Configuration::testConstruction()
 
 }
 
-/*
 // ---------------------------------------------------------------------------//
 // Description: Test moved_atom_id_ and recent_move_vector 
 //              lengths and memories allocation.
@@ -576,7 +575,6 @@ void Test_Configuration::testAtomID()
         CPPUNIT_ASSERT_EQUAL( configuration.atomID()[i], i );
     }
 }
-*/
 
 
 // -------------------------------------------------------------------------- //
@@ -742,7 +740,6 @@ void Test_Configuration::testMatchLists()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
-    /*
     // Peform the process.
     configuration.performProcess(p, 1434);
 
@@ -787,10 +784,7 @@ void Test_Configuration::testMatchLists()
                                       1.0e-14 );
 
     }
-    */
 }
-/*
-
 
 // -------------------------------------------------------------------------- //
 //
@@ -1164,4 +1158,3 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
                                  configuration.atomIDCoordinates()[1453].z(),
                                  1.0e-12);
 }
-*/
