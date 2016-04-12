@@ -1,13 +1,20 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
-
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
 
-/*! \file  process.h
- *  \brief File for the Process class definition.
+/* ******************************************************************
+ *  file   : process.h
+ *  brief  : File for the Process class definition.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-04-10   1.2          Modify match list presentation.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
 
 #ifndef __PROCESS__
@@ -16,8 +23,11 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "matchlistentry.h"
 
+//#include "matchlistentry.h"
+#include "matchlist.h"
+
+// Forward declarations.
 class Configuration;
 
 /*! \brief Class for defining a possible process int the system.
@@ -113,12 +123,12 @@ public:
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : The stored match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList() const { return minimal_match_list_; }
+    const ProcessMatchList & matchList() const { return match_list_; }
 
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : A reference to the stored match list.
      */
-    std::vector<MinimalMatchListEntry> & minimalMatchList() { return minimal_match_list_; }
+    ProcessMatchList & matchList() { return match_list_; }
 
     /*! \brief Query for the latest affected indices.
      *  \return : The affected indices from the last time the process was
@@ -180,7 +190,7 @@ protected:
     std::vector<int> sites_;
 
     /// The match list for comparing against local configurations.
-    std::vector<MinimalMatchListEntry> minimal_match_list_;
+    ProcessMatchList match_list_;
 
     /*! \brief: The configuration indices that were affected last time
      *          the process was used to update a configuration.

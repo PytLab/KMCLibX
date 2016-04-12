@@ -86,7 +86,6 @@ void Test_Configuration::testConstruction()
 
 }
 
-
 // ---------------------------------------------------------------------------//
 // Description: Test moved_atom_id_ and recent_move_vector 
 //              lengths and memories allocation.
@@ -144,9 +143,9 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
     configuration.initMatchLists(lattice_map, range);
 
     // Test lengths of minimal_matchlists
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(0).size()), 8);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(1).size()), 12);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(13).size()), 27);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.matchList(0).size()), 8);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.matchList(1).size()), 12);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.matchList(13).size()), 27);
 
     // Test size of moved_atom_ids_ before process performing
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.movedAtomIDs().size()), 0);
@@ -655,47 +654,45 @@ void Test_Configuration::testMatchLists()
 
     // Try to access the match lists before initialization. They should be
     // empty.
-    CPPUNIT_ASSERT( configuration.minimalMatchList(10).empty()   );
-    CPPUNIT_ASSERT( configuration.minimalMatchList(2101).empty() );
-    CPPUNIT_ASSERT( configuration.minimalMatchList(1434).empty() );
+    CPPUNIT_ASSERT( configuration.matchList(10).empty()   );
+    CPPUNIT_ASSERT( configuration.matchList(2101).empty() );
+    CPPUNIT_ASSERT( configuration.matchList(1434).empty() );
 
     // Init the match lists.
     configuration.initMatchLists(lattice_map, 1);
 
     // This did something.
-    CPPUNIT_ASSERT( !configuration.minimalMatchList(10).empty()   );
-    CPPUNIT_ASSERT( !configuration.minimalMatchList(2101).empty() );
-    CPPUNIT_ASSERT( !configuration.minimalMatchList(1434).empty() );
+    CPPUNIT_ASSERT( !configuration.matchList(10).empty()   );
+    CPPUNIT_ASSERT( !configuration.matchList(2101).empty() );
+    CPPUNIT_ASSERT( !configuration.matchList(1434).empty() );
 
     // Get the match list the hard way.
-    const std::vector<MinimalMatchListEntry> ref_1434 = \
-        configuration.minimalMatchList( 1434,
-                                        lattice_map.neighbourIndices(1434),
-                                        lattice_map);
+    const std::vector<ConfigMatchListEntry> ref_1434 = \
+        configuration.matchList( 1434,
+                                 lattice_map.neighbourIndices(1434),
+                                 lattice_map);
     // Check the size.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref_1434.size()),
-                          static_cast<int>(configuration.minimalMatchList(1434).size()) );
+                          static_cast<int>(configuration.matchList(1434).size()) );
 
     // Check the values.
     for (size_t i = 0; i < ref_1434.size(); ++i)
     {
         CPPUNIT_ASSERT_EQUAL( ref_1434[i].match_type,
-                              configuration.minimalMatchList(1434)[i].match_type );
-        CPPUNIT_ASSERT_EQUAL( ref_1434[i].update_type,
-                              configuration.minimalMatchList(1434)[i].update_type );
+                              configuration.matchList(1434)[i].match_type );
         CPPUNIT_ASSERT_EQUAL( ref_1434[i].index,
-                              configuration.minimalMatchList(1434)[i].index );
+                              configuration.matchList(1434)[i].index );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].distance,
-                                      configuration.minimalMatchList(1434)[i].distance,
+                                      configuration.matchList(1434)[i].distance,
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.x(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.x(),
+                                      configuration.matchList(1434)[i].coordinate.x(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.y(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.y(),
+                                      configuration.matchList(1434)[i].coordinate.y(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.z(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.z(),
+                                      configuration.matchList(1434)[i].coordinate.z(),
                                       1.0e-14 );
 
     }
@@ -758,39 +755,36 @@ void Test_Configuration::testMatchLists()
     configuration.updateMatchList(1434);
 
     // Reference.
-    const std::vector<MinimalMatchListEntry> ref2_1434 =        \
-        configuration.minimalMatchList( 1434,
-                                        lattice_map.neighbourIndices(1434),
-                                        lattice_map);
+    const std::vector<ConfigMatchListEntry> ref2_1434 =        \
+        configuration.matchList( 1434,
+                                 lattice_map.neighbourIndices(1434),
+                                 lattice_map);
     // Check the size.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref2_1434.size()),
-                          static_cast<int>(configuration.minimalMatchList(1434).size()) );
+                          static_cast<int>(configuration.matchList(1434).size()) );
 
     // Check the values.
     for (size_t i = 0; i < ref2_1434.size(); ++i)
     {
         CPPUNIT_ASSERT_EQUAL( ref2_1434[i].match_type,
-                              configuration.minimalMatchList(1434)[i].match_type );
-        CPPUNIT_ASSERT_EQUAL( ref2_1434[i].update_type,
-                              configuration.minimalMatchList(1434)[i].update_type );
+                              configuration.matchList(1434)[i].match_type );
         CPPUNIT_ASSERT_EQUAL( ref2_1434[i].index,
-                              configuration.minimalMatchList(1434)[i].index );
+                              configuration.matchList(1434)[i].index );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].distance,
-                                      configuration.minimalMatchList(1434)[i].distance,
+                                      configuration.matchList(1434)[i].distance,
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.x(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.x(),
+                                      configuration.matchList(1434)[i].coordinate.x(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.y(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.y(),
+                                      configuration.matchList(1434)[i].coordinate.y(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.z(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.z(),
+                                      configuration.matchList(1434)[i].coordinate.z(),
                                       1.0e-14 );
 
     }
 }
-
 
 // -------------------------------------------------------------------------- //
 //

@@ -10,7 +10,10 @@
  * brief test runner for all unit tests.
  * history
  *   <author>   <time>       <version>   <desc>
- *   zjshao     2016-04-04   2.0         Add sitesmap test.
+ *   zjshao     2016-04-08   2.0         Add sitesmap test.
+ *   zjshao     2016-04-09   2.0         Modify matchlistentry test.
+ *   zjshao     2016-04-10   2.0         Add matchlis test,
+                                         Modify process test.
  * *********************************************************/
 
 
@@ -22,6 +25,7 @@
 #include "test_process.h"
 #include "test_customrateprocess.h"
 #include "test_interactions.h"
+#include "test_matchlist.h"
 #include "test_coordinate.h"
 #include "test_matchlistentry.h"
 #include "test_matcher.h"
@@ -42,6 +46,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test_LatticeMap );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Process );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_CustomRateProcess );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Interactions );
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_MatchList );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Coordinate );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_MatchListEntry );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Matcher );

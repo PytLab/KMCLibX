@@ -11,7 +11,7 @@
 
 // Include the files to test.
 #include "customrateprocess.h"
-
+#include "matchlist.h"
 #include "configuration.h"
 #include "random.h"
 
@@ -149,7 +149,7 @@ void Test_CustomRateProcess::testMatchListLong()
     CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
 
     // Get the match list out.
-    const std::vector<MinimalMatchListEntry> match_list = process.minimalMatchList();
+    const ProcessMatchList match_list = process.matchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(process_coords.size()),
