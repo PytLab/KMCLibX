@@ -24,10 +24,12 @@ public:
     CPPUNIT_TEST_SUITE( Test_MatchList );
     CPPUNIT_TEST( testCall );
     CPPUNIT_TEST( test_ConfigurationsToMatchList );
+    CPPUNIT_TEST( test_WhateverMatch );
     CPPUNIT_TEST_SUITE_END();
 
     void testCall();
     void test_ConfigurationsToMatchList();
+    void test_WhateverMatch();
 
 };
 
