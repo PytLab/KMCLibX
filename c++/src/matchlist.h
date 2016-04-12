@@ -53,5 +53,33 @@ void configurationsToMatchList(const Configuration & first,
                                const std::vector<int> & move_origins = {},
                                const std::vector<Coordinate> & move_vectors = {});
 
+
+/*! \brief Determines if matchlists m1 and m2 match.
+ *  \param m1: The first match list to compare.
+ *  \param m2: The second match list to compare.
+ */
+template <class T1, class T2>
+bool whateverMatch(const T1 & m1, const T2 & m2)
+{
+    // For the shortest one, (allways the first), loop and match.
+    const size_t size = m1.size();
+
+    if (m2.size() < size)
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        if (!m1[i].match(m2[i]))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 #endif  // __MATCHLIST__
 
