@@ -129,16 +129,6 @@ public:
                            Configuration & configuration,
                            const int index) const;
 
-    /*! \brief Check the matching between two match lists, where the process match list
-     *         must be shorter or equal in length to the index match list.
-     *  \param process_match_list : The process match list to compare against.
-     *  \param index_match_list   : The index match list to compare.
-     *  \return : True if match.
-     */
-    bool isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
-                 const std::vector<MinimalMatchListEntry> & index_match_list) const;
-
-
 protected:
 
 private:
