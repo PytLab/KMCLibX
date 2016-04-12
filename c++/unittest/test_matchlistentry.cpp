@@ -46,8 +46,9 @@ void Test_MatchListEntry::testMinimalMatchListEntryConstruction()
 
 // -------------------------------------------------------------------------- //
 //
-void Test_MatchListEntry::testMinimalMatchListEntryEqualOperator()
+void Test_MatchListEntry::testMinimalMatchListEntrySamePoint()
 {
+    /*{{{*/
     // Two equal.
     {
         MinimalMatchListEntry m1;
@@ -60,7 +61,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( m1 == m2 );
+        CPPUNIT_ASSERT( m1.samePoint(m2) );
+        CPPUNIT_ASSERT( m2.samePoint(m1) );
     }
 
     // Different type but same distance and coordinate, should be equal.
@@ -75,7 +77,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( m1 == m2 );
+        CPPUNIT_ASSERT( m1.samePoint(m2) );
+        CPPUNIT_ASSERT( m2.samePoint(m1) );
     }
     
     // Different distance, same type and coordinate, should be unequal.
@@ -90,7 +93,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 == m2) );
+        CPPUNIT_ASSERT( !(m1.samePoint(m2)) );
+        CPPUNIT_ASSERT( !(m2.samePoint(m1)) );
     }
     
     // Different coordinate(x), same type and distance, should be unequal.
@@ -105,7 +109,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 == m2) );
+        CPPUNIT_ASSERT( !(m1.samePoint(m2)) );
+        CPPUNIT_ASSERT( !(m2.samePoint(m1)) );
     }
 
     // Different coordinate(y), same type and distance, should be unequal.
@@ -120,7 +125,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 == m2) );
+        CPPUNIT_ASSERT( !(m1.samePoint(m2)) );
+        CPPUNIT_ASSERT( !(m2.samePoint(m1)) );
     }
 
     // Different coordinate(z), same type and distance, should be unequal.
@@ -135,15 +141,18 @@ void Test_MatchListEntry::testMinimalMatchListEntryEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 == m2) );
+        CPPUNIT_ASSERT( !(m1.samePoint(m2)) );
+        CPPUNIT_ASSERT( !(m2.samePoint(m1)) );
     }
+    /*}}}*/
 }
 
 
 // -------------------------------------------------------------------------- //
 //
-void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
+void Test_MatchListEntry::testMinimalMatchListEntryMatch()
 {
+    /*{{{*/
     // Two equal.
     {
         MinimalMatchListEntry m1;
@@ -156,7 +165,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT(m1.match(m2));
+        CPPUNIT_ASSERT(m2.match(m1));
     }
 
     // Two equal - by wildcard.
@@ -171,8 +181,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
-        CPPUNIT_ASSERT(  (m2 != m1) );
+        CPPUNIT_ASSERT(m1.match(m2));
+        CPPUNIT_ASSERT(!m2.match(m1));
     }
 
     // Second is wildcard, but if the coordinate is different,
@@ -188,8 +198,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.2,0.2,0.34);
 
-        CPPUNIT_ASSERT_THROW( !(m1 != m2), coordinates_unmatched_error );
-        CPPUNIT_ASSERT(  (m2 != m1) );
+        CPPUNIT_ASSERT_THROW( m1.match(m2), coordinates_unmatched_error );
+        CPPUNIT_ASSERT(!m2.match(m1));
     }
 
     // Two not equal in match type should equate to not equal.
@@ -204,7 +214,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( (m1 != m2) );
+        CPPUNIT_ASSERT(!m1.match(m2));
 
     }
 
@@ -220,7 +230,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( (m1 != m2) );
+        CPPUNIT_ASSERT(!m1.match(m2));
     }
 
     // If the distance difference is below eps_ hardcoded on the class
@@ -236,7 +246,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.200000000;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT(m1.match(m2));
 
     }
 
@@ -252,7 +262,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.200000000;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( (m1 != m2) );
+        CPPUNIT_ASSERT(!m1.match(m2));
 
     }
 
@@ -268,7 +278,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.20;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( (m1 != m2) );
+        CPPUNIT_ASSERT(!m1.match(m2));
 
     }
     {
@@ -282,7 +292,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.20;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( (m1 != m2) );
+        CPPUNIT_ASSERT(!m1.match(m2));
     }
     {
         MinimalMatchListEntry m1;
@@ -295,7 +305,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.20;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( (m1 != m2) );
+        CPPUNIT_ASSERT(!m1.match(m2));
     }
 
     // But if the difference is smaller than eps_ the value is
@@ -311,7 +321,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.20;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT(m1.match(m2));
 
     }
     {
@@ -325,7 +335,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.20;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT(m1.match(m2));
     }
     {
         MinimalMatchListEntry m1;
@@ -338,9 +348,9 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
         m2.distance = 1.20;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT(m1.match(m2));
     }
-
+    /*}}}*/
 }
 
 
@@ -348,7 +358,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryNotEqualOperator()
 //
 void Test_MatchListEntry::testMinimalMatchListEntryLessOperator()
 {
-   // Two equal.
+    /*{{{*/
+    // Two equal.
     {
         MinimalMatchListEntry m1;
         m1.match_type = 1324;
@@ -477,6 +488,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryLessOperator()
         CPPUNIT_ASSERT(  (m1 < m2) );
         CPPUNIT_ASSERT( !(m2 < m1) );
     }
+    /*}}}*/
 }
 
 
@@ -484,6 +496,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryLessOperator()
 //
 void Test_MatchListEntry::testProcessMatchListEntryConstruction()
 {
+    /*{{{*/
     {
         // Construct.
         ProcessMatchListEntry m;
@@ -524,7 +537,49 @@ void Test_MatchListEntry::testProcessMatchListEntryConstruction()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(pe.distance, 1.2, 1.0e-12);
         CPPUNIT_ASSERT_EQUAL(pe.coordinate, Coordinate(0.1, 0.2, 0.34));
     }
+    /*}}}*/
+}
 
+
+// ---------------------------------------------------------------------------
+//
+void Test_MatchListEntry::testProcessMatchListEntrySamePoint()
+{
+    //{{{
+    // MinimalMatchListEntry && ProcessMatchListEntry.
+    {
+        MinimalMatchListEntry m1;
+        m1.match_type = 1324;
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 1324;
+        m2.update_type = 123;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(m1.samePoint(m2));
+        CPPUNIT_ASSERT(m2.samePoint(m1));
+    }
+    // ConfigMatchList && ProcessMatchList
+    {
+        ConfigMatchListEntry m1;
+        m1.index = 1;
+        m1.match_type = 1324;
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 1324;
+        m2.update_type = 123;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(m1.samePoint(m2));
+        CPPUNIT_ASSERT(m2.samePoint(m1));
+    }
+    //}}}
 }
 
 
@@ -532,6 +587,7 @@ void Test_MatchListEntry::testProcessMatchListEntryConstruction()
 //
 void Test_MatchListEntry::testConfigMatchListEntryConstruction()
 {
+    //{{{
     {
         // Construct.
         ConfigMatchListEntry m;
@@ -567,5 +623,46 @@ void Test_MatchListEntry::testConfigMatchListEntryConstruction()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ce.distance, 1.2, 1.0e-12);
         CPPUNIT_ASSERT_EQUAL(ce.coordinate, Coordinate(0.1, 0.2, 0.34));
     }
+    //}}}
+}
 
+// ---------------------------------------------------------------------------
+//
+void Test_MatchListEntry::testConfigMatchListEntrySamePoint()
+{
+    //{{{
+    // MinimalMatchListEntry && ConfigMatchListEntry.
+    {
+        MinimalMatchListEntry m1;
+        m1.match_type = 1324;
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ConfigMatchListEntry m2;
+        m2.index = 1;
+        m2.match_type = 1324;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(m1.samePoint(m2));
+        CPPUNIT_ASSERT(m2.samePoint(m1));
+    }
+    // ConfigMatchList && ProcessMatchList
+    {
+        ConfigMatchListEntry m1;
+        m1.index = 1;
+        m1.match_type = 1324;
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 1324;
+        m2.update_type = 123;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(m1.samePoint(m2));
+        CPPUNIT_ASSERT(m2.samePoint(m1));
+    }
+    //}}}
 }

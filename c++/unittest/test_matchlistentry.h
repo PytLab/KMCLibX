@@ -25,19 +25,23 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_MatchListEntry );
     CPPUNIT_TEST( testMinimalMatchListEntryConstruction );
-    CPPUNIT_TEST( testMinimalMatchListEntryNotEqualOperator );
+    CPPUNIT_TEST( testMinimalMatchListEntryMatch );
     CPPUNIT_TEST( testMinimalMatchListEntryLessOperator );
-    CPPUNIT_TEST( testMinimalMatchListEntryEqualOperator );
+    CPPUNIT_TEST( testMinimalMatchListEntrySamePoint );
     CPPUNIT_TEST( testProcessMatchListEntryConstruction );
+    CPPUNIT_TEST( testProcessMatchListEntrySamePoint );
     CPPUNIT_TEST( testConfigMatchListEntryConstruction );
+    CPPUNIT_TEST( testConfigMatchListEntrySamePoint );
     CPPUNIT_TEST_SUITE_END();
 
     void testMinimalMatchListEntryConstruction();
-    void testMinimalMatchListEntryNotEqualOperator();
+    void testMinimalMatchListEntryMatch();
     void testMinimalMatchListEntryLessOperator();
-    void testMinimalMatchListEntryEqualOperator(); 
+    void testMinimalMatchListEntrySamePoint(); 
     void testProcessMatchListEntryConstruction();
+    void testProcessMatchListEntrySamePoint();
     void testConfigMatchListEntryConstruction();
+    void testConfigMatchListEntrySamePoint();
 
 };
 

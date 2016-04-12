@@ -554,7 +554,7 @@ void Test_LatticeMap::testNeighbourIndicesLong()
     // These should be equal.
     for ( ; it0 != default_matchlist.end(); ++it0, ++it1 )
     {
-        CPPUNIT_ASSERT( !((*it0) != (*it1)) );
+        CPPUNIT_ASSERT( (*it0).match(*it1) );
     }
 
     // Check that they are correctly sorted.

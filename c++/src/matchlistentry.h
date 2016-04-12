@@ -48,16 +48,16 @@ public:
      */
     virtual bool operator<(const MinimalMatchListEntry & other) const;
 
-    /*! \brief 'equal' operator overloading.
+    /*! \brief 'equal' for comparing points(positions) of matchlist entry.
      *  NOTE: This == operator dose not compare match types.
      */
-    virtual bool operator==(const MinimalMatchListEntry & other) const;
+    virtual bool samePoint(const MinimalMatchListEntry & other) const;
 
-    /*! \brief 'not equal' operator overloading.
+    /*! \brief 'equal' for comparing type and positions.
      *  NOTE: This function compare type firstly,
      *        then compare distance and coordinate
      */
-    virtual bool operator!=(const MinimalMatchListEntry & other) const;
+    virtual bool match(const MinimalMatchListEntry & other) const;
 };
 
 

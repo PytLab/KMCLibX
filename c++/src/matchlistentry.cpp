@@ -28,12 +28,10 @@
  */
 static double epsi__ = 1.0e-5;
 
-/*! \brief operator overloading funtion implementation.
- */
 
 // -------------------------------------------------------------------------
 //
-bool MinimalMatchListEntry::operator==(const MinimalMatchListEntry & other) const
+bool MinimalMatchListEntry::samePoint(const MinimalMatchListEntry & other) const
 {
     // Check the distance.
     if (std::fabs(distance - other.distance) > epsi__)
@@ -58,7 +56,7 @@ bool MinimalMatchListEntry::operator==(const MinimalMatchListEntry & other) cons
 
 // -------------------------------------------------------------------------
 //
-bool MinimalMatchListEntry::operator!=(const MinimalMatchListEntry & other) const
+bool MinimalMatchListEntry::match(const MinimalMatchListEntry & other) const
 {
     // Handle the wildcard case.
     if (match_type == 0)
@@ -66,7 +64,7 @@ bool MinimalMatchListEntry::operator!=(const MinimalMatchListEntry & other) cons
         // Check the coordinate.
         // NOTE: if a wildcard is in them, but the positons are different,
         //       a exception would be thrown.
-        if (!(*this == other))
+        if ( !(*this).samePoint(other) )
         {
             std::string msg = "Wildcard exists, position different\n" + \
                               coordinate.toString() + " and " + \
@@ -75,17 +73,17 @@ bool MinimalMatchListEntry::operator!=(const MinimalMatchListEntry & other) cons
         }
         else
         {
-            return false;
+            return true;
         }
     }
     // Check the type.
     else if (match_type != other.match_type)
     {
-        return true;
+        return false;
     }
     else
     {
-        return !(*this == other);
+        return (*this).samePoint(other);
     }
 }
 
