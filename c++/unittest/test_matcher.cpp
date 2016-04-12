@@ -11,7 +11,7 @@
 
 // Include the file to test.
 #include "matcher.h"
-
+#include "matchlist.h"
 #include "matchlistentry.h"
 #include "configuration.h"
 #include "latticemap.h"
@@ -39,8 +39,8 @@ void Test_Matcher::testIsMatchMatchList()
     Matcher matcher;
 
     // Setup two match lists to check.
-    std::vector<MinimalMatchListEntry> process_match_list;
-    MinimalMatchListEntry m;
+    ProcessMatchList process_match_list;
+    ProcessMatchListEntry m;
     m.match_type  = 3;
     m.update_type = 2;
     m.distance     = 1.2;
@@ -59,58 +59,53 @@ void Test_Matcher::testIsMatchMatchList()
     m.coordinate   = Coordinate(0.1,5.2,0.34);
     process_match_list.push_back(m);
 
-    std::vector<MinimalMatchListEntry> index_match_list;
-    m.match_type  = 3;
-    m.update_type = 2;
-    m.distance     = 1.2;
-    m.coordinate   = Coordinate(0.1,2.0,0.34);
-    index_match_list.push_back(m);
+    ConfigMatchList index_match_list;
+    ConfigMatchListEntry n;
+    n.match_type  = 3;
+    n.distance     = 1.2;
+    n.coordinate   = Coordinate(0.1,2.0,0.34);
+    index_match_list.push_back(n);
 
-    m.match_type  = 1;
-    m.update_type = 4;
-    m.distance     = 1.6;
-    m.coordinate   = Coordinate(1.1,2.0,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 1;
+    n.distance     = 1.6;
+    n.coordinate   = Coordinate(1.1,2.0,0.34);
+    index_match_list.push_back(n);
 
-    m.match_type  = 8;
-    m.update_type = 2;
-    m.distance     = 1.9;
-    m.coordinate   = Coordinate(0.1,5.2,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 8;
+    n.distance     = 1.9;
+    n.coordinate   = Coordinate(0.1,5.2,0.34);
+    index_match_list.push_back(n);
 
     // These two are equal.
-    CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( whateverMatch(process_match_list, index_match_list) );
 
     // It works also if the index match list is longer.
-    m.match_type  = 8;
-    m.update_type = 2;
-    m.distance     = 1.93;
-    m.coordinate   = Coordinate(0.13,5.2,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 8;
+    n.distance     = 1.93;
+    n.coordinate   = Coordinate(0.13,5.2,0.34);
+    index_match_list.push_back(n);
 
     // These two are still equal.
-    CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( whateverMatch(process_match_list, index_match_list) );
 
     // If we add another not matching element to the process_match_list vecctor
     // we get a non-match.
     m.match_type  = 3;
-    m.update_type = 2;
     m.distance     = 1.93;
     m.coordinate   = Coordinate(0.13,5.2,0.34);
     process_match_list.push_back(m);
 
     // These two are no longer equal.
-    CPPUNIT_ASSERT( !matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( !whateverMatch(process_match_list, index_match_list) );
 
     // But if they differ in the update index they are still equal.
     m.match_type  = 8;
-    m.update_type = 3;
     m.distance     = 1.93;
     m.coordinate   = Coordinate(0.13,5.2,0.34);
     process_match_list[3] = m;
 
     // These two are again equal.
-    CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( whateverMatch(process_match_list, index_match_list) );
 }
 
 
@@ -122,8 +117,8 @@ void Test_Matcher::testIsMatchWildcard()
     Matcher matcher;
 
     // Setup two match lists to check.
-    std::vector<MinimalMatchListEntry> process_match_list;
-    MinimalMatchListEntry m;
+    ProcessMatchList process_match_list;
+    ProcessMatchListEntry m;
     m.match_type  = 3;
     m.update_type = 2;
     m.distance     = 1.2;
@@ -143,32 +138,30 @@ void Test_Matcher::testIsMatchWildcard()
     m.coordinate   = Coordinate(0.1,5.2,0.34);
     process_match_list.push_back(m);
 
-    std::vector<MinimalMatchListEntry> index_match_list;
-    m.match_type  = 3;
-    m.update_type = 2;
-    m.distance     = 1.2;
-    m.coordinate   = Coordinate(0.1,2.0,0.34);
-    index_match_list.push_back(m);
+    ConfigMatchList index_match_list;
+    ConfigMatchListEntry n;
+    n.match_type  = 3;
+    n.distance     = 1.2;
+    n.coordinate   = Coordinate(0.1,2.0,0.34);
+    index_match_list.push_back(n);
 
     // Note that no wildcard here.
-    m.match_type  = 1;
-    m.update_type = 4;
-    m.distance     = 1.6;
-    m.coordinate   = Coordinate(1.1,2.0,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 1;
+    n.distance     = 1.6;
+    n.coordinate   = Coordinate(1.1,2.0,0.34);
+    index_match_list.push_back(n);
 
-    m.match_type  = 8;
-    m.update_type = 2;
-    m.distance     = 1.9;
-    m.coordinate   = Coordinate(0.1,5.2,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 8;
+    n.distance     = 1.9;
+    n.coordinate   = Coordinate(0.1,5.2,0.34);
+    index_match_list.push_back(n);
 
     // These two are equal.
-    CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( whateverMatch(process_match_list, index_match_list) );
 
     // But the wildcard is only skipped in the process match list, so swapping
     // place creates a mismatch.
-    CPPUNIT_ASSERT( !matcher.isMatch(index_match_list, process_match_list) );
+    CPPUNIT_ASSERT( !whateverMatch(index_match_list, process_match_list) );
 
 }
 
@@ -247,10 +240,10 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         Process process(config1, config2, rate, basis_sites);
 
         // This is a match.
-        CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT( whateverMatch(process.matchList(), config.matchList(0)) );
 
         // This is not a match.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(1)) );
     }
 
     // Construct another process that should match the second index.
@@ -276,10 +269,10 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         Process process(config1, config2, rate, basis_sites);
 
         // This is a match.
-        CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
+        CPPUNIT_ASSERT( whateverMatch(process.matchList(), config.matchList(1)) );
 
         // This is not a match.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(0)) );
     }
 
     // This process does not match any. Note that the symmetry / direction is important.
@@ -305,8 +298,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         Process process(config1, config2, rate, basis_sites);
 
         // Not a match.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(1)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(0)) );
     }
 
     // This process does not match any site since it is to long.
@@ -337,8 +330,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         Process process(config1, config2, rate, basis_sites);
 
         // Not a match.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(1)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(0)) );
     }
 }
 
@@ -484,8 +477,8 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
         {
-            CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(i)) );
-            CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(i+1)) );
+            CPPUNIT_ASSERT(  whateverMatch(process.matchList(), config.matchList(i)) );
+            CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(i+1)) );
         }
     }
 
@@ -597,8 +590,8 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
         {
-            CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(i)) );
-            CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(i+1)) );
+            CPPUNIT_ASSERT(  whateverMatch(process.matchList(), config.matchList(i)) );
+            CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(i+1)) );
         }
     }
 }
@@ -740,13 +733,13 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
         Process process(config1, config2, rate, basis_sites);
 
         // This process should match all except the first the even numbered indices.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(0)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(1)) );
 
         for (int i = 2; i < 27; i += 2)
         {
-            CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(i)) );
-            CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(i+1)) );
+            CPPUNIT_ASSERT(  whateverMatch(process.matchList(), config.matchList(i)) );
+            CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(i+1)) );
         }
     }
 
@@ -856,11 +849,11 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
         Process process(config1, config2, rate, basis_sites);
 
         // This process should only match the first index.
-        CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT(  whateverMatch(process.matchList(), config.matchList(0)) );
 
         for (int i = 1; i < 27; ++i)
         {
-            CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(i)) );
+            CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(i)) );
         }
     }
 }
