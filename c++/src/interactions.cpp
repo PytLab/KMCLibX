@@ -105,6 +105,7 @@ int Interactions::maxRange() const
 void Interactions::updateProcessMatchLists(const Configuration & configuration,
                                            const LatticeMap & lattice_map)
 {
+    //{{{
     // Skip if we are not using implicit wildcards.
     if (!implicit_wildcards_)
     {
@@ -149,7 +150,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
         for ( ; it1 != process_matchlist.end() && it2 != config_matchlist.end(); ++it1, ++it2 )
         {
             // Check if there is a match in lattice point.
-            if( !((*it1) == (*it2)) )
+            if( !(*it1).samePoint(*it2) )
             {
                 // If not matching, add a wildcard entry to it1.
                 ProcessMatchListEntry wildcard_entry(*it2);
@@ -181,6 +182,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
             id_moves[j].second = index_mapping[old_index_second];
         }
     }
+    //}}}
 }
 
 
