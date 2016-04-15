@@ -212,20 +212,10 @@ void Test_MatchList::test_WhateverMatch()
     CPPUNIT_ASSERT(is_match);
 
     // Change the coordinate of the 2nd entry, should be ummatched.
-    Coordinate original_coord = process_match_list[1].coordinate;
     process_match_list[1].coordinate = Coordinate(1.0, 1.0, 1.0);
     // Check match.
     is_match = whateverMatch(process_match_list, config_match_list);
     CPPUNIT_ASSERT(!is_match);
-
-    // Change the coordinate of wildcard in process,
-    // then an exception would be catched.
-    process_match_list[1].coordinate = original_coord;
-    process_match_list[0].coordinate = Coordinate(1.0, 1.0, 1.0);
-    // Check match.
-    CPPUNIT_ASSERT_THROW(whateverMatch(process_match_list, config_match_list),
-                         coordinates_unmatched_error);
-
 
     // }}}
 }

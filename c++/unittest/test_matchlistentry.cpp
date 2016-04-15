@@ -185,23 +185,6 @@ void Test_MatchListEntry::testMinimalMatchListEntryMatch()
         CPPUNIT_ASSERT(!m2.match(m1));
     }
 
-    // Second is wildcard, but if the coordinate is different,
-    // an coordinates_unmatched_error would be expected.
-    {
-        MinimalMatchListEntry m1;
-        m1.match_type = 0;
-        m1.distance = 1.2;
-        m1.coordinate = Coordinate(0.1,0.2,0.34);
-
-        MinimalMatchListEntry m2;
-        m2.match_type = 1324;
-        m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.2,0.2,0.34);
-
-        CPPUNIT_ASSERT_THROW( m1.match(m2), coordinates_unmatched_error );
-        CPPUNIT_ASSERT(!m2.match(m1));
-    }
-
     // Two not equal in match type should equate to not equal.
     {
         MinimalMatchListEntry m1;
