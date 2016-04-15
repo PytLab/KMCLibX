@@ -61,20 +61,7 @@ bool MinimalMatchListEntry::match(const MinimalMatchListEntry & other) const
     // Handle the wildcard case.
     if (match_type == 0)
     {
-        // Check the coordinate.
-        // NOTE: if a wildcard is in them, but the positons are different,
-        //       a exception would be thrown.
-        if ( !(*this).samePoint(other) )
-        {
-            std::string msg = "Wildcard exists, position different\n" + \
-                              coordinate.toString() + " and " + \
-                              other.coordinate.toString();
-            throw coordinates_unmatched_error(msg);
-        }
-        else
-        {
-            return true;
-        }
+        return true;
     }
     // Check the type.
     else if (match_type != other.match_type)

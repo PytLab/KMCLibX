@@ -26,7 +26,6 @@
 #include <stdexcept>
 
 #include "coordinate.h"
-#include "exceptions.h"
 
 
 /// The base class for the match list entries.
