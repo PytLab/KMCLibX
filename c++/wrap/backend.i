@@ -21,6 +21,8 @@
 #include "process.h"
 #include "customrateprocess.h"
 #include "coordinate.h"
+#include "matcher.h"
+#include "matchlist.h"
 #include "matchlistentry.h"
 #include "simulationtimer.h"
 #include "ratecalculator.h"
@@ -58,7 +60,9 @@
 %template(StdVectorProcess) std::vector<Process>;
 %template(StdVectorProcessPtr) std::vector<Process*>;
 %template(StdVectorCustomRateProcess) std::vector<CustomRateProcess>;
-%template(StdVectorMinimalMatchListEntry) std::vector<MinimalMatchListEntry>;
+%template(StdVectorConfigMatchListEntry) std::vector<ConfigMatchListEntry>;
+%template(StdVectorProcessMatchListEntry) std::vector<ProcessMatchListEntry>;
+// %template(StdVectorMinimalMatchListEntry) std::vector<MinimalMatchListEntry>;
 %template(StdVectorStdVectorInt) std::vector<std::vector<int> >;
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
 %template(StdVectorCoordinate) std::vector<Coordinate>;
@@ -75,6 +79,7 @@
 %include "process.h"
 %include "customrateprocess.h"
 %include "coordinate.h"
+%include "matchlist.h"
 %include "matchlistentry.h"
 %include "simulationtimer.h"
 %include "ratecalculator.h"
