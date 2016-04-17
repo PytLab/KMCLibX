@@ -44,7 +44,7 @@ public:
     /* Class functions. */
     /*! brief constructor function
      */
-    MinimalMatchListEntry() {}
+    inline MinimalMatchListEntry();
 
     /*! \brief virtual destructor function
      */
@@ -81,7 +81,7 @@ public:
 
     /* \brief Default constructor.
      */
-    ConfigMatchListEntry() {}
+    inline ConfigMatchListEntry();
 
     /* \brief Defualt destructor.
      */
@@ -125,7 +125,7 @@ public:
     
     /* \brief Default constructor.
      */
-    ProcessMatchListEntry() {}
+    inline ProcessMatchListEntry();
 
     /* \brief Defualt destructor.
      */
@@ -137,6 +137,37 @@ public:
     explicit ProcessMatchListEntry(const ConfigMatchListEntry & ce);
 
 };
+
+
+// --------------------------------------------------------------- //
+// INLINE FUNCITON IMPLIMENTATION CODE
+// --------------------------------------------------------------- //
+
+MinimalMatchListEntry::MinimalMatchListEntry() :
+    distance(0.0),
+    coordinate(Coordinate(0.0, 0.0, 0.0)),
+    match_type(0)
+{
+    // NOTHING HERE.
+}
+
+ConfigMatchListEntry::ConfigMatchListEntry() :
+    index(0)
+{
+    // NOTHING HERE.
+}
+
+ProcessMatchListEntry::ProcessMatchListEntry() :
+    has_move_coordinate(false),
+    move_cell_i(0),
+    move_cell_j(0),
+    move_cell_k(0),
+    move_basis(0),
+    move_coordinate(Coordinate(0.0, 0.0, 0.0)),
+    update_type(0)
+{
+    // NOTHING HERE.
+}
 
 #endif  // __MATHCLISTENTRY__
 
