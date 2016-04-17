@@ -42,6 +42,13 @@ public:
     int match_type;
 
     /* Class functions. */
+    /*! brief constructor function
+     */
+    MinimalMatchListEntry() {}
+
+    /*! \brief virtual destructor function
+     */
+    virtual ~MinimalMatchListEntry() {}
     
     /*! \brief 'less than' operator overloading for sorting matchlists.
      */
@@ -74,7 +81,11 @@ public:
 
     /* \brief Default constructor.
      */
-    ConfigMatchListEntry() {};
+    ConfigMatchListEntry() {}
+
+    /* \brief Defualt destructor.
+     */
+    virtual ~ConfigMatchListEntry() {}
     
     /*! \brief explicit type coversion
      *         ProcessMatchListEntry -> ConfigMatchListEntry.
@@ -114,7 +125,11 @@ public:
     
     /* \brief Default constructor.
      */
-    ProcessMatchListEntry() {};
+    ProcessMatchListEntry() {}
+
+    /* \brief Defualt destructor.
+     */
+    virtual ~ProcessMatchListEntry() {}
 
     /*! \brief explicit type coversion
      *         ConfigMatchListEntry -> ProcessMatchListEntry.
