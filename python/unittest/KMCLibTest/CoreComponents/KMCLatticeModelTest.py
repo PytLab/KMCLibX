@@ -188,7 +188,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         model = KMCLatticeModel(config, interactions)
 
         # Get the match types out.
-        match_types = [ l.match_type for l in model._backend().interactions().processes()[0].minimalMatchList() ]
+        match_types = [ l.match_type for l in model._backend().interactions().processes()[0].matchList() ]
 
         # This does not have wildcards added.
         ref_match_types = [1, 2, 2, 2, 2, 1]
@@ -201,7 +201,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         model = KMCLatticeModel(config, interactions)
 
         # Check the process matchlists again.
-        match_types = [ l.match_type for l in model._backend().interactions().processes()[0].minimalMatchList() ]
+        match_types = [ l.match_type for l in model._backend().interactions().processes()[0].matchList() ]
 
         ref_match_types = [1, 2, 2, 2, 2,
                            0, 0, 0, 0, 0,
