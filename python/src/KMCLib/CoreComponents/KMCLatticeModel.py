@@ -19,7 +19,7 @@ from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory
 from KMCLib.Utilities.PrintUtilities import prettyPrint
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
-from KMCLib.Backend import Backend
+
 
 class KMCLatticeModel(object):
     """
@@ -108,22 +108,20 @@ class KMCLatticeModel(object):
         """
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):
-            msg ="""
-The 'control_parameters' input to the KMCLatticeModel run funtion
-must be an instance of type KMCControlParameters."""
+            msg = ("The 'control_parameters' input to the KMCLatticeModel run funtion" +
+                   "must be an instance of type KMCControlParameters.")
             raise Error(msg)
 
         # Check the trajectory filename.
         use_trajectory = True
         if trajectory_filename is None:
             use_trajectory = False
-            msg =""" KMCLib: WARNING: No trajectory filename given -> no trajectory will be saved."""
+            msg = " KMCLib: WARNING: No trajectory filename given -> no trajectory will be saved."
             prettyPrint(msg)
 
         elif not isinstance(trajectory_filename, str):
-            msg = """
-The 'trajectory_filename' input to the KMCLattice model run function
-must be given as string."""
+            msg = ("The 'trajectory_filename' input to the KMCLattice model " +
+                   "run function must be given as string.")
             raise Error(msg)
 
         # Check the analysis type.
@@ -142,7 +140,9 @@ must be given as string."""
 
         # Set and seed the backend random number generator.
         if not Backend.setRngType(control_parameters.rngType()):
-            raise Error("DEVICE random number generator is not supported by your system, or the std::random_device in the standard C++ library you use is implemented using a pseudo random number generator (entropy=0).")
+            raise Error("DEVICE random number generator is not supported by your system, " +
+                        "or the std::random_device in the standard C++ library you use " +
+                        "is implemented using a pseudo random number generator (entropy=0).")
 
         Backend.seedRandom(control_parameters.timeSeed(),
                            control_parameters.seed())
@@ -158,7 +158,9 @@ must be given as string."""
 
         # Check that we have at least one available process to  run the KMC simulation.
         if cpp_model.interactions().totalAvailableSites() == 0:
-            raise Error("No available processes. None of the processes defined as input match any position in the configuration. Change the initial configuration or processes to run KMC.")
+            raise Error("No available processes. None of the processes " +
+                        "defined as input match any position in the configuration. " +
+                        "Change the initial configuration or processes to run KMC.")
 
         # Setup a trajectory object.
         if use_trajectory:
@@ -172,22 +174,23 @@ must be given as string."""
                 raise Error("The 'trajectory_type' input must be either 'lattice' or 'xyz'.")
 
             # Add the first step.
-            trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
-                              step             = 0,
-                              configuration    = self.__configuration)
+            trajectory.append(simulation_time=self.__cpp_timer.simulationTime(),
+                              step=0,
+                              configuration=self.__configuration)
 
         # Setup the analysis objects.
         for ap in analysis:
             step = 0
             ap.setup(step,
                      self.__cpp_timer.simulationTime(),
-                     self.__configuration);
+                     self.__configuration)
 
         # Get the needed parameters.
-        n_steps   = control_parameters.numberOfSteps()
-        n_dump    = control_parameters.dumpInterval()
+        n_steps = control_parameters.numberOfSteps()
+        n_dump = control_parameters.dumpInterval()
         n_analyse = control_parameters.analysisInterval()
-        prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps, self.__cpp_timer.simulationTime()))
+        prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n" %
+                    (n_steps, self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
         try:
@@ -206,21 +209,22 @@ must be given as string."""
                 # Take a step.
                 cpp_model.singleStep()
 
-                if ((step)%n_dump == 0):
-                    prettyPrint(" KMCLib: %i steps executed. time: %20.10e "%(step, self.__cpp_timer.simulationTime()))
+                if ((step) % n_dump == 0):
+                    prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
+                                (step, self.__cpp_timer.simulationTime()))
 
                     # Perform IO using the trajectory object.
                     if use_trajectory:
-                        trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
-                                          step             = step,
-                                          configuration    = self.__configuration)
+                        trajectory.append(simulation_time=self.__cpp_timer.simulationTime(),
+                                          step=step,
+                                          configuration=self.__configuration)
 
-                if ((step)%n_analyse == 0):
+                if ((step) % n_analyse == 0):
                     # Run all other python analysis.
                     for ap in analysis:
                         ap.registerStep(step,
                                         self.__cpp_timer.simulationTime(),
-                                        self.__configuration);
+                                        self.__configuration)
 
         finally:
 
@@ -230,7 +234,7 @@ must be given as string."""
 
             # Perform the analysis post processing.
             for ap in analysis:
-                ap.finalize();
+                ap.finalize()
 
     def _script(self, variable_name="model"):
         """
@@ -244,7 +248,7 @@ must be given as string."""
         """
         # Get the configuration and interactions scripts.
         configuration_script = self.__configuration._script(variable_name="configuration")
-        interactions_script  = self.__interactions._script(variable_name="interactions")
+        interactions_script = self.__interactions._script(variable_name="interactions")
 
         # Setup the lattice model string.
         lattice_model_string = variable_name + """ = KMCLatticeModel(
@@ -274,6 +278,5 @@ must be given as string."""
 
         prettyPrint("")
         prettyPrint(" Matching Information: ")
-        for i,p in enumerate(cpp_processes):
-            print i,p.sites()
-
+        for i, p in enumerate(cpp_processes):
+            print i, p.sites()

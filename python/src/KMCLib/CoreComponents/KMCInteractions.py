@@ -128,7 +128,7 @@ the KMCRateCalculatorPlugin class itself. """
             for process_number, process in enumerate(self.__processes):
                 all_elements = list(set(process.elementsBefore() + process.elementsAfter()))
                 if (not all([(e in possible_types) for e in all_elements])):
-                    raise Error("Process %i contains elements not present in the list of possible types of the configuration."%(process_number))
+                    raise Error("Process %i contains elements not present in the list of possible types of the configuration." % (process_number))
 
             # Setup the correct type of backend process objects
             # depending on the presence of a rate calculator.
@@ -217,9 +217,9 @@ the KMCRateCalculatorPlugin class itself. """
         processes_script = ""
         processes_string = "processes = ["
 
-        for i,process in enumerate(self.__processes):
+        for i, process in enumerate(self.__processes):
 
-            var_name = "process_%i"%(i)
+            var_name = "process_%i" % (i)
             processes_script += process._script(var_name)
 
             if i == 0:
@@ -253,6 +253,3 @@ the KMCRateCalculatorPlugin class itself. """
         # Return the script.
         return comment_string + processes_script + processes_string + "\n" + \
             kmc_interactions_string
-
-
-

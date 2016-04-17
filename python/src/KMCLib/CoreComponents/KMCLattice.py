@@ -121,9 +121,9 @@ class KMCLattice(object):
             for j in range(self.__repetitions[1]):
                 for k in range(self.__repetitions[2]):
                     # For each point in the basis, add the translation.
-                    translation = numpy.array([i,j,k])
+                    translation = numpy.array([i, j, k])
                     for b in basis:
-                        site = b+translation
+                        site = b + translation
                         sites.append(site)
 
         # Return the data.
@@ -239,4 +239,3 @@ class KMCLattice(object):
 
 """
         return unit_cell_script + comment_string + lattice_string
-

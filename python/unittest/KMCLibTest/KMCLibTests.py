@@ -16,6 +16,7 @@ from Exceptions import ExceptionsTests
 from PluginInterfaces import PluginInterfacesTests
 from Utilities import UtilitiesTests
 
+
 def suite():
     suite = unittest.TestSuite(
         [AnalysisTests.suite(),
@@ -28,4 +29,3 @@ def suite():
 
 if __name__ == '__main__':
     unittest.TextTestRunner(verbosity=2).run(suite())
-

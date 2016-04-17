@@ -21,6 +21,7 @@ from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.Exceptions.Error import Error
 
+
 class KMCProcess(object):
     """
     Class for representing a possible process in a lattice KMC simulation.
@@ -168,7 +169,7 @@ class KMCProcess(object):
             # Check that the the element at this position in the new elements
             # vector corresponds to the move.
             if self.__elements_before[move_index] != self.__elements_after[new_index]:
-                raise Error("The move vector for index %i does not match the elements after move."%(move_index))
+                raise Error("The move vector for index %i does not match the elements after move." % (move_index))
 
             # Perform the move.
             moved_elements[new_index] = self.__elements_before[move_index]
@@ -233,7 +234,7 @@ coordinates defining where the moved index goes."""
         pairs = []
         for i, (e1, e2) in enumerate(zip(self.__elements_before, self.__elements_after)):
             if e1 != e2:
-                pairs.append((e1,e2,i))
+                pairs.append((e1, e2, i))
 
         # Check the size.
         if len(pairs) != 2:
@@ -265,11 +266,11 @@ coordinates defining where the moved index goes."""
 
         # Sort, and co-sort coordinates and indices.
         (sorted_coords, dummy_distances, sorted_types_before, sorted_types_after, new_to_old_index) = \
-            sortCoordinatesDistance(coordinates = self.__coordinates,
-                                    center      = 0,
-                                    types1      = self.__elements_before,
-                                    types2      = self.__elements_after,
-                                    co_sort     = original_indexing)
+            sortCoordinatesDistance(coordinates=self.__coordinates,
+                                    center=0,
+                                    types1=self.__elements_before,
+                                    types2=self.__elements_after,
+                                    co_sort=original_indexing)
 
         # Fix the move vectors.
         if len(self.__move_vectors) > 0:
@@ -285,7 +286,7 @@ coordinates defining where the moved index goes."""
             # Setup and sort the backmapping.
             help_index = range(len(move_vector_index))
             to_sort = numpy.array(zip(help_index, move_vector_index))
-            sorted_indices = to_sort[numpy.argsort(to_sort[:,1])]
+            sorted_indices = to_sort[numpy.argsort(to_sort[:, 1])]
 
             # Construct the new move vectors.
             new_move_vectors = []
@@ -307,7 +308,7 @@ coordinates defining where the moved index goes."""
             return False
 
         # Check the basis sites.
-        elif not all([s1 == s2 for s1,s2 in zip(other.basisSites(),self.basisSites())]):
+        elif not all([s1 == s2 for s1,s2 in zip(other.basisSites(), self.basisSites())]):
             return False
 
         # Check the number of atoms in the local configurations.
@@ -525,4 +526,3 @@ coordinates defining where the moved index goes."""
             basis_sites_string     + "\n" + \
             rate_constant_string   + "\n\n" + \
             process_string + "\n"
-

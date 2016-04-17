@@ -26,7 +26,6 @@
 #include "configuration.h"
 #include "latticemap.h"
 #include "process.h"
-#include "exceptions.h"
 #include "coordinate.h"
 
 // Temporary data for the match list return.
@@ -79,18 +78,7 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     for (const std::string & element : elements)
     {
         std::map<std::string, int>::const_iterator it = possible_types.find(element);
-
-        // If an impossible element is detected, throw an exception.
-        if (it == possible_types.end())
-        {
-            const std::string msg("Element '" + element + \
-                                  "' not found in possible_types.");
-            throw element_type_error(msg);
-        }
-        else
-        {
-            types_.push_back(it->second);
-        }
+        types_.push_back(it->second);
     }
 }
 

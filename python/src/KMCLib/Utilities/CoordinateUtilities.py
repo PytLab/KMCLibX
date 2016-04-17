@@ -90,6 +90,7 @@ def sortCoordinatesDistance(coordinates, center, types1, types2=None, co_sort=No
     else:
         return (coordinates, distances, types1, types2)
 
+
 def sortCoordinates(coordinates, types1, types2=None, co_sort=None):
     """
     Sort the coordinates with respect to their x,y and z coordinates

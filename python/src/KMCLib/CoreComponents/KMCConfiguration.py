@@ -54,7 +54,7 @@ class KMCConfiguration(object):
                              not specified in the types list.
         """
         # Check that the lattice is of the correct type.
-        if not isinstance(lattice,KMCLattice):
+        if not isinstance(lattice, KMCLattice):
             raise Error("The lattice given to the KMCConfiguration constructor must be of type KMCLattice.")
         self.__lattice = lattice
 
@@ -68,7 +68,6 @@ class KMCConfiguration(object):
         self.__backend = None
 
     def __checkAndSetTypes(self, types, default_type, possible_types):
-        """ """
         """
         Private helper routine to check and set the types input.
         """
@@ -77,7 +76,7 @@ class KMCConfiguration(object):
             raise Error("The 'types' given to the KMCConfiguration constructor must be \na list of type strings, e.g. ['a','b','c'] or tuples e.g. [(0,0,1,0,'a'), (0,0,2,0,'b'), ...].")
 
         # Check the first element to get the assumed format.
-        use_long_format = not isinstance(types[0],str)
+        use_long_format = not isinstance(types[0], str)
 
         # Set the use of default type flag.
         use_default_type = (default_type is not None)
@@ -101,11 +100,11 @@ class KMCConfiguration(object):
             # Check each element in the list.
             for t in types:
                 # Check that it is ia tuple.
-                if not isinstance(t,tuple) or len(t) != 5:
+                if not isinstance(t, tuple) or len(t) != 5:
                     raise Error("All elements in the types list must be of type (int,int,int,int,string) when\nusing the long type format.")
 
                 # Check that the elements in the tuple have the correct type.
-                if not all([isinstance(tt,(int,int,int,int,str)[i]) for i,tt in enumerate(t)]):
+                if not all([isinstance(tt, (int, int, int, int, str)[i]) for i, tt in enumerate(t)]):
                     raise Error("All elements in the types list must be of type (int,int,int,int,string) when\nusing the long type format.")
 
                 # Check the bounds of the given indices.
@@ -122,12 +121,12 @@ class KMCConfiguration(object):
                     raise Error("The fourth index in the type tuple must be withing the limits of the basis points in the original unit cell, indexed from 0.")
 
                 # Set the type.
-                index = self.__lattice._globalIndex(t[0],t[1],t[2],t[3])
+                index = self.__lattice._globalIndex(t[0], t[1], t[2], t[3])
                 types_to_set[index] = t[4]
 
         else:
             # Otherwise, check the types the normal way.
-            types_to_set = checkTypes(types,self.__n_lattice_sites)
+            types_to_set = checkTypes(types, self.__n_lattice_sites)
 
         # Setup the list of possible types.
         all_types_present = list(set(types_to_set))
@@ -135,7 +134,7 @@ class KMCConfiguration(object):
             possible_types = all_types_present
         else:
             # Check that the possible types is a list of strings.
-            if not isinstance(possible_types, list) or not all([isinstance(pt,str) for pt in possible_types]):
+            if not isinstance(possible_types, list) or not all([isinstance(pt, str) for pt in possible_types]):
                 raise Error("The possible types must be given as a list of strings.")
 
             # Check that each present type is in the list of possible types.

@@ -52,3 +52,6 @@
 
 # ctag files for Vim plugin
 tags
+
+# backend extension module
+/python/src/KMCLib/Backend/Backend*

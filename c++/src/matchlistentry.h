@@ -26,7 +26,6 @@
 #include <stdexcept>
 
 #include "coordinate.h"
-#include "exceptions.h"
 
 
 /// The base class for the match list entries.
@@ -43,6 +42,13 @@ public:
     int match_type;
 
     /* Class functions. */
+    /*! brief constructor function
+     */
+    inline MinimalMatchListEntry();
+
+    /*! \brief virtual destructor function
+     */
+    virtual ~MinimalMatchListEntry() {}
     
     /*! \brief 'less than' operator overloading for sorting matchlists.
      */
@@ -75,7 +81,11 @@ public:
 
     /* \brief Default constructor.
      */
-    ConfigMatchListEntry() {};
+    inline ConfigMatchListEntry();
+
+    /* \brief Defualt destructor.
+     */
+    virtual ~ConfigMatchListEntry() {}
     
     /*! \brief explicit type coversion
      *         ProcessMatchListEntry -> ConfigMatchListEntry.
@@ -115,7 +125,11 @@ public:
     
     /* \brief Default constructor.
      */
-    ProcessMatchListEntry() {};
+    inline ProcessMatchListEntry();
+
+    /* \brief Defualt destructor.
+     */
+    virtual ~ProcessMatchListEntry() {}
 
     /*! \brief explicit type coversion
      *         ConfigMatchListEntry -> ProcessMatchListEntry.
@@ -123,6 +137,37 @@ public:
     explicit ProcessMatchListEntry(const ConfigMatchListEntry & ce);
 
 };
+
+
+// --------------------------------------------------------------- //
+// INLINE FUNCITON IMPLIMENTATION CODE
+// --------------------------------------------------------------- //
+
+MinimalMatchListEntry::MinimalMatchListEntry() :
+    distance(0.0),
+    coordinate(Coordinate(0.0, 0.0, 0.0)),
+    match_type(0)
+{
+    // NOTHING HERE.
+}
+
+ConfigMatchListEntry::ConfigMatchListEntry() :
+    index(0)
+{
+    // NOTHING HERE.
+}
+
+ProcessMatchListEntry::ProcessMatchListEntry() :
+    has_move_coordinate(false),
+    move_cell_i(0),
+    move_cell_j(0),
+    move_cell_k(0),
+    move_basis(0),
+    move_coordinate(Coordinate(0.0, 0.0, 0.0)),
+    update_type(0)
+{
+    // NOTHING HERE.
+}
 
 #endif  // __MATHCLISTENTRY__
 

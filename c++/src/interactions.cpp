@@ -155,6 +155,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
                 // If not matching, add a wildcard entry to it1.
                 ProcessMatchListEntry wildcard_entry(*it2);
                 wildcard_entry.match_type = 0;
+                wildcard_entry.update_type = 0;
 
                 it1 = process_matchlist.insert(it1, wildcard_entry);
                 // it1 now points to the newly inserted position.
