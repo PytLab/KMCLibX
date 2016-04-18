@@ -107,7 +107,7 @@ bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other) const
 
 // -------------------------------------------------------------------------
 //
-bool ProcessMatchListEntry::match(const SitesMapMatchListEntry & se) const
+bool ProcessMatchListEntry::match(const SiteMatchListEntry & se) const
 {
     return se.match(*this);
 }
@@ -123,7 +123,7 @@ bool ProcessMatchListEntry::match(const MinimalMatchListEntry & me) const
 
 // -------------------------------------------------------------------------
 //
-bool SitesMapMatchListEntry::match(const ProcessMatchListEntry & pe) const
+bool SiteMatchListEntry::match(const ProcessMatchListEntry & pe) const
 {
     // {{{
 

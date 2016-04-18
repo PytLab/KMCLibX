@@ -95,7 +95,7 @@ public:
 };
 
 /// Forward declaration.
-class SitesMapMatchListEntry;
+class SiteMatchListEntry;
 
 /// Match list entry for process match list.
 class ProcessMatchListEntry : public MinimalMatchListEntry {
@@ -142,9 +142,9 @@ public:
     inline explicit ProcessMatchListEntry(const ConfigMatchListEntry & ce);
 
     /*! \brief overloaded match function.
-     *         Matching SitesMapMatchListEntry object.
+     *         Matching SiteMatchListEntry object.
      */
-    bool match(const SitesMapMatchListEntry & se) const;
+    bool match(const SiteMatchListEntry & se) const;
 
     /* \brief overloaded match function,
      *        Matching MinimalMatchListEntry object or
@@ -158,7 +158,7 @@ public:
 
 /// Match list entry for sitesmap match list.
 
-class SitesMapMatchListEntry : public MinimalMatchListEntry {
+class SiteMatchListEntry : public MinimalMatchListEntry {
 
 public:
     /// The index in the global structrue.
@@ -168,11 +168,11 @@ public:
 
     /* \brief Default constructor.
      */
-    inline SitesMapMatchListEntry();
+    inline SiteMatchListEntry();
 
     /* \brief Defualt destructor.
      */
-    virtual ~SitesMapMatchListEntry() {}
+    virtual ~SiteMatchListEntry() {}
 
     /* \brief overloaded match function.
      */
@@ -238,7 +238,7 @@ ProcessMatchListEntry::ProcessMatchListEntry(const ConfigMatchListEntry & ce) :
 
 // ---------------------------------------------------------------
 //
-SitesMapMatchListEntry::SitesMapMatchListEntry() :
+SiteMatchListEntry::SiteMatchListEntry() :
     index(0)
 {
     // NOTHING HERE.

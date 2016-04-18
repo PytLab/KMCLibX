@@ -32,8 +32,8 @@ public:
     CPPUNIT_TEST( testProcessMatchListEntrySamePoint );
     CPPUNIT_TEST( testConfigMatchListEntryConstruction );
     CPPUNIT_TEST( testConfigMatchListEntrySamePoint );
-    CPPUNIT_TEST( testSitesMapMatchListEntryConstruction );
-    CPPUNIT_TEST( testSitesMapAndProcessMatchListEntryMatch );
+    CPPUNIT_TEST( testSiteMatchListEntryConstruction );
+    CPPUNIT_TEST( testSiteAndProcessMatchListEntryMatch );
     CPPUNIT_TEST_SUITE_END();
 
     void testMinimalMatchListEntryConstruction();
@@ -44,8 +44,8 @@ public:
     void testProcessMatchListEntrySamePoint();
     void testConfigMatchListEntryConstruction();
     void testConfigMatchListEntrySamePoint();
-    void testSitesMapMatchListEntryConstruction(); 
-    void testSitesMapAndProcessMatchListEntryMatch();
+    void testSiteMatchListEntryConstruction(); 
+    void testSiteAndProcessMatchListEntryMatch();
 
 };
 

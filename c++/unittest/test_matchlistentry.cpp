@@ -663,12 +663,12 @@ void Test_MatchListEntry::testConfigMatchListEntrySamePoint()
 
 // ---------------------------------------------------------------------------
 //
-void Test_MatchListEntry::testSitesMapMatchListEntryConstruction()
+void Test_MatchListEntry::testSiteMatchListEntryConstruction()
 {
     // {{{
 
     // Construct.
-    SitesMapMatchListEntry m;
+    SiteMatchListEntry m;
     m.match_type = 1324;
     m.distance = 1.2;
     m.coordinate = Coordinate(0.1,0.2,0.34);
@@ -686,13 +686,13 @@ void Test_MatchListEntry::testSitesMapMatchListEntryConstruction()
 
 // ---------------------------------------------------------------------------
 //
-void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
+void Test_MatchListEntry::testSiteAndProcessMatchListEntryMatch()
 {
     // {{{
 
     // Two equal.
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.match_type = 1324;
         m1.distance = 1.2;
         m1.index = 1;
@@ -710,7 +710,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
 
     // Two unequal - by wildcard.
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.match_type = 0;
         m1.index = 1;
         m1.distance = 1.2;
@@ -728,7 +728,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
 
     // Two not equal in match type should equate to not equal.
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.match_type = 1322;
         m1.index = 1;
         m1.distance = 1.2;
@@ -747,7 +747,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
 
     // Two not equal in distance should equate to not equal.
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.match_type = 1322;
         m1.index = 1;
         m1.distance = 1.23;
@@ -766,7 +766,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
     // If the distance difference is below eps_ hardcoded on the class
     // the difference is not visible.
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.match_type = 1324;
         m1.index = 1;
         m1.distance = 1.200000001;
@@ -785,7 +785,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
 
     // But if the difference is larger it becomes visible.
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.match_type = 1324;
         m1.index = 1;
         m1.distance = 1.2001;
@@ -804,7 +804,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
 
     // Two not equal in coordinate should equate to not equal.
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.index = 1;
         m1.match_type = 1324;
         m1.distance = 1.20;
@@ -821,7 +821,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
 
     }
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.index = 1;
         m1.match_type = 1324;
         m1.distance = 1.20;
@@ -838,7 +838,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
 
     }
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.index = 1;
         m1.match_type = 1324;
         m1.distance = 1.20;
@@ -858,7 +858,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
     // But if the difference is smaller than eps_ the value is
     // regarded as equal.
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.index = 1;
         m1.match_type = 1324;
         m1.distance = 1.20;
@@ -875,7 +875,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
 
     }
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.index = 1;
         m1.match_type = 1324;
         m1.distance = 1.20;
@@ -891,7 +891,7 @@ void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
         CPPUNIT_ASSERT(m2.match(m1));
     }
     {
-        SitesMapMatchListEntry m1;
+        SiteMatchListEntry m1;
         m1.index = 1;
         m1.match_type = 1324;
         m1.distance = 1.20;
