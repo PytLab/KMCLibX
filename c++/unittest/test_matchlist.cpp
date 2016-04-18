@@ -126,9 +126,10 @@ void Test_MatchList::test_ConfigurationsToMatchList()
 
 // -------------------------------------------------------------------------- //
 //
-void Test_MatchList::test_WhateverMatch()
+void Test_MatchList::test_WhateverMatchProcessConfig()
 {
     // {{{
+
     // Use configurationsToMatchList to get process match list.
     // Configuration elements.
     const std::vector<std::string> elements1 = {
