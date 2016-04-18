@@ -94,6 +94,8 @@ public:
 
 };
 
+/// Forward declaration.
+class SitesMapMatchListEntry;
 
 /// Match list entry for process match list.
 class ProcessMatchListEntry : public MinimalMatchListEntry {
@@ -121,6 +123,9 @@ public:
     /// The update type.
     int update_type;
 
+    /// The site type the entry's elements on.
+    int site_type;
+
     /* Class functions.*/
     
     /* \brief Default constructor.
@@ -135,6 +140,18 @@ public:
      *         ConfigMatchListEntry -> ProcessMatchListEntry.
      */
     inline explicit ProcessMatchListEntry(const ConfigMatchListEntry & ce);
+
+    /*! \brief overloaded match function.
+     *         Matching SitesMapMatchListEntry object.
+     */
+    bool match(const SitesMapMatchListEntry & se) const;
+
+    /* \brief overloaded match function,
+     *        Matching MinimalMatchListEntry object or
+     *        ConfigMatchListEntry object(by up-cast conversion)
+     */
+    bool match(const MinimalMatchListEntry & me) const;
+    
 
 };
 
@@ -156,6 +173,10 @@ public:
     /* \brief Defualt destructor.
      */
     virtual ~SitesMapMatchListEntry() {}
+
+    /* \brief overloaded match function.
+     */
+    bool match(const ProcessMatchListEntry & pe) const;
 
 };
 
@@ -201,7 +222,8 @@ ProcessMatchListEntry::ProcessMatchListEntry() :
     move_cell_k(0),
     move_basis(0),
     move_coordinate(Coordinate(0.0, 0.0, 0.0)),
-    update_type(0)
+    update_type(0),
+    site_type(0)
 {
     // NOTHING HERE.
 }

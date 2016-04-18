@@ -104,3 +104,48 @@ bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other) const
     // }}}
 }
 
+
+// -------------------------------------------------------------------------
+//
+bool ProcessMatchListEntry::match(const SitesMapMatchListEntry & se) const
+{
+    return se.match(*this);
+}
+
+
+// -------------------------------------------------------------------------
+//
+bool ProcessMatchListEntry::match(const MinimalMatchListEntry & me) const
+{
+    return ((MinimalMatchListEntry)(*this)).match(me);
+}
+
+
+// -------------------------------------------------------------------------
+//
+bool SitesMapMatchListEntry::match(const ProcessMatchListEntry & pe) const
+{
+    // {{{
+
+    // Handle the wildcard case.
+    // NOTE: In sites map, the wildcard stands for an INVISIBALE site.
+    if (match_type == 0)
+    {
+        return false;
+    }
+
+    // Check the type.
+    else if (match_type != pe.site_type)
+    {
+        return false;
+    }
+
+    // Check the position.
+    else
+    {
+        return (*this).samePoint(pe);
+    }
+
+    // }}}
+}
+
