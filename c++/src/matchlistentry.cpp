@@ -92,27 +92,3 @@ bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other) const
     }
 }
 
-
-/* ConfigMatchListEntry member funtions implementation.
- */
-
-// ------------------------------------------------------------------------
-//
-ConfigMatchListEntry::ConfigMatchListEntry(const ProcessMatchListEntry & pe) :
-    MinimalMatchListEntry(pe)
-{
-    // NOTHING HERE.
-}
-
-
-/* ProcessMatchListEntry member funtions implementation.
- */
-
-// --------------------------------------------------------------------------
-//
-ProcessMatchListEntry::ProcessMatchListEntry(const ConfigMatchListEntry & ce) :
-    MinimalMatchListEntry(ce)
-{
-    // NOTHING HERE.
-}
-

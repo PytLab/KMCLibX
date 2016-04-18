@@ -90,7 +90,7 @@ public:
     /*! \brief explicit type coversion
      *         ProcessMatchListEntry -> ConfigMatchListEntry.
      */
-    explicit ConfigMatchListEntry(const ProcessMatchListEntry & pe);
+    inline explicit ConfigMatchListEntry(const ProcessMatchListEntry & pe);
 
 };
 
@@ -134,7 +134,7 @@ public:
     /*! \brief explicit type coversion
      *         ConfigMatchListEntry -> ProcessMatchListEntry.
      */
-    explicit ProcessMatchListEntry(const ConfigMatchListEntry & ce);
+    inline explicit ProcessMatchListEntry(const ConfigMatchListEntry & ce);
 
 };
 
@@ -143,6 +143,9 @@ public:
 // INLINE FUNCITON IMPLIMENTATION CODE
 // --------------------------------------------------------------- //
 
+
+// ---------------------------------------------------------------
+//
 MinimalMatchListEntry::MinimalMatchListEntry() :
     distance(0.0),
     coordinate(Coordinate(0.0, 0.0, 0.0)),
@@ -151,12 +154,25 @@ MinimalMatchListEntry::MinimalMatchListEntry() :
     // NOTHING HERE.
 }
 
+
+// ---------------------------------------------------------------
+//
 ConfigMatchListEntry::ConfigMatchListEntry() :
     index(0)
 {
     // NOTHING HERE.
 }
 
+
+ConfigMatchListEntry::ConfigMatchListEntry(const ProcessMatchListEntry & pe) :
+    MinimalMatchListEntry(pe)
+{
+    // NOTHING HERE.
+}
+
+
+// ---------------------------------------------------------------
+//
 ProcessMatchListEntry::ProcessMatchListEntry() :
     has_move_coordinate(false),
     move_cell_i(0),
@@ -168,6 +184,14 @@ ProcessMatchListEntry::ProcessMatchListEntry() :
 {
     // NOTHING HERE.
 }
+
+
+ProcessMatchListEntry::ProcessMatchListEntry(const ConfigMatchListEntry & ce) :
+    MinimalMatchListEntry(ce)
+{
+    // NOTHING HERE.
+}
+
 
 #endif  // __MATHCLISTENTRY__
 
