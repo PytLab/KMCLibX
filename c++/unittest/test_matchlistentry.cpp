@@ -156,6 +156,7 @@ void Test_MatchListEntry::testMinimalMatchListEntrySamePoint()
 void Test_MatchListEntry::testMinimalMatchListEntryMatch()
 {
     // {{{
+
     // Two equal.
     {
         MinimalMatchListEntry m1;
@@ -678,6 +679,233 @@ void Test_MatchListEntry::testSitesMapMatchListEntryConstruction()
     CPPUNIT_ASSERT_EQUAL(m.index, 123);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(m.distance, 1.2, 1.0e-12);
     CPPUNIT_ASSERT_EQUAL(m.coordinate, Coordinate(0.1, 0.2, 0.34));
+
+    // }}}
+}
+
+
+// ---------------------------------------------------------------------------
+//
+void Test_MatchListEntry::testSitesMapAndProcessMatchListEntryMatch()
+{
+    // {{{
+
+    // Two equal.
+    {
+        SitesMapMatchListEntry m1;
+        m1.match_type = 1324;
+        m1.distance = 1.2;
+        m1.index = 1;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1324;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(m1.match(m2));
+        CPPUNIT_ASSERT(m2.match(m1));
+    }
+
+    // Two unequal - by wildcard.
+    {
+        SitesMapMatchListEntry m1;
+        m1.match_type = 0;
+        m1.index = 1;
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 1324;
+        m2.distance = 1.2;
+        m2.site_type = 1324;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(!m1.match(m2));
+        CPPUNIT_ASSERT(!m2.match(m1));
+    }
+
+    // Two not equal in match type should equate to not equal.
+    {
+        SitesMapMatchListEntry m1;
+        m1.match_type = 1322;
+        m1.index = 1;
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1321;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(!m1.match(m2));
+        CPPUNIT_ASSERT(!m2.match(m1));
+
+    }
+
+    // Two not equal in distance should equate to not equal.
+    {
+        SitesMapMatchListEntry m1;
+        m1.match_type = 1322;
+        m1.index = 1;
+        m1.distance = 1.23;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.distance = 1.2;
+        m2.site_type = 1322;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(!m1.match(m2));
+        CPPUNIT_ASSERT(!m2.match(m1));
+    }
+
+    // If the distance difference is below eps_ hardcoded on the class
+    // the difference is not visible.
+    {
+        SitesMapMatchListEntry m1;
+        m1.match_type = 1324;
+        m1.index = 1;
+        m1.distance = 1.200000001;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1324;
+        m2.distance = 1.200000000;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(m1.match(m2));
+        CPPUNIT_ASSERT(m2.match(m1));
+
+    }
+
+    // But if the difference is larger it becomes visible.
+    {
+        SitesMapMatchListEntry m1;
+        m1.match_type = 1324;
+        m1.index = 1;
+        m1.distance = 1.2001;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1324;
+        m2.distance = 1.200000000;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(!m1.match(m2));
+        CPPUNIT_ASSERT(!m2.match(m1));
+
+    }
+
+    // Two not equal in coordinate should equate to not equal.
+    {
+        SitesMapMatchListEntry m1;
+        m1.index = 1;
+        m1.match_type = 1324;
+        m1.distance = 1.20;
+        m1.coordinate = Coordinate(0.1001,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1324;
+        m2.distance = 1.20;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(!m1.match(m2));
+        CPPUNIT_ASSERT(!m2.match(m1));
+
+    }
+    {
+        SitesMapMatchListEntry m1;
+        m1.index = 1;
+        m1.match_type = 1324;
+        m1.distance = 1.20;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1324;
+        m2.distance = 1.20;
+        m2.coordinate = Coordinate(0.1,0.3,0.34);
+
+        CPPUNIT_ASSERT(!m1.match(m2));
+        CPPUNIT_ASSERT(!m2.match(m1));
+
+    }
+    {
+        SitesMapMatchListEntry m1;
+        m1.index = 1;
+        m1.match_type = 1324;
+        m1.distance = 1.20;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1324;
+        m2.distance = 1.20;
+        m2.coordinate = Coordinate(0.1,0.2,0.24);
+
+        CPPUNIT_ASSERT(!m1.match(m2));
+        CPPUNIT_ASSERT(!m2.match(m1));
+
+    }
+
+    // But if the difference is smaller than eps_ the value is
+    // regarded as equal.
+    {
+        SitesMapMatchListEntry m1;
+        m1.index = 1;
+        m1.match_type = 1324;
+        m1.distance = 1.20;
+        m1.coordinate = Coordinate(0.10000001,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1324;
+        m2.distance = 1.20;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT(m1.match(m2));
+        CPPUNIT_ASSERT(m2.match(m1));
+
+    }
+    {
+        SitesMapMatchListEntry m1;
+        m1.index = 1;
+        m1.match_type = 1324;
+        m1.distance = 1.20;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1324;
+        m2.distance = 1.20;
+        m2.coordinate = Coordinate(0.1,0.20000001,0.34);
+
+        CPPUNIT_ASSERT(m1.match(m2));
+        CPPUNIT_ASSERT(m2.match(m1));
+    }
+    {
+        SitesMapMatchListEntry m1;
+        m1.index = 1;
+        m1.match_type = 1324;
+        m1.distance = 1.20;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ProcessMatchListEntry m2;
+        m2.match_type = 132;
+        m2.site_type = 1324;
+        m2.distance = 1.20;
+        m2.coordinate = Coordinate(0.1,0.2,0.34000001);
+
+        CPPUNIT_ASSERT(m1.match(m2));
+        CPPUNIT_ASSERT(m2.match(m1));
+    }
 
     // }}}
 }
