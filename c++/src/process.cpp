@@ -14,6 +14,7 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-10   1.2          Modify match list presentation.
+ *  zjshao     2016-04-10   2.0          Add site type.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -34,7 +35,8 @@ Process::Process(const Configuration & first,
                  const std::vector<int> & basis_sites,
                  const std::vector<int> & move_origins,
                  const std::vector<Coordinate> & move_vectors,
-                 const int process_number) :
+                 const int process_number,
+                 const std::vector<int> & site_types) :
     process_number_(process_number),
     range_(1),
     rate_(rate),
@@ -44,6 +46,8 @@ Process::Process(const Configuration & first,
     basis_sites_(basis_sites),
     id_moves_(0)
 {
+    // {{{
+
     // Transform the configurations into match list.
     configurationsToMatchList(first,
                               second,
@@ -87,6 +91,31 @@ Process::Process(const Configuration & first,
             }
         }
     }
+
+    // Add site type to matchlist.
+    ProcessMatchList::iterator proc_it;
+    const ProcessMatchList::const_iterator end_it = match_list_.end();
+
+    // If no site type is passed in,
+    // fill match list with default site type (wildcard).
+    if (site_types.size() == 0)
+    {
+        for (proc_it = match_list_.begin(); proc_it != end_it; ++proc_it)
+        {
+            proc_it->site_type = 0;
+        }
+    }
+    // Or fill match list with site types passed in.
+    else
+    {
+        std::vector<int>::const_iterator site_it = site_types.begin();
+        for (proc_it = match_list_.begin(); proc_it != end_it; ++proc_it, ++site_it)
+        {
+            proc_it->site_type = *site_it;
+        }
+    }
+
+    // }}}
 }
 
 

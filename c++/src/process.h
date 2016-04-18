@@ -12,6 +12,7 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-10   1.2          Modify match list presentation.
+ *  zjshao     2016-04-10   2.0          Add site type.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -24,7 +25,6 @@
 #include <map>
 #include <string>
 
-//#include "matchlistentry.h"
 #include "matchlist.h"
 
 // Forward declarations.
@@ -59,14 +59,16 @@ public:
      *                         i.e., if only elements are moved on the lattice and no
      *                         atom id moves are considered.
      *  \param process_number: The id number of the process.
+     *  \param site_types    : The site type on which the process is performed.
      */
     Process(const Configuration & first,
             const Configuration & second,
             const double rate,
             const std::vector<int> & basis_sites,
-            const std::vector<int> & move_origins=std::vector<int>(0),
-            const std::vector<Coordinate> & move_vectors=std::vector<Coordinate>(0),
-            const int process_number=-1);
+            const std::vector<int> & move_origins = {},
+            const std::vector<Coordinate> & move_vectors = {},
+            const int process_number = -1,
+            const std::vector<int> & site_types = {});
 
     /*! \brief Virtual destructor needed for use as base class.
      */
