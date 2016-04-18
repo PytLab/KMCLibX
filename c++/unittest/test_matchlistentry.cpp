@@ -708,7 +708,7 @@ void Test_MatchListEntry::testSiteAndProcessMatchListEntryMatch()
         CPPUNIT_ASSERT(m2.match(m1));
     }
 
-    // Two unequal - by wildcard.
+    // Two equal - by wildcard.
     {
         SiteMatchListEntry m1;
         m1.match_type = 0;
@@ -722,8 +722,8 @@ void Test_MatchListEntry::testSiteAndProcessMatchListEntryMatch()
         m2.site_type = 1324;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT(!m1.match(m2));
-        CPPUNIT_ASSERT(!m2.match(m1));
+        CPPUNIT_ASSERT(m1.match(m2));
+        CPPUNIT_ASSERT(m2.match(m1));
     }
 
     // Two not equal in match type should equate to not equal.

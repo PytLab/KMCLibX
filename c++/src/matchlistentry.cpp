@@ -128,18 +128,15 @@ bool SiteMatchListEntry::match(const ProcessMatchListEntry & pe) const
     // {{{
 
     // Handle the wildcard case.
-    // NOTE: In sites map, the wildcard stands for an INVISIBALE site.
     if (match_type == 0)
     {
-        return false;
+        return true;
     }
-
     // Check the type.
     else if (match_type != pe.site_type)
     {
         return false;
     }
-
     // Check the position.
     else
     {
