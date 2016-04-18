@@ -30,6 +30,8 @@
 //
 void Test_MatchListEntry::testMinimalMatchListEntryConstruction()
 {
+    // {{{
+
     // Construct.
     MinimalMatchListEntry m;
     m.match_type = 1324;
@@ -41,6 +43,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryConstruction()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(m.distance, 1.2, 1.0e-12);
     CPPUNIT_ASSERT_EQUAL(m.coordinate, Coordinate(0.1, 0.2, 0.34));
 
+    // }}}
 }
 
 
@@ -48,7 +51,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryConstruction()
 //
 void Test_MatchListEntry::testMinimalMatchListEntrySamePoint()
 {
-    /*{{{*/
+    // {{{
     // Two equal.
     {
         MinimalMatchListEntry m1;
@@ -144,7 +147,7 @@ void Test_MatchListEntry::testMinimalMatchListEntrySamePoint()
         CPPUNIT_ASSERT( !(m1.samePoint(m2)) );
         CPPUNIT_ASSERT( !(m2.samePoint(m1)) );
     }
-    /*}}}*/
+    // }}}
 }
 
 
@@ -152,7 +155,7 @@ void Test_MatchListEntry::testMinimalMatchListEntrySamePoint()
 //
 void Test_MatchListEntry::testMinimalMatchListEntryMatch()
 {
-    /*{{{*/
+    // {{{
     // Two equal.
     {
         MinimalMatchListEntry m1;
@@ -333,7 +336,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryMatch()
 
         CPPUNIT_ASSERT(m1.match(m2));
     }
-    /*}}}*/
+
+    // }}}
 }
 
 
@@ -341,7 +345,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryMatch()
 //
 void Test_MatchListEntry::testMinimalMatchListEntryLessOperator()
 {
-    /*{{{*/
+    // {{{
+
     // Two equal.
     {
         MinimalMatchListEntry m1;
@@ -471,7 +476,8 @@ void Test_MatchListEntry::testMinimalMatchListEntryLessOperator()
         CPPUNIT_ASSERT(  (m1 < m2) );
         CPPUNIT_ASSERT( !(m2 < m1) );
     }
-    /*}}}*/
+
+    // }}}
 }
 
 
@@ -479,7 +485,7 @@ void Test_MatchListEntry::testMinimalMatchListEntryLessOperator()
 //
 void Test_MatchListEntry::testProcessMatchListEntryConstruction()
 {
-    /*{{{*/
+    // {{{
     {
         // Construct.
         ProcessMatchListEntry m;
@@ -571,6 +577,7 @@ void Test_MatchListEntry::testProcessMatchListEntrySamePoint()
 void Test_MatchListEntry::testConfigMatchListEntryConstruction()
 {
     //{{{
+
     {
         // Construct.
         ConfigMatchListEntry m;
@@ -606,8 +613,10 @@ void Test_MatchListEntry::testConfigMatchListEntryConstruction()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ce.distance, 1.2, 1.0e-12);
         CPPUNIT_ASSERT_EQUAL(ce.coordinate, Coordinate(0.1, 0.2, 0.34));
     }
+
     //}}}
 }
+
 
 // ---------------------------------------------------------------------------
 //
@@ -649,3 +658,27 @@ void Test_MatchListEntry::testConfigMatchListEntrySamePoint()
     }
     //}}}
 }
+
+
+// ---------------------------------------------------------------------------
+//
+void Test_MatchListEntry::testSitesMapMatchListEntryConstruction()
+{
+    // {{{
+
+    // Construct.
+    SitesMapMatchListEntry m;
+    m.match_type = 1324;
+    m.distance = 1.2;
+    m.coordinate = Coordinate(0.1,0.2,0.34);
+    m.index = 123;
+
+    // Check the member data.
+    CPPUNIT_ASSERT_EQUAL(m.match_type, 1324);
+    CPPUNIT_ASSERT_EQUAL(m.index, 123);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(m.distance, 1.2, 1.0e-12);
+    CPPUNIT_ASSERT_EQUAL(m.coordinate, Coordinate(0.1, 0.2, 0.34));
+
+    // }}}
+}
+
