@@ -139,6 +139,27 @@ public:
 };
 
 
+/// Match list entry for sitesmap match list.
+
+class SitesMapMatchListEntry : public MinimalMatchListEntry {
+
+public:
+    /// The index in the global structrue.
+    int index;
+
+    /* Class functions.*/
+
+    /* \brief Default constructor.
+     */
+    inline SitesMapMatchListEntry();
+
+    /* \brief Defualt destructor.
+     */
+    virtual ~SitesMapMatchListEntry() {}
+
+};
+
+
 // --------------------------------------------------------------- //
 // INLINE FUNCITON IMPLIMENTATION CODE
 // --------------------------------------------------------------- //
@@ -193,5 +214,12 @@ ProcessMatchListEntry::ProcessMatchListEntry(const ConfigMatchListEntry & ce) :
 }
 
 
+// ---------------------------------------------------------------
+//
+SitesMapMatchListEntry::SitesMapMatchListEntry() :
+    index(0)
+{
+    // NOTHING HERE.
+}
 #endif  // __MATHCLISTENTRY__
 

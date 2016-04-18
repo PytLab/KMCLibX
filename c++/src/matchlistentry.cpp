@@ -33,6 +33,8 @@ static double epsi__ = 1.0e-5;
 //
 bool MinimalMatchListEntry::samePoint(const MinimalMatchListEntry & other) const
 {
+    // {{{
+
     // Check the distance.
     if (std::fabs(distance - other.distance) > epsi__)
     {
@@ -52,12 +54,17 @@ bool MinimalMatchListEntry::samePoint(const MinimalMatchListEntry & other) const
         return false;
     }
     return true;
+
+    // }}}
 }
+
 
 // -------------------------------------------------------------------------
 //
 bool MinimalMatchListEntry::match(const MinimalMatchListEntry & other) const
 {
+    // {{{
+
     // Handle the wildcard case.
     if (match_type == 0)
     {
@@ -72,12 +79,16 @@ bool MinimalMatchListEntry::match(const MinimalMatchListEntry & other) const
     {
         return (*this).samePoint(other);
     }
+
+    // }}}
 }
 
-/*! \brief 'less than' for sorting matchlists.
- */
+
+// -------------------------------------------------------------------------
+//
 bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other) const
 {
+    // {{{
     // Sort along distance and coordinate.
     if (std::fabs(distance - other.distance) < epsi__)
     {
@@ -90,5 +101,6 @@ bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other) const
         // Sort wrt. distance.
         return (distance < other.distance);
     }
+    // }}}
 }
 
