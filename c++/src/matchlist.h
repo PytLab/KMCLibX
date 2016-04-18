@@ -32,6 +32,7 @@ class Configuration;
 /// Define the match lists.
 typedef std::vector<ProcessMatchListEntry> ProcessMatchList;
 typedef std::vector<ConfigMatchListEntry> ConfigMatchList;
+typedef std::vector<SiteMatchListEntry> SiteMatchList;
 
 
 /*! \brief Set up a process matchlist from two local configurations.
