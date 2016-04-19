@@ -96,17 +96,9 @@ Process::Process(const Configuration & first,
     ProcessMatchList::iterator proc_it;
     const ProcessMatchList::const_iterator end_it = match_list_.end();
 
-    // If no site type is passed in,
-    // fill match list with default site type (wildcard).
-    if (site_types.size() == 0)
-    {
-        for (proc_it = match_list_.begin(); proc_it != end_it; ++proc_it)
-        {
-            proc_it->site_type = 0;
-        }
-    }
-    // Or fill match list with site types passed in.
-    else
+    // Fill match list with site types passed in.
+    // If no site types passed in, default value 0 will be used.
+    if (site_types.size() != 0)
     {
         std::vector<int>::const_iterator site_it = site_types.begin();
         for (proc_it = match_list_.begin(); proc_it != end_it; ++proc_it, ++site_it)
