@@ -64,6 +64,9 @@ void Test_Process::testConstruction()
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[1], basis_sites[1] );
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[2], basis_sites[2] );
 
+    // Check the site type setting flag.
+    CPPUNIT_ASSERT( !process.hasSiteTypes() );
+
     // }}}
 }
 
@@ -135,6 +138,9 @@ void Test_Process::testConstruction2()
     CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 1 );
     CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  1 );
     CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 0 );
+
+    // Check the site type setting flag.
+    CPPUNIT_ASSERT( !process.hasSiteTypes() );
 
     // }}}
 }
@@ -211,6 +217,9 @@ void Test_Process::testConstruction3()
     CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 1 );
     CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  1 );
     CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 0 );
+
+    // Check the site type setting flag.
+    CPPUNIT_ASSERT( !process.hasSiteTypes() );
 
     // }}}
 }
@@ -569,6 +578,9 @@ void Test_Process::testMatchList()
             // Check the site type.
             CPPUNIT_ASSERT_EQUAL(entry.site_type, 2);
         }
+
+        // Check the site type setting flag.
+        CPPUNIT_ASSERT( process.hasSiteTypes() );
     }
     // Construct the process without site types defined.
     {
@@ -640,6 +652,9 @@ void Test_Process::testMatchList()
             // Check the site type.
             CPPUNIT_ASSERT_EQUAL(entry.site_type, 0);
         }
+
+        // Check the site type setting flag.
+        CPPUNIT_ASSERT( !process.hasSiteTypes() );
     }
 
     // }}}
