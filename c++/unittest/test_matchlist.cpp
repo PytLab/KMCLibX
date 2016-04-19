@@ -221,3 +221,132 @@ void Test_MatchList::test_WhateverMatchProcessConfig()
     // }}}
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_MatchList::test_WhateverMatchProcessSite()
+{
+    // {{{
+
+    // Use configurationsToMatchList to get process match list.
+    // Configuration elements.
+    const std::vector<std::string> elements1 = {
+        "A", "B", "V", "A", "A",
+        "A", "B", "V", "A", "A"
+    };
+    const std::vector<std::string> elements2 = {
+        "B", "B", "V", "A", "A",
+        "V", "B", "V", "A", "A"
+    };
+
+    // Configuration coordinates.
+    const std::vector< std::vector<double> > process_coords = {
+        { 0.0,  0.0,  0.0}, { 0.5,  0.5,  0.5}, {-0.5,  0.5,  0.5}, 
+        { 0.5, -0.5,  0.5}, { 0.5,  0.5, -0.5}, {-0.5, -0.5,  0.5},
+        {-0.5,  0.5, -0.5}, { 0.5, -0.5, -0.5}, {-0.5, -0.5, -0.5},
+        { 1.0,  0.0,  0.0}
+    };
+
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    // Construct two local configurations.
+    const Configuration first(process_coords, elements1, possible_types);
+    const Configuration second(process_coords, elements2, possible_types);
+
+    // Output variables.
+    int range = 0;
+    double cutoff = 0.0;
+    ProcessMatchList process_match_list(0);
+    std::vector<int> affected_indices(0);
+
+    configurationsToMatchList(first, second, range, cutoff, 
+                              process_match_list, affected_indices);
+
+    // --------------------------------------------------------
+    // Now the site type in process match list is 0 (wildcard).
+    // --------------------------------------------------------
+
+    // Get a site match list.
+    SiteMatchList site_match_list(0);
+    const std::vector<int> site_types = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    for (size_t i = 0; i < elements1.size(); ++i)
+    {
+        SiteMatchListEntry se;
+
+        se.index = i;
+        const std::vector<double> & coord = process_coords[i];
+        se.coordinate = Coordinate(coord[0], coord[1], coord[2]);
+        se.distance = se.coordinate.distanceToOrigin();
+        std::string element = elements1[i];
+        se.match_type = site_types[i];
+
+        site_match_list.push_back(se);
+    }
+
+    // Sort the configuration match list.
+    std::sort(site_match_list.begin(), site_match_list.end());
+
+    // Check match.
+    bool is_match = false;
+    is_match = whateverMatch(process_match_list, site_match_list);
+    CPPUNIT_ASSERT(is_match);
+
+    // Change one type, should still be matched.
+    // 1 --> 3
+    const int orig_type = site_match_list[0].match_type;
+    site_match_list[0].match_type = 3;
+    // Check match.
+    is_match = whateverMatch(process_match_list, site_match_list);
+    CPPUNIT_ASSERT(is_match);
+    // Recover.
+    site_match_list[0].match_type = orig_type;
+
+    // NOTE : Change the coordinate of the 2nd entry, should still be matched.
+    //        If we detect that the process entry is a wildcard, then
+    //        we will not check the others e.g. coordinate and distance.
+    //        We do not check data validity in C++ backend.
+    const Coordinate orig_coord = process_match_list[1].coordinate;
+    process_match_list[1].coordinate = Coordinate(1.0, 1.0, 1.0);
+    // Check match.
+    is_match = whateverMatch(process_match_list, site_match_list);
+    CPPUNIT_ASSERT(is_match);
+    // Recover.
+    process_match_list[1].coordinate = orig_coord;
+
+    // So does the different distance.
+    const double orig_dist = process_match_list[1].distance;
+    process_match_list[1].distance = 3.9;
+    // Check match.
+    is_match = whateverMatch(process_match_list, site_match_list);
+    CPPUNIT_ASSERT(is_match);
+    // Recover.
+    process_match_list[1].distance = orig_dist;
+
+    // --------------------------------------------------------
+    // Now we add site types to process match list.
+    // --------------------------------------------------------
+
+    for (size_t i = 0; i < process_match_list.size(); ++i)
+    {
+        process_match_list[i].site_type = site_match_list[i].match_type;
+    }
+
+    // Check match.
+
+    // Same site type, should be matched.
+    is_match = whateverMatch(process_match_list, site_match_list);
+    CPPUNIT_ASSERT(is_match);
+
+    // Change site type of the first process match list entry.
+    // Should not be matched.
+    process_match_list[1].site_type = 11;
+    is_match = whateverMatch(process_match_list, site_match_list);
+    CPPUNIT_ASSERT(!is_match);
+
+    // }}}
+}
+

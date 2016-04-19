@@ -25,11 +25,13 @@ public:
     CPPUNIT_TEST( testCall );
     CPPUNIT_TEST( test_ConfigurationsToMatchList );
     CPPUNIT_TEST( test_WhateverMatchProcessConfig );
+    CPPUNIT_TEST( test_WhateverMatchProcessSite );
     CPPUNIT_TEST_SUITE_END();
 
     void testCall();
     void test_ConfigurationsToMatchList();
     void test_WhateverMatchProcessConfig();
+    void test_WhateverMatchProcessSite(); 
 
 };
 
