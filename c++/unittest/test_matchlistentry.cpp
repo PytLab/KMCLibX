@@ -711,7 +711,7 @@ void Test_MatchListEntry::testSiteAndProcessMatchListEntryMatch()
     // Two equal - by wildcard.
     {
         SiteMatchListEntry m1;
-        m1.match_type = 0;
+        m1.match_type = 1324;
         m1.index = 1;
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.1,0.2,0.34);
@@ -719,7 +719,7 @@ void Test_MatchListEntry::testSiteAndProcessMatchListEntryMatch()
         ProcessMatchListEntry m2;
         m2.match_type = 1324;
         m2.distance = 1.2;
-        m2.site_type = 1324;
+        m2.site_type = 0;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
         CPPUNIT_ASSERT(m1.match(m2));
