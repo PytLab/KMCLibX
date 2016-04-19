@@ -494,77 +494,152 @@ void Test_Process::testMatchList()
     const Configuration config1(coords, elements1, possible_types);
     const Configuration config2(coords, elements2, possible_types);
 
-    // Construct the process.
-    const std::vector<int> site_types = {1, 2, 3};
-    const std::vector<int> basis_sites(1,0);
-    const double rate = 13.7;
-    const std::vector<int> move_origins = {0};
-    const std::vector<Coordinate> move_vectors = {Coordinate(0.0, 0.0, 0.0)};
-    const int process_number = -1;
-    Process process(config1, config2, rate, basis_sites, move_origins,
-                    move_vectors, process_number, site_types);
-
-    // Get the match list out.
-    const ProcessMatchList & match_list = process.matchList();
-
-    // Check the size of the match list.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
-
-    // Get the first entry out and check.
+    // Construct the process with site types defined.
     {
-        const ProcessMatchListEntry entry = match_list[0];
-        CPPUNIT_ASSERT_EQUAL(entry.match_type, 123);
-        CPPUNIT_ASSERT_EQUAL(entry.update_type, 0);
+        const std::vector<int> site_types = {1, 2, 3};
+        const std::vector<int> basis_sites(1,0);
+        const double rate = 13.7;
+        const std::vector<int> move_origins = {0};
+        const std::vector<Coordinate> move_vectors = {Coordinate(0.0, 0.0, 0.0)};
+        const int process_number = -1;
+        Process process(config1, config2, rate, basis_sites, move_origins,
+                        move_vectors, process_number, site_types);
 
-        // Make sure these coordinates are equal.
-        Coordinate check_coord(coords[0][0],coords[0][1],coords[0][2]);
-        CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+        // Get the match list out.
+        const ProcessMatchList & match_list = process.matchList();
 
-        // Check the distance.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, 0.0, 1.0e-14);
+        // Check the size of the match list.
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
 
-        // Check the site type.
-        CPPUNIT_ASSERT_EQUAL(entry.site_type, 1);
+        // Get the first entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[0];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 123);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 0);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[0][0],coords[0][1],coords[0][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, 0.0, 1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 1);
+        }
+
+        // Get the third entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[2];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 24);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 24);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[1][0],coords[1][1],coords[1][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
+                                         check_coord.distance(Coordinate(0.0,0.0,0.0)),
+                                         1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 3);
+
+        }
+
+        // Get the second entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[1];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 0);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 123);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[2][0],coords[2][1],coords[2][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
+                                         check_coord.distance(Coordinate(0.0,0.0,0.0)),
+                                         1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 2);
+        }
     }
-
-    // Get the third entry out and check.
+    // Construct the process without site types defined.
     {
-        const ProcessMatchListEntry entry = match_list[2];
-        CPPUNIT_ASSERT_EQUAL(entry.match_type, 24);
-        CPPUNIT_ASSERT_EQUAL(entry.update_type, 24);
+        const std::vector<int> basis_sites(1,0);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
-        // Make sure these coordinates are equal.
-        Coordinate check_coord(coords[1][0],coords[1][1],coords[1][2]);
-        CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+        // Get the match list out.
+        const ProcessMatchList & match_list = process.matchList();
 
-        // Check the distance.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
-                                     check_coord.distance(Coordinate(0.0,0.0,0.0)), 1.0e-14);
+        // Check the size of the match list.
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
 
-        // Check the site type.
-        CPPUNIT_ASSERT_EQUAL(entry.site_type, 3);
+        // Get the first entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[0];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 123);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 0);
 
-    }
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[0][0],coords[0][1],coords[0][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
 
-    // Get the second entry out and check.
-    {
-        const ProcessMatchListEntry entry = match_list[1];
-        CPPUNIT_ASSERT_EQUAL(entry.match_type, 0);
-        CPPUNIT_ASSERT_EQUAL(entry.update_type, 123);
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, 0.0, 1.0e-14);
 
-        // Make sure these coordinates are equal.
-        Coordinate check_coord(coords[2][0],coords[2][1],coords[2][2]);
-        CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 0);
+        }
 
-        // Check the distance.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
-                                     check_coord.distance(Coordinate(0.0,0.0,0.0)), 1.0e-14);
+        // Get the third entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[2];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 24);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 24);
 
-        // Check the site type.
-        CPPUNIT_ASSERT_EQUAL(entry.site_type, 2);
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[1][0],coords[1][1],coords[1][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
+                                         check_coord.distance(Coordinate(0.0,0.0,0.0)),
+                                         1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 0);
+
+        }
+
+        // Get the second entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[1];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 0);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 123);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[2][0],coords[2][1],coords[2][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
+                                         check_coord.distance(Coordinate(0.0,0.0,0.0)), 
+                                         1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 0);
+        }
     }
 
     // }}}
