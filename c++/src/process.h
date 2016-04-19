@@ -174,6 +174,11 @@ public:
      */
     int processNumber() const { return process_number_; }
 
+    /*! \brief Query for the site type setting flag.
+     *  \return : Whether site type is set.
+     */
+    bool hasSiteTypes() const { return has_site_types_; }
+
 protected:
 
     /// The process number.
@@ -204,6 +209,9 @@ protected:
 
     /// The atom id moves.
     std::vector< std::pair<int,int> > id_moves_;
+
+    /// The flag whether site type is set.
+    bool has_site_types_;
 
 private:
 

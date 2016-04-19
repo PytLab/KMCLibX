@@ -98,13 +98,21 @@ Process::Process(const Configuration & first,
 
     // Fill match list with site types passed in.
     // If no site types passed in, default value 0 will be used.
-    if (site_types.size() != 0)
+    if (site_types.size() == 0)
     {
+        has_site_types_ = false;        
+    }
+    else if (site_types.size() != 0)
+    {
+        // Set site type for each process match list entry.
         std::vector<int>::const_iterator site_it = site_types.begin();
         for (proc_it = match_list_.begin(); proc_it != end_it; ++proc_it, ++site_it)
         {
             proc_it->site_type = *site_it;
         }
+
+        // Set site type setting flag.
+        has_site_types_ = true;
     }
 
     // }}}
