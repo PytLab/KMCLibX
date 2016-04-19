@@ -109,7 +109,25 @@ bool MinimalMatchListEntry::operator<(const MinimalMatchListEntry & other) const
 //
 bool ProcessMatchListEntry::match(const SiteMatchListEntry & se) const
 {
-    return se.match(*this);
+    // {{{
+
+    // Handle the wildcard case.
+    if (site_type == 0)
+    {
+        return true;
+    }
+    // Check the type.
+    else if (site_type != se.match_type)
+    {
+        return false;
+    }
+    // Check the position.
+    else
+    {
+        return (*this).samePoint(se);
+    }
+
+    // }}}
 }
 
 
@@ -125,24 +143,6 @@ bool ProcessMatchListEntry::match(const MinimalMatchListEntry & me) const
 //
 bool SiteMatchListEntry::match(const ProcessMatchListEntry & pe) const
 {
-    // {{{
-
-    // Handle the wildcard case.
-    if (match_type == 0)
-    {
-        return true;
-    }
-    // Check the type.
-    else if (match_type != pe.site_type)
-    {
-        return false;
-    }
-    // Check the position.
-    else
-    {
-        return (*this).samePoint(pe);
-    }
-
-    // }}}
+    return pe.match(*this);
 }
 
