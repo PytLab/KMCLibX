@@ -36,7 +36,8 @@ SitesMap::SitesMap(const std::vector< std::vector<double> > & coordinates,
                    const std::vector<std::string> & sites,
                    const std::map<std::string, int> & possible_types) :
     sites_(sites),
-    possible_types_(possible_types)
+    possible_types_(possible_types),
+    match_lists_(sites.size())
 {
     // Initialize all site coordinates.
     for (const std::vector<double> & c : coordinates)
@@ -50,6 +51,27 @@ SitesMap::SitesMap(const std::vector< std::vector<double> > & coordinates,
         const int type = possible_types.find(site)->second;
         types_.push_back(type);
     }
+}
+
+
+// -------------------------------------------------------------------------------
+//
+void SitesMap::initMatchLists(const LatticeMap & lattice_map,
+                              const int range)
+{
+    // {{{
+    
+    // Loop over all lattice sites to initialize the match lists.
+    for (size_t i = 0; i < types_.size(); ++i)
+    {
+        // Calculate and store the match list.
+        const int origin_index = i;
+        const std::vector<int> neighbourhood = lattice_map.neighbourIndices(origin_index,
+                                                                            range);
+        match_lists_[i] = matchList(origin_index, neighbourhood, lattice_map);
+    }
+
+    // }}}
 }
 
 

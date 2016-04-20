@@ -50,6 +50,12 @@ public:
              const std::vector<std::string> & sites,
              const std::map<std::string, int> & possible_types);
 
+    /*! \brief Initiate the calculation of the match lists.
+     *  \param lattice_map : The lattice map needed to get coordinates wrapped.
+     *  \param range       : The number of shells to include.
+     */
+    void initMatchLists(const LatticeMap & lattice_map, const int range);
+
     /*! \brief Construct and return the sitesmap match list for the
      *         given list of indices.
      *  \param origin_index : The index to treat as the origin.
@@ -61,6 +67,12 @@ public:
     const SiteMatchList & matchList(const int origin_index,
                                     const std::vector<int> & indices,
                                     const LatticeMap & lattice_map) const;
+
+    /*! \brief Return the cached match list without update.
+     *  \param index : The index to get the match list for.
+     *  \return : The match list.
+     */
+    const SiteMatchList & matchList(const int index) const { return match_lists_[index]; }
 
     /*! \brief Const query for the site coordinates.
      *  \return : The coordinates of all sites on lattice.
@@ -90,6 +102,9 @@ private:
 
     /// Mapping from type string to type int.
     std::map<std::string, int> possible_types_;
+
+    /// Site match lists.
+    std::vector<SiteMatchList> match_lists_;
 
 };
 
