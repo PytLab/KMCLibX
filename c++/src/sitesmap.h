@@ -5,24 +5,6 @@
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-/*! \file   sitesmap.h
- *  \brief  File for the SitesMap class definition.
- *  \author zjshao <shaozhengjiang@gmail.com>
- *  \date   2016-04-08
- */
-
-#ifndef __SITESMAP__
-#define __SITESMAP__
-
-#include <vector>
-#include <string>
-#include <map>
-
-#include "matchlistentry.h"
-#include "coordinate.h"
-
 /* ****************************************************************************
  * file   : sitesmap.h
  * brief  : Class for defining the sites information used in a KMC simulation to
@@ -37,6 +19,17 @@
  *
  * ------------------------------------------------------
  * ****************************************************************************/
+
+#ifndef __SITESMAP__
+#define __SITESMAP__
+
+#include <vector>
+#include <string>
+#include <map>
+
+// Forward declaration.
+class Coordinate;
+
 
 class SitesMap 
 {

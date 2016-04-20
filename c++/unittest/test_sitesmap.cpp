@@ -17,6 +17,7 @@
 // Include the files to test.
 #include "sitesmap.h"
 
+#include "coordinate.h"
 
 // -------------------------------------------------------------------------//
 //
