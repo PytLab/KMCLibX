@@ -127,6 +127,8 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
 //
 void Configuration::updateMatchList(const int index)
 {
+    // {{{
+
     // Update the match list's types information.
     ConfigMatchList::iterator it1   = match_lists_[index].begin();
     const ConfigMatchList::const_iterator end = match_lists_[index].end();
@@ -134,6 +136,8 @@ void Configuration::updateMatchList(const int index)
     {
         (*it1).match_type = types_[(*it1).index];
     }
+
+    // }}}
 }
 
 

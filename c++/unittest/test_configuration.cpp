@@ -19,6 +19,8 @@
 //
 void Test_Configuration::testConstruction()
 {
+    // {{{
+
     // Setup coordinates.
     std::vector<std::vector<double> > coords(5, std::vector<double>(3, 0.0));
     coords[0][0]  = 0.1;
@@ -83,6 +85,7 @@ void Test_Configuration::testConstruction()
     }
 
     // DONE
+    // }}}
 
 }
 
@@ -94,6 +97,8 @@ void Test_Configuration::testConstruction()
 // ---------------------------------------------------------------------------//
 void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
 {
+    // {{{
+
     // Make a 3x3x3 structure
     const int nI = 3;
     const int nJ = 3;
@@ -197,6 +202,7 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), 0.0, 1.0e-12);
     }
 
+    // }}}
 }
 
 
@@ -204,6 +210,8 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
 //
 void Test_Configuration::testPerformProcess()
 {
+    // {{{
+
     // Setup a realistic system.
     std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
     basis[1][0] = 0.25;
@@ -334,6 +342,7 @@ void Test_Configuration::testPerformProcess()
     CPPUNIT_ASSERT_EQUAL( affected[0], 1434 );
     CPPUNIT_ASSERT_EQUAL( affected[1], 350  );
 
+    // }}}
 }
 
 
@@ -341,6 +350,8 @@ void Test_Configuration::testPerformProcess()
 //
 void Test_Configuration::testPerformProcessVectors()
 {
+    // {{{
+
     // Setup a realistic system.
     std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
     basis[1][0] = 0.25;
@@ -520,12 +531,16 @@ void Test_Configuration::testPerformProcessVectors()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), id_coord.y(), 1.0e-12);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), id_coord.z(), 1.0e-12);
     }
+
+    // }}}
 }
 
 // -------------------------------------------------------------------------- //
 //
 void Test_Configuration::testAtomID()
 {
+    // {{{
+
     // Setup coordinates.
     std::vector<std::vector<double> > coords(5, std::vector<double>(3, 0.0));
     coords[0][0]  = 0.1;
@@ -574,6 +589,8 @@ void Test_Configuration::testAtomID()
     {
         CPPUNIT_ASSERT_EQUAL( configuration.atomID()[i], i );
     }
+
+    // }}}
 }
 
 
@@ -581,6 +598,8 @@ void Test_Configuration::testAtomID()
 //
 void Test_Configuration::testMatchLists()
 {
+    // {{{
+
     // Setup a configuration.
     std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
     basis[1][0] = 0.25;
@@ -784,12 +803,16 @@ void Test_Configuration::testMatchLists()
                                       1.0e-14 );
 
     }
+
+    // }}}
 }
 
 // -------------------------------------------------------------------------- //
 //
 void Test_Configuration::testTypeNameQuery()
 {
+    // {{{
+
     // Setup coordinates.
     const std::vector<std::vector<double> > coords(1, std::vector<double>(3, 0.0));
 
@@ -819,6 +842,7 @@ void Test_Configuration::testTypeNameQuery()
     CPPUNIT_ASSERT_EQUAL( config.typeName(6), std::string("G") );
 
     // DONE
+    // }}}
 }
 
 
@@ -826,6 +850,7 @@ void Test_Configuration::testTypeNameQuery()
 //
 void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
 {
+    // {{{
     // Setup a configuration.
     const std::vector< std::vector<double> > basis(0, std::vector<double>(3,0.0));
     const std::vector<int> basis_sites(1, 0);
@@ -1157,4 +1182,5 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].z(),
                                  configuration.atomIDCoordinates()[1453].z(),
                                  1.0e-12);
+    // }}}
 }
