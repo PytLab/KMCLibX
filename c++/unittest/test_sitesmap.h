@@ -26,28 +26,12 @@ public:
     CPPUNIT_TEST_SUITE( Test_SitesMap );
     CPPUNIT_TEST( testConstructionAndQuery );
     CPPUNIT_TEST( testMatchList );
-//    CPPUNIT_TEST( testLessOperator );
-//    CPPUNIT_TEST( testAddIntoOperator );
-//    CPPUNIT_TEST( testEqualsOperator );
-//    CPPUNIT_TEST( testDistance );
-//    CPPUNIT_TEST( testMinusOperator );
-//    CPPUNIT_TEST( testMultiplicationOperator );
-//    CPPUNIT_TEST( testAccessOperator );
-//    CPPUNIT_TEST( testOuterProdDiag );
-//    CPPUNIT_TEST( testDotProduct );
+    CPPUNIT_TEST( testInitMatchList );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
     void testMatchList();
-//    void testLessOperator();
-//    void testAddIntoOperator();
-//    void testEqualsOperator();
-//    void testDistance();
-//    void testMinusOperator();
-//    void testMultiplicationOperator();
-//    void testAccessOperator();
-//    void testOuterProdDiag();
-//    void testDotProduct();
+    void testInitMatchList();
 
 };
 
