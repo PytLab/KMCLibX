@@ -25,6 +25,7 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_SitesMap );
     CPPUNIT_TEST( testConstructionAndQuery );
+    CPPUNIT_TEST( testMatchList );
 //    CPPUNIT_TEST( testLessOperator );
 //    CPPUNIT_TEST( testAddIntoOperator );
 //    CPPUNIT_TEST( testEqualsOperator );
@@ -37,6 +38,7 @@ public:
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
+    void testMatchList();
 //    void testLessOperator();
 //    void testAddIntoOperator();
 //    void testEqualsOperator();
