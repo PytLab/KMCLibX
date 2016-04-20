@@ -41,6 +41,8 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     atom_id_elements_(elements),
     match_lists_(elements_.size())
 {
+    // {{{
+
     // Setup the coordinates and initial atom ids.
     for (size_t i = 0; i < coordinates.size(); ++i)
     {
@@ -80,6 +82,8 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
         std::map<std::string, int>::const_iterator it = possible_types.find(element);
         types_.push_back(it->second);
     }
+
+    // }}}
 }
 
 
@@ -88,6 +92,8 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
 void Configuration::initMatchLists( const LatticeMap & lattice_map,
                                     const int range )
 {
+    // {{{
+
     // Store the max size of minimal_match_list_
     size_t max_size = 0;
     size_t tmp_size;
@@ -112,6 +118,8 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
     // memory for the moved_atom_ids_ vector.
     moved_atom_ids_.resize(max_size);
     recent_move_vectors_.resize(max_size);
+
+    // }}}
 }
 
 
@@ -135,6 +143,8 @@ const ConfigMatchList & Configuration::matchList(const int origin_index,
                                                  const std::vector<int> & indices,
                                                  const LatticeMap & lattice_map) const
 {
+    // {{{
+
     // Setup the return data.
     tmp_config_match_list__.resize(indices.size());
 
@@ -240,6 +250,8 @@ const ConfigMatchList & Configuration::matchList(const int origin_index,
     std::sort(tmp_config_match_list__.begin(), tmp_config_match_list__.end());
 
     return tmp_config_match_list__;
+
+    // }}}
 }
 
 
@@ -248,6 +260,8 @@ const ConfigMatchList & Configuration::matchList(const int origin_index,
 void Configuration::performProcess(Process & process,
                                    const int site_index)
 {
+    // {{{
+
     // PERFORMME
     // Need to time and optimize the new parts of the routine.
 
@@ -342,5 +356,7 @@ void Configuration::performProcess(Process & process,
         atom_id_elements_[id] = elements_[index];
 
     }
+
+    // }}}
 }
 
