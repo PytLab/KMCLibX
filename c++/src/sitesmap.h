@@ -28,7 +28,12 @@
 #include <map>
 
 // Forward declaration.
+class LatticeMap;
 class Coordinate;
+class SiteMatchListEntry;
+
+// Typedef.
+typedef std::vector<SiteMatchListEntry> SiteMatchList;
 
 
 class SitesMap 
@@ -44,6 +49,18 @@ public:
     SitesMap(const std::vector< std::vector<double> > & coordinates,
              const std::vector<std::string> & sites,
              const std::map<std::string, int> & possible_types);
+
+    /*! \brief Construct and return the sitesmap match list for the
+     *         given list of indices.
+     *  \param origin_index : The index to treat as the origin.
+     *  \param indices      : The indices to get the match list for.
+     *  \param lattice_map  : The lattice map needed for calculating distances
+     *                        using correct boundaries.
+     *  \return : The sitesmap match list.
+     */
+    const SiteMatchList & matchList(const int origin_index,
+                                    const std::vector<int> & indices,
+                                    const LatticeMap & lattice_map) const;
 
     /*! \brief Const query for the site coordinates.
      *  \return : The coordinates of all sites on lattice.
@@ -76,4 +93,4 @@ private:
 
 };
 
-#endif
+#endif  // __SITESMAP__
