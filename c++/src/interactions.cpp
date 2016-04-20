@@ -105,7 +105,8 @@ int Interactions::maxRange() const
 void Interactions::updateProcessMatchLists(const Configuration & configuration,
                                            const LatticeMap & lattice_map)
 {
-    //{{{
+    // {{{
+
     // Skip if we are not using implicit wildcards.
     if (!implicit_wildcards_)
     {
@@ -156,6 +157,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
                 ProcessMatchListEntry wildcard_entry(*it2);
                 wildcard_entry.match_type = 0;
                 wildcard_entry.update_type = 0;
+                wildcard_entry.site_type = 0;
 
                 it1 = process_matchlist.insert(it1, wildcard_entry);
                 // it1 now points to the newly inserted position.
@@ -183,6 +185,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
             id_moves[j].second = index_mapping[old_index_second];
         }
     }
+
     //}}}
 }
 
