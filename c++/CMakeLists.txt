@@ -124,7 +124,7 @@ add_subdirectory(unittest)
 # ADD THE WRAPPINGS
 # -----------------------------------------------------------------------------
 
-#add_subdirectory(wrap)
+add_subdirectory(wrap)
 
 # -----------------------------------------------------------------------------
 # ADD THE INSTALL TARGET
