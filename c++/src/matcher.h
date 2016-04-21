@@ -16,8 +16,6 @@
 
 #include <vector>
 
-#include "matchlistentry.h"
-
 // Forward declarations.
 class Interactions;
 class Configuration;
