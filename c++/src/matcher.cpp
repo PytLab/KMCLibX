@@ -80,20 +80,32 @@ void Matcher::calculateMatching(Interactions & interactions,
                            basis_site) \
                     != process_basis_sites.end() )
             {
-                // Get process match list.
+                // Pick out the process.
                 const Process * process_ptr = interactions.processes()[j];
-                const ProcessMatchList & process_matchlist = process_ptr->matchList();
 
-                // Check if the process matches with site types.
-                bool is_match = whateverMatch(process_matchlist, site_matchlist);
+                // Check if process site types is set.
+                if (process_ptr->hasSiteTypes())
+                {
+                    // Get process match list.
+                    const ProcessMatchList & process_matchlist = process_ptr->matchList();
 
-                if (is_match)
+                    // Check if the process matches with site types.
+                    bool is_match = whateverMatch(process_matchlist, site_matchlist);
+
+                    if (is_match)
+                    {
+                        // Register the candidate.
+                        index_process_to_match.push_back(std::pair<int, int>(index, j));
+                        use_index = true;
+                    }
+                }
+                else
                 {
                     // Register the candidate.
                     index_process_to_match.push_back(std::pair<int, int>(index, j));
                     use_index = true;
+                
                 }
-
             }
         }
 
