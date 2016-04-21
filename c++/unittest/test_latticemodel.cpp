@@ -459,6 +459,28 @@ void Test_LatticeModel::testSingleStepFunction()
         processes.push_back(p);
     }
 
+    // A process that finds an A between two B's in the 1,1,1 direction
+    // and swap the A and the first B.
+    // Add site types to this process.
+    {
+        std::vector<std::string> process_elements1 = {"A", "B", "B"};
+        std::vector<std::string> process_elements2 = {"B", "A", "B"};
+        std::vector<int> process_site_types = {1, 2, 1};
+
+        std::vector<std::vector<double> > process_coordinates = { 
+            {0.0, 0.0, 0.0}, {-0.25, -0.25, -0.25}, {0.25, 0.25, 0.25} };
+
+        const double rate = 13.7;
+        const std::vector<int> move_origins = {};
+        const std::vector<Coordinate> move_vectors = {};
+        const int process_number = -1;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, rate, basis_sites, move_origins, move_vectors,
+                  process_number, process_site_types);
+        processes.push_back(p);
+    }
+
     // A process that finds a V between two A in the 1,1,1 direction
     // and turn the V into B.
     {
@@ -1135,5 +1157,6 @@ void Test_LatticeModel::testTiming()
     printf("        with %i processes (7 centers per process) for %i sites in the lattice.\n",
            static_cast<int>(processes.size()), nI*nJ*nK*nB);
 
+    // }}}
 }
 
