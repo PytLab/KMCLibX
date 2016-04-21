@@ -104,7 +104,6 @@ void Matcher::calculateMatching(Interactions & interactions,
                     // Register the candidate.
                     index_process_to_match.push_back(std::pair<int, int>(index, j));
                     use_index = true;
-                
                 }
             }
         }
