@@ -30,6 +30,7 @@
 #include "configuration.h"
 #include "latticemap.h"
 #include "matchlist.h"
+#include "sitesmap.h"
 
 #include "mpicommons.h"
 #include "mpiroutines.h"
@@ -46,9 +47,12 @@ Matcher::Matcher()
 //
 void Matcher::calculateMatching(Interactions & interactions,
                                 Configuration & configuration,
+                                const SitesMap & sitesmap,
                                 const LatticeMap & lattice_map,
                                 const std::vector<int> & indices) const
 {
+    // {{{
+
     // Build the list of indices and processes to match.
 
     std::vector<std::pair<int,int> > index_process_to_match;
@@ -61,16 +65,46 @@ void Matcher::calculateMatching(Interactions & interactions,
         // Get the basis site.
         const int basis_site = lattice_map.basisSiteFromIndex(index);
 
+        // Get site match list.
+        const SiteMatchList & site_matchlist = sitesmap.matchList(index);
+
         // For each process, check if we should try to match.
         for (size_t j = 0; j < interactions.processes().size(); ++j)
         {
             // Check if the basis site is listed.
-            const std::vector<int> & process_basis_sites = (*interactions.processes()[j]).basisSites();
-            if ( std::find(process_basis_sites.begin(), process_basis_sites.end(), basis_site) != process_basis_sites.end() )
+            const std::vector<int> & process_basis_sites = \
+                (*interactions.processes()[j]).basisSites();
+
+            if ( std::find(process_basis_sites.begin(),
+                           process_basis_sites.end(),
+                           basis_site) \
+                    != process_basis_sites.end() )
             {
-                // This is a potential match.
-                index_process_to_match.push_back(std::pair<int,int>(index,j));
-                use_index = true;
+                // Pick out the process.
+                const Process * process_ptr = interactions.processes()[j];
+
+                // Check if process site types is set.
+                if (process_ptr->hasSiteTypes())
+                {
+                    // Get process match list.
+                    const ProcessMatchList & process_matchlist = process_ptr->matchList();
+
+                    // Check if the process matches with site types.
+                    bool is_match = whateverMatch(process_matchlist, site_matchlist);
+
+                    if (is_match)
+                    {
+                        // Register the candidate.
+                        index_process_to_match.push_back(std::pair<int, int>(index, j));
+                        use_index = true;
+                    }
+                }
+                else
+                {
+                    // Register the candidate.
+                    index_process_to_match.push_back(std::pair<int, int>(index, j));
+                    use_index = true;
+                }
             }
         }
 
@@ -133,7 +167,7 @@ void Matcher::calculateMatching(Interactions & interactions,
                     add_tasks,
                     interactions);
 
-    // DONE
+    // }}}
 }
 
 // -----------------------------------------------------------------------------
@@ -145,6 +179,8 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
                                         std::vector<RateTask>   & update_tasks,
                                         std::vector<RateTask>   & add_tasks) const
 {
+    // {{{
+
     // Setup local variables for running in parallel.
     std::vector< std::pair<int,int> > local_index_process_to_match = \
         splitOverProcesses(index_process_to_match);
@@ -229,7 +265,7 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         }
     }
 
-    // DONE
+    // }}}
 }
 
 
@@ -240,6 +276,8 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
                               const std::vector<RateTask>   & add_tasks,
                               Interactions & interactions) const
 {
+    // {{{
+
     // This could perhaps be OpenMP parallelized.
 
     // Remove.
@@ -268,6 +306,8 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
         const double rate = add_tasks[i].rate;
         interactions.processes()[p_idx]->addSite(index, rate);
     }
+
+    // }}}
 }
 
 
@@ -278,6 +318,8 @@ void Matcher::updateRates(std::vector<double>         & new_rates,
                           const Interactions          & interactions,
                           const Configuration         & configuration) const
 {
+    // {{{
+
     // Use the backendCallBack function on the RateCalculator stored on the
     // interactions object, to get an updated rate for each process.
 
@@ -294,6 +336,8 @@ void Matcher::updateRates(std::vector<double>         & new_rates,
         // Send this information to the updateSingleRate function.
         new_rates[i] = updateSingleRate(index, process, configuration, rate_calculator);
     }
+
+    // }}}
 }
 
 
@@ -304,6 +348,8 @@ double Matcher::updateSingleRate(const int index,
                                  const Configuration  & configuration,
                                  const RateCalculator & rate_calculator) const
 {
+    // {{{
+
     // Get the match lists.
     const ProcessMatchList & process_match_list = process.matchList();
     const ConfigMatchList & config_match_list  = configuration.matchList(index);
@@ -385,4 +431,6 @@ double Matcher::updateSingleRate(const int index,
                                                global_x,
                                                global_y,
                                                global_z);
+
+    // }}}
 }

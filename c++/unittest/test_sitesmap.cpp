@@ -18,6 +18,8 @@
 #include "sitesmap.h"
 
 #include "coordinate.h"
+#include "process.h"
+#include "configuration.h"
 #include "matchlist.h"
 #include "latticemap.h"
 
@@ -318,6 +320,131 @@ void Test_SitesMap::testInitMatchList()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(it1->distance, it2->distance, 1.0e-12);
     }
 
+    // }}}
+}
+
+
+// -------------------------------------------------------------------------//
+//
+void Test_SitesMap::testMatchListMatching()
+{
+    // {{{
+    // Construct a sites map object and initialize the match lists.
+    // 27 cells cell with two atoms in the basis.
+    std::vector<std::vector<double> > basis(2, std::vector<double>(3,0.0));
+    basis[1][0] = 0.5;
+    basis[1][1] = 0.5;
+    basis[1][2] = 0.5;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
+
+    std::vector<std::string> site_types;
+    std::vector<std::vector<double> > coords;
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            for (int k = 0; k < 3; ++k)
+            {
+                std::vector<double> coord = basis[0];
+                coord[0] += i;
+                coord[1] += j;
+                coord[2] += k;
+                coords.push_back(coord);
+                site_types.push_back("M");
+
+                coord = basis[1];
+                coord[0] += i;
+                coord[1] += j;
+                coord[2] += k;
+                coords.push_back(coord);
+                site_types.push_back("N");
+            }
+        }
+    }
+
+    // Setup the mapping from site type to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["M"] = 1;
+    possible_site_types["N"] = 2;
+
+    // Construct the sitesmap.
+    SitesMap sitesmap(coords, site_types, possible_site_types);
+
+    // ---------------------------------------------------------------------
+    // Setup a periodic cooresponding lattice map.
+    const std::vector<int> repetitions(3, 3);
+    const std::vector<bool> periodicity(3, true);
+    const int basis_size = 2;
+
+    LatticeMap lattice_map(basis_size, repetitions, periodicity);
+
+    // Calculate the site match lists.
+    sitesmap.initMatchLists(lattice_map, 1);
+
+    // ---------------------------------------------------------------------
+    // Now the processes.
+    // Setup the two configurations.
+    std::vector<std::string> elements1 = {
+        "C", "B", "B", "B", "B", "B", "B", "B", "B"
+    };
+    std::vector<std::string> elements2 = {
+        "D", "B", "B", "B", "B", "B", "B", "B", "B"
+    };
+
+    // Setup the site types.
+    std::vector<int> process_site_types = {
+        1, 2, 2, 2, 2, 2, 2, 2, 2
+        //"M", "N", "N", "N", "N", "N", "N", "N", "N"
+    };
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > process_coords = {
+        { 0.0,  0.0,  0.0}, { 0.5,  0.5,  0.5}, {-0.5,  0.5,  0.5},
+        { 0.5, -0.5,  0.5}, { 0.5,  0.5, -0.5}, {-0.5, -0.5,  0.5},
+        {-0.5,  0.5, -0.5}, { 0.5, -0.5, -0.5}, {-0.5, -0.5, -0.5},
+    };
+
+    // The configurations.
+    const Configuration config1(process_coords, elements1, possible_types);
+    const Configuration config2(process_coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 13.7;
+    const std::vector<int> move_origins(0);
+    const std::vector<Coordinate> move_vectors(0);
+    const int process_number = 0;
+    const Process process(config1, config2, rate, basis_sites, move_origins,
+                          move_vectors, process_number, process_site_types);
+
+    // ---------------------------------------------------------------------
+    // Check the site type in match list.
+    const int even_site_types[9] = {1, 2, 2, 2, 2, 2, 2, 2, 2};
+    const int odd_site_types[9] = {2, 1, 1, 1, 1, 1, 1, 1, 1};
+    const SiteMatchList & even_match_list = sitesmap.matchList(26);
+    const SiteMatchList & odd_match_list = sitesmap.matchList(1);
+    for (int i = 0; i < 9; ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(even_site_types[i], even_match_list[i].match_type);
+        CPPUNIT_ASSERT_EQUAL(odd_site_types[i], odd_match_list[i].match_type);
+    }
+
+    // Check match list matching.
+    const ProcessMatchList & process_match_list = process.matchList();
+    CPPUNIT_ASSERT(whateverMatch(process_match_list, even_match_list));
+    CPPUNIT_ASSERT(!whateverMatch(process_match_list, odd_match_list));
+    
     // }}}
 }
 

@@ -27,11 +27,13 @@ public:
     CPPUNIT_TEST( testConstructionAndQuery );
     CPPUNIT_TEST( testMatchList );
     CPPUNIT_TEST( testInitMatchList );
+    CPPUNIT_TEST( testMatchListMatching );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
     void testMatchList();
     void testInitMatchList();
+    void testMatchListMatching();
 
 };
 

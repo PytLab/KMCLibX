@@ -23,6 +23,7 @@
 
 // Forward declarations.
 class Configuration;
+class SitesMap;
 class SimulationTimer;
 class Process;
 
@@ -39,6 +40,7 @@ public:
      *                         and possible processes in the system.
      */
     LatticeModel(Configuration & configuration,
+                 const SitesMap & sitesmap,
                  SimulationTimer & simulation_timer,
                  const LatticeMap & lattice_map,
                  const Interactions & interactions);
@@ -62,6 +64,11 @@ public:
      */
     const LatticeMap & latticeMap() const { return lattice_map_; }
 
+    /*! \brief Query for the sites map.
+     *  \return : A handle to the sites map stored on the class.
+     */
+    const SitesMap & sitesMap() const { return sitesmap_; }
+
 protected:
 
 private:
@@ -73,6 +80,9 @@ private:
 
     /// A reference to the configuration given at construction.
     Configuration & configuration_;
+
+    /// A reference to the sites map given at construction.
+    const SitesMap & sitesmap_;
 
     /// A reference to the timer given at construction.
     SimulationTimer & simulation_timer_;

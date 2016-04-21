@@ -15,16 +15,19 @@
 #include "configuration.h"
 #include "simulationtimer.h"
 #include "random.h"
+#include "sitesmap.h"
 
 #include <cstdio>
 
 // -----------------------------------------------------------------------------
 //
 LatticeModel::LatticeModel(Configuration & configuration,
+                           const SitesMap & sitesmap,
                            SimulationTimer & simulation_timer,
                            const LatticeMap & lattice_map,
                            const Interactions & interactions) :
     configuration_(configuration),
+    sitesmap_(sitesmap),
     simulation_timer_(simulation_timer),
     lattice_map_(lattice_map),
     interactions_(interactions)
@@ -56,6 +59,7 @@ void LatticeModel::calculateInitialMatching()
     }
     matcher_.calculateMatching(interactions_,
                                configuration_,
+                               sitesmap_,
                                lattice_map_,
                                indices);
 }
@@ -83,6 +87,7 @@ void LatticeModel::singleStep()
 
     matcher_.calculateMatching(interactions_,
                                configuration_,
+                               sitesmap_,
                                lattice_map_,
                                indices);
 
