@@ -77,34 +77,34 @@ public:
     /*! \brief Const query for the site coordinates.
      *  \return : The coordinates of all sites on lattice.
      */
-    const std::vector<Coordinate> & coordinates() { return coordinates_; }
+    const std::vector<Coordinate> & coordinates() const { return coordinates_; }
 
     /*! \brief Const query for the site type string.
      *  \return : The site type strings of all sites on lattice.
      */
-    const std::vector<std::string> & sites() { return sites_; }
+    const std::vector<std::string> & sites() const { return sites_; }
 
     /*! \brief Const query for the site type numbers.
      *  \return : The site type numbers of all sites on lattice.
      */
-    const std::vector<int> & types() { return types_; }
+    const std::vector<int> & types() const { return types_; }
 
 private:
+
+    /// All site types on lattice presented in string.
+    const std::vector<std::string> sites_;
+
+    /// Mapping from type string to type int.
+    const std::map<std::string, int> possible_types_;
+
+    /// Site match lists.
+    std::vector<SiteMatchList> match_lists_;
 
     /// The site coordinates on lattice.
     std::vector<Coordinate> coordinates_;
 
     /// All site types on lattice presented in int.
     std::vector<int> types_;
-
-    /// All site types on lattice presented in string.
-    std::vector<std::string> sites_;
-
-    /// Mapping from type string to type int.
-    std::map<std::string, int> possible_types_;
-
-    /// Site match lists.
-    std::vector<SiteMatchList> match_lists_;
 
 };
 
