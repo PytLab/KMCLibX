@@ -21,13 +21,11 @@ def stringListToStdVectorString(string_list):
 
     :returns: A corresponding std::vector<std::string> object.
     """
-    # Get the size.
-    size = len(string_list)
     # Setup the c++ object.
     cpp_list = Backend.StdVectorString()
     # Copy values over.
     for s in string_list:
-        cpp_list.push_back(s);
+        cpp_list.push_back(s)
     # Done.
     return cpp_list
 

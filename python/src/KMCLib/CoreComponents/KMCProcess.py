@@ -16,7 +16,6 @@ from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfFloats
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
-from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.Exceptions.Error import Error
@@ -79,14 +78,14 @@ class KMCProcess(object):
 
         # Check the types.
         elements_before = checkTypes(elements_before, len(coordinates))
-        elements_after  = checkTypes(elements_after,  len(coordinates))
+        elements_after = checkTypes(elements_after,  len(coordinates))
 
         # Check that the elements represents a valid move.
         self.__checkValidMoveElements(elements_before, elements_after)
 
         # All types checking done.
         self.__elements_before = elements_before
-        self.__elements_after  = elements_after
+        self.__elements_after = elements_after
 
         # Check that the move vectors are compatible with the elements.
         self.__move_vectors = self.__checkValidMoveVectors(move_vectors)
@@ -95,8 +94,9 @@ class KMCProcess(object):
         self.__sortCoordinatesElementsAndMoveVectors()
 
         # Check the list of basis sites.
-        basis_sites = checkSequenceOfPositiveIntegers(basis_sites,
-                                                      msg="The basis_sites must be given as a list of positive integers.")
+        basis_sites = checkSequenceOfPositiveIntegers(
+            basis_sites,
+            msg="The basis_sites must be given as a list of positive integers.")
 
         if len(basis_sites) == 0:
             msg = "The list of available basis sites for a process may not be empty."
@@ -121,8 +121,8 @@ class KMCProcess(object):
         :param elements_after: The list of elements after the move.
         """
         # Check that the wildcards, if any, are not moved.
-        before = [ e == "*" for e in elements_before ]
-        after  = [ e == "*" for e in elements_after ]
+        before = [e == "*" for e in elements_before]
+        after = [e == "*" for e in elements_after]
 
         if len(before) != len(after) or before != after:
             raise Error("Wildcards must not move during a valid process.")
@@ -155,13 +155,13 @@ class KMCProcess(object):
         moved_elements = [] + self.__elements_before
         for (move_index, move_vector) in move_vectors:
             old_coord = self.__coordinates[move_index]
-            new_coord = numpy.array(old_coord) + numpy.array(move_vector)   #    <- Elementwise addition.
+            new_coord = numpy.array(old_coord) + numpy.array(move_vector)  # <- Elementwise addition.
 
             # Find which index this corresponds to.
             subtracted = self.__coordinates - new_coord
-            reduced    = numpy.abs(sum(abs(subtracted.transpose())))
-            boolean    = [ rr < 1.0e-8 for rr in reduced ]
-            new_index  = numpy.where(boolean)
+            reduced = numpy.abs(sum(abs(subtracted.transpose())))
+            boolean = [rr < 1.0e-8 for rr in reduced]
+            new_index = numpy.where(boolean)
             if len(new_index[0]) == 0:
                 raise Error("Each move_vector must move an atom to a valid lattice site.")
             new_index = new_index[0][0]
@@ -169,7 +169,8 @@ class KMCProcess(object):
             # Check that the the element at this position in the new elements
             # vector corresponds to the move.
             if self.__elements_before[move_index] != self.__elements_after[new_index]:
-                raise Error("The move vector for index %i does not match the elements after move." % (move_index))
+                raise Error("The move vector for index %i " +
+                            "does not match the elements after move." % (move_index))
 
             # Perform the move.
             moved_elements[new_index] = self.__elements_before[move_index]
@@ -177,7 +178,8 @@ class KMCProcess(object):
         # With all moves performed on the elements we check if we properly reconstructed
         # the elements after the move.
         if (self.__elements_after != moved_elements):
-            raise Error("Applying the move vectors to the elements_before does not generate the elements_after list.")
+            raise Error("Applying the move vectors to the elements_before " +
+                        "does not generate the elements_after list.")
 
         return move_vectors
 
@@ -200,10 +202,10 @@ class KMCProcess(object):
             return move_vectors
 
         # This is the error message.
-        msg = """The 'move_vectors' input to the KMCProcess constructor must be a
-list of tuples, where the first element of each tuple refers to an atom index
-and the second element is a cartesian vector of length 3, in internal
-coordinates defining where the moved index goes."""
+        msg = ("The 'move_vectors' input to the KMCProcess constructor must " +
+               "be a list of tuples, where the first element of each tuple " +
+               "refers to an atom index and the second element is a cartesian vector of length 3, " +
+               "in internal coordinates defining where the moved index goes.")
 
         # Check that we have a sequence.
         move_vectors = checkSequence(move_vectors, msg)
@@ -249,7 +251,7 @@ coordinates defining where the moved index goes."""
         index_1 = pairs[1][2]
 
         start = numpy.array(self.__coordinates[index_0])
-        end   = numpy.array(self.__coordinates[index_1])
+        end = numpy.array(self.__coordinates[index_1])
 
         vector_0 = numpy.array(end-start)
         vector_1 = numpy.array(start-end)
@@ -281,7 +283,7 @@ coordinates defining where the moved index goes."""
             # Fixt the move vector indexing.
             move_vector_index = []
             for v in self.__move_vectors:
-                move_vector_index.append( old_to_new_index[v[0]] )
+                move_vector_index.append(old_to_new_index[v[0]])
 
             # Setup and sort the backmapping.
             help_index = range(len(move_vector_index))
@@ -291,7 +293,7 @@ coordinates defining where the moved index goes."""
             # Construct the new move vectors.
             new_move_vectors = []
             for idx in sorted_indices:
-                new_move_vectors.append( (idx[1], self.__move_vectors[idx[0]][1]) )
+                new_move_vectors.append((idx[1], self.__move_vectors[idx[0]][1]))
 
             # Set the move vectors.
             self.__move_vectors = new_move_vectors
@@ -308,7 +310,7 @@ coordinates defining where the moved index goes."""
             return False
 
         # Check the basis sites.
-        elif not all([s1 == s2 for s1,s2 in zip(other.basisSites(), self.basisSites())]):
+        elif not all([s1 == s2 for s1, s2 in zip(other.basisSites(), self.basisSites())]):
             return False
 
         # Check the number of atoms in the local configurations.
@@ -328,11 +330,11 @@ coordinates defining where the moved index goes."""
         # Check the coordinates and types.
         if numpy.linalg.norm(coords_self - coords_other) > 0.00001:
             return False
-        elif not all([s1 == s2 for s1,s2 in zip(types_before_self,
-                                                types_before_other)]):
+        elif not all([s1 == s2 for s1, s2 in zip(types_before_self,
+                                                 types_before_other)]):
             return False
-        elif not all([s1 == s2 for s1,s2 in zip(types_after_self,
-                                                types_after_other)]):
+        elif not all([s1 == s2 for s1, s2 in zip(types_after_self,
+                                                 types_after_other)]):
             return False
 
         # Check the move vectors.
@@ -340,7 +342,7 @@ coordinates defining where the moved index goes."""
             return False
 
             # For each move vector, loop through the others and find the one that matches.
-        for v1,v2 in zip(self.__move_vectors,other._KMCProcess__move_vectors):
+        for v1, v2 in zip(self.__move_vectors, other._KMCProcess__move_vectors):
             if v1[0] != v2[0]:
                 return False
             elif numpy.linalg.norm(numpy.array(v1[1])-numpy.array(v2[1])) > 1.0e-8:
@@ -423,12 +425,12 @@ coordinates defining where the moved index goes."""
         # For the first coordinate, if there are more than one coordinate.
         if len(self.__coordinates) > 1:
             c = self.__coordinates[0]
-            coords_string += coord_template%(c[0],c[1],c[2])
+            coords_string += coord_template % (c[0], c[1], c[2])
 
             # And the middle coordinates.
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "],\n"
             for c in self.__coordinates[1:-1]:
-                coords_string += coord_template%(c[0],c[1],c[2])
+                coords_string += coord_template % (c[0], c[1], c[2])
 
         # Add the last coordinate (which is also the first if there is only one coordinate).
         c = self.__coordinates[-1]
@@ -436,14 +438,14 @@ coordinates defining where the moved index goes."""
             coord_template = "[" + ff + "," + ff + "," + ff + "]]\n"
         else:
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "]]\n"
-        coords_string += coord_template%(c[0],c[1],c[2])
+        coords_string += coord_template % (c[0], c[1], c[2])
 
         # Setup the elements before string.
         elements_before_string = "elements_before = "
         indent = " "*19
         line = "["
         nT = len(self.__elements_before)
-        for i,t in enumerate(self.__elements_before):
+        for i, t in enumerate(self.__elements_before):
             # Add the type.
             line += "'" + t + "'"
             if i == nT-1:
@@ -465,7 +467,7 @@ coordinates defining where the moved index goes."""
         indent = " "*19
         line = "["
         nT = len(self.__elements_after)
-        for i,t in enumerate(self.__elements_after):
+        for i, t in enumerate(self.__elements_after):
             # Add the type.
             line += "'" + t + "'"
             if i == nT-1:
@@ -491,7 +493,7 @@ coordinates defining where the moved index goes."""
             vector_template = "[" + ff + "," + ff + "," + ff + "]"
             for i, (index, vector) in enumerate(self.__move_vectors):
 
-                move_vectors_string += "( %2i,"%(index) + vector_template%(vector[0], vector[1], vector[2])
+                move_vectors_string += "( %2i," % (index) + vector_template % (vector[0], vector[1], vector[2])
 
                 if i < len(self.__move_vectors)-1:
                     move_vectors_string += "),\n" + indent
@@ -500,15 +502,15 @@ coordinates defining where the moved index goes."""
 
         # Setup the basis sites list.
         basis_sites_string = "basis_sites     = ["
-        for j,b in enumerate(self.__basis_sites):
+        for j, b in enumerate(self.__basis_sites):
             if j == (len(self.__basis_sites)-1):
-                basis_sites_string += "%i]"%(b)
+                basis_sites_string += "%i]" % (b)
             else:
-                basis_sites_string += "%i,"%(b)
+                basis_sites_string += "%i," % (b)
 
         # Setup the rate constant string.
         rate_constant_string = "rate_constant   = " + ff
-        rate_constant_string = rate_constant_string%(self.__rate_constant)
+        rate_constant_string = rate_constant_string % (self.__rate_constant)
 
         # Get the script together.
         process_string = variable_name + " = KMCProcess(\n" + \
@@ -519,10 +521,10 @@ coordinates defining where the moved index goes."""
             "    basis_sites=basis_sites,\n" + \
             "    rate_constant=rate_constant)\n"
 
-        return coords_string + "\n" + \
-            elements_before_string + \
-            elements_after_string  + \
-            move_vectors_string    + \
-            basis_sites_string     + "\n" + \
-            rate_constant_string   + "\n\n" + \
-            process_string + "\n"
+        return (coords_string + "\n" +
+                elements_before_string +
+                elements_after_string +
+                move_vectors_string +
+                basis_sites_string + "\n" +
+                rate_constant_string + "\n\n" +
+                process_string + "\n")

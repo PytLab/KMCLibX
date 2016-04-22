@@ -38,7 +38,8 @@ class KMCLattice(object):
         """
         # Check and store the unit cell.
         if not isinstance(unit_cell, KMCUnitCell):
-            raise Error("The 'unit_cell parameter to the KMCLattice constructor must be of type KMCUnitCell.")
+            raise Error("The 'unit_cell' parameter to the KMCLattice " +
+                        "constructor must be of type KMCUnitCell.")
         self.__unit_cell = unit_cell
 
         # Passed the tests, store.
@@ -60,10 +61,12 @@ class KMCLattice(object):
         """
         # Handle the default case.
         if repetitions is None:
-            repetitions = (1,1,1)
+            repetitions = (1, 1, 1)
 
         # Check that it is a sequence.
-        repetitions = checkSequence(repetitions, "The 'repetitions' input parametr is not given as a sequence of numbers.")
+        repetitions = checkSequence(repetitions,
+                                    "The 'repetitions' input parametr is not " +
+                                    "given as a sequence of numbers.")
 
         # Check its length.
         if len(repetitions) != 3:
@@ -72,12 +75,14 @@ class KMCLattice(object):
         # Check the values.
         for val in repetitions:
             if not isinstance(val, int):
-                raise Error("The 'repetitions' input paramter must be given as a list or tuple of three integers, e.g. (5,5,6)")
+                raise Error("The 'repetitions' input paramter must be given as " +
+                            "a list or tuple of three integers, e.g. (5,5,6)")
 
         # Check for the occurance of too small values.
         for val in repetitions:
             if val < 1:
-                raise Error("The all elements in the 'repetitions' parameter must be larger than zero.")
+                raise Error("The all elements in the 'repetitions' parameter " +
+                            "must be larger than zero.")
 
         # Done.
         return repetitions
@@ -89,10 +94,12 @@ class KMCLattice(object):
         """
         # Handle the default case.
         if periodic is None:
-            periodic = (True,True,True)
+            periodic = (True, True, True)
 
         # Check that it is a sequence.
-        periodic = checkSequence(periodic, "The 'periodic' input parametr is not given as a sequence of bools.")
+        periodic = checkSequence(periodic,
+                                 "The 'periodic' input parametr is not " +
+                                 "given as a sequence of bools.")
 
         # Check its length.
         if len(periodic) != 3:
@@ -101,7 +108,9 @@ class KMCLattice(object):
         # Check the values.
         for val in periodic:
             if not isinstance(val, bool):
-                raise Error("The 'periodic' input paramter must be given as a list or tuple of three bools, e.g. (True,True,False).")
+                raise Error("The 'periodic' input paramter must be given as " +
+                            "a list or tuple of three bools, " +
+                            "e.g. (True,True,False).")
 
         # Done.
         return periodic
@@ -109,8 +118,8 @@ class KMCLattice(object):
     def __generateLatticeSites(self):
         """ """
         """
-        Private helper function to generate the sites data based on the basis and repetitions
-        stored on the class.
+        Private helper function to generate the sites data
+        based on the basis and repetitions stored on the class.
         """
         # Get the basis out of the unit cell.
         basis = self.__unit_cell.basis()
@@ -187,7 +196,7 @@ class KMCLattice(object):
 
         :returns: The global index.
         """
-        nI = self.__repetitions[0]
+        # nI = self.__repetitions[0]
         nJ = self.__repetitions[1]
         nK = self.__repetitions[2]
         nB = len(self.__unit_cell.basis())
@@ -226,11 +235,11 @@ class KMCLattice(object):
         nK = self.__repetitions[2]
 
         # Generate the lattice string.
-        lattice_string = variable_name + """ = KMCLattice(
-    unit_cell=unit_cell,
-    repetitions=(%i,%i,%i),
-    periodic=%s)
-"""%(nI, nJ, nK, str(self.__periodic))
+        lattice_string = (variable_name +
+                          " = KMCLattice(\n" +
+                          "    unit_cell=unit_cell,\n" +
+                          "    repetitions=(%i,%i,%i),\n" +
+                          "    periodic=%s)\n" % (nI, nJ, nK, str(self.__periodic)))
 
         # Add the comment.
         comment_string = """

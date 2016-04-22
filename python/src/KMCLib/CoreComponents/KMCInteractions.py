@@ -41,13 +41,16 @@ class KMCInteractions(object):
         :type implicit_wildcards:  bool
         """
         # Check the processes input.
-        self.__processes = checkSequenceOf(processes, KMCProcess, msg="The 'processes' input must be a list of KMCProcess instances.")
+        self.__processes = checkSequenceOf(processes, KMCProcess,
+                                           msg="The 'processes' input must be " +
+                                               "a list of KMCProcess instances.")
 
         # Check the implicit wildcard flag.
         if implicit_wildcards is None:
             implicit_wildcards = True
         if not isinstance(implicit_wildcards, bool):
-            raise Error("The 'implicit_wildcard' flag to the KMCInteractions constructor must be given as either True or False")
+            raise Error("The 'implicit_wildcard' flag to the KMCInteractions constructor" +
+                        " must be given as either True or False")
         self.__implicit_wildcards = implicit_wildcards
 
         # Set the backend to be generated at first query.
@@ -79,26 +82,25 @@ class KMCInteractions(object):
 
             # Check if this is a class.
             if not inspect.isclass(rate_calculator):
-                msg = """
-The 'rate_calculator' input to the KMCInteractions constructor must
-be a class (not instantiated) inheriting from the KMCRateCalculatorPlugin. """
+                msg = ("\nThe 'rate_calculator' input to the KMCInteractions constructor " +
+                       "must be a class (not instantiated) inheriting " +
+                       "from the KMCRateCalculatorPlugin.")
                 raise Error(msg)
 
             # Save the class name for use in scripting.
-            self.__rate_calculator_str = str(rate_calculator).replace("'>","").split('.')[-1]
+            self.__rate_calculator_str = str(rate_calculator).replace("'>", "").split('.')[-1]
             # Instantiate.
             rate_calculator = rate_calculator()
             if not isinstance(rate_calculator, KMCRateCalculatorPlugin):
-                msg = """
-The 'rate_calculator' input to the KMCInteractions constructor must
-be a class inheriting from the KMCRateCalculatorPlugin. """
+                msg = ("\nThe 'rate_calculator' input to the KMCInteractions constructor " +
+                       "must be a class inheriting from the KMCRateCalculatorPlugin.")
                 raise Error(msg)
             elif rate_calculator.__class__ == KMCRateCalculatorPlugin().__class__:
-                msg = """
-The 'rate_calculator' input to the KMCInteractions constructor must
-be inheriting from the KMCRateCalculatorPlugin class. It may not be
-the KMCRateCalculatorPlugin class itself. """
+                msg = ("\nThe 'rate_calculator' input to the KMCInteractions constructor " +
+                       "must be inheriting from the KMCRateCalculatorPlugin class. " +
+                       "It may not be the KMCRateCalculatorPlugin class itself.")
                 raise Error(msg)
+
         # All tests passed. Save the instantiated rate calculator on the class.
         self.__rate_calculator = rate_calculator
 
@@ -128,7 +130,8 @@ the KMCRateCalculatorPlugin class itself. """
             for process_number, process in enumerate(self.__processes):
                 all_elements = list(set(process.elementsBefore() + process.elementsAfter()))
                 if (not all([(e in possible_types) for e in all_elements])):
-                    raise Error("Process %i contains elements not present in the list of possible types of the configuration." % (process_number))
+                    raise Error("Process %i contains elements not present in the list of " +
+                                "possible types of the configuration." % (process_number))
 
             # Setup the correct type of backend process objects
             # depending on the presence of a rate calculator.
@@ -142,8 +145,8 @@ the KMCRateCalculatorPlugin class itself. """
             for process_number, process in enumerate(self.__processes):
 
                 # Get the corresponding C++ objects.
-                cpp_config1   = process.localConfigurations()[0]._backend(possible_types)
-                cpp_config2   = process.localConfigurations()[1]._backend(possible_types)
+                cpp_config1 = process.localConfigurations()[0]._backend(possible_types)
+                cpp_config2 = process.localConfigurations()[1]._backend(possible_types)
                 rate_constant = process.rateConstant()
 
                 basis_list = range(n_basis)

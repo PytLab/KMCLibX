@@ -25,7 +25,7 @@ def centerCoordinates(coordinates, index):
     # Extract the centeral coordinate.
     center = coordinates[index]
     # Subtract.
-    coordinates = numpy.array([ coord - center for coord in coordinates ])
+    coordinates = numpy.array([coord - center for coord in coordinates])
 
     # Done.
     return coordinates

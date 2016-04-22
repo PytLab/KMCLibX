@@ -8,8 +8,6 @@
 #
 
 
-import numpy
-
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkTypes
@@ -53,7 +51,8 @@ class KMCLocalConfiguration(object):
         # Check the bounds of the center coordinate.
         center = checkIndexWithinBounds(center,
                                         coordinates,
-                                        msg="The 'center' index paramter must be one in the coordinate list.")
+                                        msg=("The 'center' index paramter must be " +
+                                             "one in the coordinate list."))
 
         # Center the coordinates.
         self.__coordinates = centerCoordinates(coordinates, center)

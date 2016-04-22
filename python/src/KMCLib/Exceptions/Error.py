@@ -31,4 +31,3 @@ class Error(Exception):
         :returns: The error message string.
         """
         return self.__msg
-
