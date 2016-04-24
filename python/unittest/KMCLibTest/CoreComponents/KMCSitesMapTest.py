@@ -1,4 +1,4 @@
-"""" Module for testing KMCConfiguration """
+"""" Module for testing KMCSitesMap """
 
 # Copyright (c)  2016-2019  Shao Zhengjiang
 #
@@ -239,6 +239,148 @@ class KMCSitesMapTest(unittest.TestCase):
                           lattice=lattice,
                           types=types,
                           possible_types=['g','a','h','*'])
+        # }}}
+
+    def testConstructionFailLongFormat(self):
+        """ Test everything that can go wrong when constructing with the long fomat. """
+
+        # {{{
+        # Setup a valid KMCUnitCell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.5, 0.5, 0.5],
+                                              [0.25, 0.25, 0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4, 3, 2),
+                             periodic=(True, True, False))
+
+        types = [(0, 0, 0, 0, 'g'), (3, 2, 1, 2, 'h')]
+        default_type = 'a'
+
+        # Setup the configuration.
+        config = KMCSitesMap(lattice=lattice,
+                             types=types,
+                             default_type=default_type)
+
+
+        # This fails because the lattice is of wrong type.
+        self.assertRaises(Error, KMCSitesMap, 
+                          lattice=unit_cell,
+                          types=types,
+                          default_type=default_type)
+
+        # This fails because no default type is given.
+        self.assertRaises(Error, KMCSitesMap, lattice=lattice, types=types)
+
+        # This fails because no default type is not a string.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types,
+                          default_type=['a'])
+
+        # This fails because the possible types are not set correctly.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice, types=types,
+                          default_type=default_type,
+                          possible_types="agh")
+
+        # This fails because there are types missing in the possible types.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice, types=types,
+                          default_type=default_type,
+                          possible_types=['a','h'])
+
+        # This fails because there is a wildcard character in the possible types list.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice, types=types,
+                          default_type=default_type,
+                          possible_types=['g','a','*','h'])
+
+        types_1 = [123, 345]
+        # This fails because of wrong type in the types list.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice, types=types_1,
+                          default_type=default_type)
+
+        types_1 = [(0, 0, 0, 0, 'a'), (0, 0, 0, 'a')]
+        # This fails because of wrong type in the types list.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
+
+        types_1 = [(0, 0, 0, 0, 'a'), (0, 0, 0, 1, 'b', 3)]
+        # This fails because of wrong type in the types list.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
+
+        types_1 = [[0, 0, 0, 0, 'a'], [0, 0, 0, 1, 'b']]
+        # This fails because of wrong type in the types list.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
+
+        types_1 = [(0, 0, 0, 0, 'a'), (-1, 0, 0, 0, 'b')]
+        # This fails because of a negative first index.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
+
+        types_1 = [(100, 0, 0, 0, 'a'), (0, 0, 0, 0, 'b')]
+        # This fails because of a too large firs index.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
+
+        types_1 = [(0, 0, 0, 0, 'a'), (0, -1, 0, 0, 'b')]
+        # This fails because of a negative second index.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
+
+        types_1 = [(0, 100, 0, 0, 'a'), (0, 0, 0, 1, 'b')]
+        # This fails because of a too large second index.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type) 
+        types_1 = [(0, 0, 0, 0, 'a'), (0, 0, -1, 0, 'b')]
+        # This fails because of a negative third index.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
+
+        types_1 = [(0, 0, 100, 0, 'a'), (0, 0, 0, 0, 'b')]
+        # This fails because of a too large third index.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
+
+        types_1 = [(0, 0, 0, 0, 'a'), (0, 0, 0, -1, 'b')]
+        # This fails because of a negative fourth index.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
+
+        types_1 = [(0, 0, 0, 100, 'a'), (0, 0, 0, 1, 'b')]
+        # This fails because of a too large fourth index.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types_1,
+                          default_type=default_type)
         # }}}
 
 if __name__ == '__main__':
