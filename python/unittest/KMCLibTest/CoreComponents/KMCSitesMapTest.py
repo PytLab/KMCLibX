@@ -161,5 +161,85 @@ class KMCSitesMapTest(unittest.TestCase):
 
         # }}}
 
+    def testConstructionFailShort(self):
+        """ Test every thing that should fail when using the short format. """
+
+        # {{{
+        # Setup a valid KMCUnitCell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.5, 0.5, 0.5],
+                                              [0.25, 0.25, 0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4, 3, 2),
+                             periodic=(True, True, False)) 
+
+        types = ['g', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'h']
+
+        default_type = 'a'
+
+
+        # This fails because the lattice is of wrong type.
+        self.assertRaises(Error, KMCSitesMap, lattice=unit_cell, types=types)
+
+
+        # This fails because there is a default type given.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types,
+                          default_type=default_type)
+
+        # This fails becaulse of wrong length of the types.
+        types_1 = ['g', 'a', 'a']
+        self.assertRaises(Error, KMCSitesMap, lattice=lattice, types=types_1)
+
+        types_1 = ['g', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                   'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                   'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                   'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                   'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                   'a', 'a', 'a', 'a', 'a', 3, 'a', 'a',
+                   'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                   'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                   'a', 'a', 'a', 'a', 'a', 'a', 'a', 1]
+
+        # This fails because of the wrong type of the types information.
+        self.assertRaises(Error, KMCSitesMap, lattice=lattice, types=types_1)
+
+        types_1 = "ABCDE"
+        # And this also.
+        self.assertRaises(Error, KMCSitesMap, lattice=lattice, types=types_1)
+
+        # Use an incompatible possible types list.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types,
+                          possible_types=['a'])
+
+        # Use an incompatible possible types list.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types,
+                          possible_types="ABCD")
+
+        # Use a possible types list with a wildcard.
+        self.assertRaises(Error, KMCSitesMap,
+                          lattice=lattice,
+                          types=types,
+                          possible_types=['g','a','h','*'])
+        # }}}
+
 if __name__ == '__main__':
     unittest.main()
