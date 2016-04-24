@@ -23,7 +23,7 @@ class KMCSitesMap(KMCConfiguration):
                  lattice=None,
                  types=None,
                  possible_types=None,
-                 default_types=None):
+                 default_type=None):
         """
         Constructor for the KMCSitesMap - the sitesmap object to use
         in the KMC simulations.
@@ -49,7 +49,7 @@ class KMCSitesMap(KMCConfiguration):
                              The default type will then be used for lattice sites
                              not specified in the types list.
         """
-        super(self.__class__, self).__init__(lattice, types, possible_types, default_types)
+        super(self.__class__, self).__init__(lattice, types, possible_types, default_type)
 
     def __checkAndSetTypes(self, types, default_type, possible_types):
         """

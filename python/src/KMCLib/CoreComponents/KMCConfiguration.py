@@ -91,7 +91,8 @@ class KMCConfiguration(object):
                         "the long types format\nwhen constructing a " +
                         "KMCConfiguration object.")
 
-        # If we use the long format, check that each entry is of the form (int,int,int,int,string)
+        # If we use the long format, check that each entry is of the form
+        # (int,int,int,int,string)
         if use_long_format:
 
             # We must have a default type for the long format.
