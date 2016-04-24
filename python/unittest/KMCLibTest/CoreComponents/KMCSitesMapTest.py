@@ -73,6 +73,11 @@ class KMCSitesMapTest(unittest.TestCase):
         self.assertAlmostEqual(numpy.linalg.norm(numpy.array(sitesmap.sites()) -
                                numpy.array(lattice.sites())), 0.0, 10)
 
+        # Check the empty oveloaded functions.
+        self.assertIs(sitesmap.atomIDTypes(), None)
+        self.assertIs(sitesmap.atomIDCoordinates(), None)
+        self.assertIs(sitesmap.movedAtomIDs(), None)
+
         # Construct without possible types and check that the list is set correctly
         # from the given types.
         sitesmap = KMCSitesMap(lattice=lattice,
