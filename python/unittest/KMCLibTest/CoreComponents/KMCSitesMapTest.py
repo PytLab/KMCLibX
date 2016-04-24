@@ -26,6 +26,7 @@ class KMCSitesMapTest(unittest.TestCase):
     def testConstructionShortFormat(self):
         """ Test that the KMCSitesMap class can be constructed. """
 
+        # {{{
         # Setup a valid KMCUnitCell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
                                                           [0.0, 3.2, 0.0],
@@ -54,16 +55,16 @@ class KMCSitesMapTest(unittest.TestCase):
                                possible_types=['a', 'c', 'b'])
 
         # Check that the types are what we expect.
-        self.assertEqual(types, sitesmap._KMCConfiguration__types)
+        self.assertListEqual(types, sitesmap._KMCConfiguration__types)
         # Check query function.
-        self.assertEqual(types, sitesmap.types())
+        self.assertListEqual(types, sitesmap.types())
 
         # Check that the possible types are what we expect.
-        self.assertEqual(set(['a', 'c', 'b', '*']),
-                         set(sitesmap._KMCConfiguration__possible_types.keys()))
+        self.assertSetEqual(set(['a', 'c', 'b', '*']),
+                            set(sitesmap._KMCConfiguration__possible_types.keys()))
         # Check query function.
-        self.assertEqual(set(['a', 'c', 'b', '*']),
-                         set(sitesmap.possibleTypes().keys()))
+        self.assertSetEqual(set(['a', 'c', 'b', '*']),
+                            set(sitesmap.possibleTypes().keys()))
 
         # Check that the number of lattice sites corresponds to the lattice.
         self.assertEqual(sitesmap._KMCConfiguration__n_lattice_sites,
@@ -82,12 +83,13 @@ class KMCSitesMapTest(unittest.TestCase):
         # from the given types.
         sitesmap = KMCSitesMap(lattice=lattice,
                                types=types)
-        self.assertEqual(set(['a', 'b', '*']),
-                         set(sitesmap._KMCConfiguration__possible_types.keys()))
+        self.assertSetEqual(set(['a', 'b', '*']),
+                            set(sitesmap._KMCConfiguration__possible_types.keys()))
+        # }}}
 
     def testConstructionLongFormat(self):
         """ Test that the KMCSitesMap class can be constructed with the long types format. """
-
+        # {{{
         # Setup a valid KMCUnitCell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
                                                           [0.0, 3.2, 0.0],
@@ -120,16 +122,16 @@ class KMCSitesMapTest(unittest.TestCase):
                      'a', 'a', 'a', 'a', 'a', 'a', 'a', 'h']
 
         # Check that they are what we inserted.
-        self.assertEqual(ref_types, sitesmap._KMCConfiguration__types)
+        self.assertListEqual(ref_types, sitesmap._KMCConfiguration__types)
         # Check query function.
-        self.assertEqual(ref_types, sitesmap.types())
+        self.assertListEqual(ref_types, sitesmap.types())
 
         # Check that the possible types are what we expect.
-        self.assertEqual(set(['a','g','h','*']),
-                         set(sitesmap._KMCConfiguration__possible_types))
+        self.assertSetEqual(set(['a','g','h','*']),
+                            set(sitesmap._KMCConfiguration__possible_types))
         # Check query function.
-        self.assertEqual(set(['a','g','h','*']),
-                         set(sitesmap.possibleTypes()))
+        self.assertSetEqual(set(['a','g','h','*']),
+                            set(sitesmap.possibleTypes()))
 
         # Check that the number of lattice sites corresponds
         # to the lattice.
@@ -138,6 +140,12 @@ class KMCSitesMapTest(unittest.TestCase):
         # Check query function.
         self.assertEqual(len(sitesmap.sites()), len(lattice.sites()))
 
+        # Check the empty oveloaded functions.
+        self.assertIs(sitesmap.atomIDTypes(), None)
+        self.assertIs(sitesmap.atomIDCoordinates(), None)
+        self.assertIs(sitesmap.movedAtomIDs(), None)
+
+
         # Construct again, now with a list of possible types.
         sitesmap = KMCSitesMap(lattice=lattice,
                                types=types,
@@ -145,11 +153,13 @@ class KMCSitesMapTest(unittest.TestCase):
                                possible_types=['aa', 'a', 'h', 'g'])
 
         # Check that the possible types are what we expect.
-        self.assertEqual(set(['aa', 'a', 'g', 'h', '*']),
-                         set(sitesmap._KMCConfiguration__possible_types))
+        self.assertSetEqual(set(['aa', 'a', 'g', 'h', '*']),
+                            set(sitesmap._KMCConfiguration__possible_types))
         # Check query function.
-        self.assertEqual(set(['aa', 'a', 'g', 'h', '*']),
-                         set(sitesmap.possibleTypes()))
+        self.assertSetEqual(set(['aa', 'a', 'g', 'h', '*']),
+                            set(sitesmap.possibleTypes()))
+
+        # }}}
 
 if __name__ == '__main__':
     unittest.main()
