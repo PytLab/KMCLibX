@@ -64,10 +64,11 @@ class KMCSitesMap(KMCConfiguration):
         :returns: The stored types list.
         """
         # Update the types with what ever has been changed in the backend.
-        self.__types = list(self._backend().sites())
+        mangled_name = self.__mangled_name("__types")
+        setattr(self, mangled_name, list(self._backend().sites()))
 
         # Return the types.
-        return self.__types
+        return getattr(self, mangled_name)
 
     def atomIDTypes(self):
         """
