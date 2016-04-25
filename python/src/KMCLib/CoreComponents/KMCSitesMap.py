@@ -49,13 +49,16 @@ class KMCSitesMap(KMCConfiguration):
                              The default type will then be used for lattice sites
                              not specified in the types list.
         """
-        super(self.__class__, self).__init__(lattice, types, possible_types, default_type)
+        super(self.__class__, self).__init__(lattice, types,
+                                             possible_types,
+                                             default_type)
 
     def __checkAndSetTypes(self, types, default_type, possible_types):
         """
         Private helper function to check and set the site types input.
         """
-        super(self.__class__, self).__checkAndSetTypes(types, default_type, possible_types)
+        super(self.__class__, self).__checkAndSetTypes(types, default_type,
+                                                       possible_types)
 
     def types(self):
         """
@@ -100,7 +103,8 @@ class KMCSitesMap(KMCConfiguration):
             cpp_types = stringListToStdVectorString(getattr(self, mangled_name))
 
             mangled_name = self.__mangled_name("__lattice")
-            cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(getattr(self, mangled_name).sites())
+            cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(
+                getattr(self, mangled_name).sites())
 
             mangled_name = self.__mangled_name("__possible_types")
             cpp_possible_types = Backend.StdMapStringInt(getattr(self, mangled_name))
@@ -199,3 +203,5 @@ class KMCSitesMap(KMCConfiguration):
         return (lattice_script + comment_string + types_string + "\n" +
                 possible_types_string + "\n" + sitesmap_string)
 
+    def _atkScript(self, types_map):
+        pass
