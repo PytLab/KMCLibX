@@ -240,7 +240,7 @@ class KMCLattice(object):
                           " = KMCLattice(\n" +
                           "    unit_cell=unit_cell,\n" +
                           "    repetitions=(%i,%i,%i),\n" +
-                          "    periodic=%s)\n" % (nI, nJ, nK, str(self.__periodic)))
+                          "    periodic=%s)\n") % (nI, nJ, nK, str(self.__periodic))
 
         # Add the comment.
         comment_string = """
