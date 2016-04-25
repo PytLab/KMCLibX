@@ -49,7 +49,7 @@ class KMCSitesMapTest(unittest.TestCase):
                  'a', 'a', 'a', 'a', 'b', 'b',
                  'b', 'b', 'a', 'b', 'b', 'a']
 
-        # Setup the configuration.
+        # Setup the sitesmap.
         sitesmap = KMCSitesMap(lattice=lattice,
                                types=types,
                                possible_types=['a', 'c', 'b'])
@@ -70,7 +70,7 @@ class KMCSitesMapTest(unittest.TestCase):
         self.assertEqual(sitesmap._KMCConfiguration__n_lattice_sites,
                          len(lattice.sites()))
 
-        # Check that the lattice site can be returned from the configuration.
+        # Check that the lattice site can be returned from the sitesmap.
         self.assertAlmostEqual(numpy.linalg.norm(numpy.array(sitesmap.sites()) -
                                numpy.array(lattice.sites())), 0.0, 10)
 
@@ -106,7 +106,7 @@ class KMCSitesMapTest(unittest.TestCase):
         types = [(0, 0, 0, 0, 'g'), (3, 2, 1, 2, 'h')]
         default_type = 'a'
 
-        # Setup the configuration.
+        # Setup the sitesmap.
         sitesmap = KMCSitesMap(lattice=lattice,
                                types=types,
                                default_type=default_type)
@@ -261,8 +261,8 @@ class KMCSitesMapTest(unittest.TestCase):
         types = [(0, 0, 0, 0, 'g'), (3, 2, 1, 2, 'h')]
         default_type = 'a'
 
-        # Setup the configuration.
-        config = KMCSitesMap(lattice=lattice,
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
                              types=types,
                              default_type=default_type)
 
@@ -408,7 +408,7 @@ class KMCSitesMapTest(unittest.TestCase):
                  'a', 'a', 'a', 'a', 'b', 'b',
                  'b', 'b', 'a', 'b', 'b', 'a']
 
-        # Setup the configuration.
+        # Setup the sitesmap.
         sitesmap = KMCSitesMap(lattice=lattice,
                                types=types,
                                possible_types=['a', 'c', 'b'])
@@ -422,6 +422,8 @@ class KMCSitesMapTest(unittest.TestCase):
 
         # Check that these two are references to the same underlying object.
         self.assertTrue(cpp_lattice_map == cpp_lattice_map_ref)
+
+        # }}}
 
     def testBackend(self):
         """ Make sure the C++ backend is what we expect. """
@@ -448,12 +450,12 @@ class KMCSitesMapTest(unittest.TestCase):
                  'a','a','a','a','b','b',
                  'b','b','a','b','b','a']
 
-        # Setup the configuration.
+        # Setup the sitesmap.
         sitesmap = KMCSitesMap(lattice=lattice,
                                types=types,
                                possible_types=['a','c','b'])
 
-        # Make sure that the backend stored on the config is None.
+        # Make sure that the backend stored on the sitesmap is None.
         self.assertTrue(sitesmap._KMCConfiguration__backend is None)
 
         # Query for the backend.
@@ -464,6 +466,143 @@ class KMCSitesMapTest(unittest.TestCase):
 
         # Check the type of the cpp backend.
         self.assertTrue(isinstance(cpp_backend, Backend.SitesMap))
+        # }}}
+
+    def testScript(self):
+        """ Test that we can generate a valid script. """
+        # [{{
+        # Setup a valid KMCUnitCell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.5, 0.5, 0.5],
+                                              [0.25, 0.25, 0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4, 4, 1),
+                             periodic=(True, True, False))
+
+        types = ['a', 'a', 'a', 'a', 'b', 'b',
+                 'a', 'a', 'a', 'b', 'b',  'b',
+                 'b', 'b', 'a', 'a', 'b',  'a',
+                 'b', 'b', 'b', 'a', 'b',  'a',
+                 'b', 'a', 'a', 'a', 'b',  'b',
+                 'b', 'b', 'b', 'b', 'b',  'b',
+                 'a', 'a', 'a', 'a', 'b',  'b',
+                 'b', 'b', 'a', 'b', 'b',  'a']
+                                           
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
+                                  types=types,
+                                  possible_types=['a', 'c', 'b'])
+
+        # Get the script.
+        script = sitesmap._script()
+
+        ref_script = """
+# -----------------------------------------------------------------------------
+# Unit cell
+
+cell_vectors = [[   2.800000e+00,   0.000000e+00,   0.000000e+00],
+                [   0.000000e+00,   3.200000e+00,   0.000000e+00],
+                [   0.000000e+00,   5.000000e-01,   3.000000e+00]]
+
+basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+                [   5.000000e-01,   5.000000e-01,   5.000000e-01],
+                [   2.500000e-01,   2.500000e-01,   7.500000e-01]]
+
+unit_cell = KMCUnitCell(
+    cell_vectors=cell_vectors,
+    basis_points=basis_points)
+
+# -----------------------------------------------------------------------------
+# Lattice
+
+lattice = KMCLattice(
+    unit_cell=unit_cell,
+    repetitions=(4,4,1),
+    periodic=(True, True, False))
+
+# -----------------------------------------------------------------------------
+# SitesMap
+
+types = ['a','a','a','a','b','b','a','a','a','b','b','b','b',
+         'b','a','a','b','a','b','b','b','a','b','a','b','a',
+         'a','a','b','b','b','b','b','b','b','b','a','a','a',
+         'a','b','b','b','b','a','b','b','a']
+
+possible_types = ['a','c','b']
+
+sitesmap = KMCSitesMap(
+    lattice=lattice,
+    types=types,
+    possible_types=possible_types)
+"""
+        self.assertEqual(script, ref_script)
+
+        # Try another one.
+
+        # Setup a valid KMCUnitCell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(1, 1, 1),
+                             periodic=(False, False, False))
+
+        types = ['ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure']
+
+        possible_types = ['ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure', "A", "B", "CDEFGHI"]
+
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
+                                  types=types,
+                                  possible_types=possible_types)
+
+        # Get the script.
+        script = sitesmap._script(variable_name="sitesmap")
+
+        ref_script = """
+# -----------------------------------------------------------------------------
+# Unit cell
+
+cell_vectors = [[   2.800000e+00,   0.000000e+00,   0.000000e+00],
+                [   0.000000e+00,   3.200000e+00,   0.000000e+00],
+                [   0.000000e+00,   5.000000e-01,   3.000000e+00]]
+
+basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+unit_cell = KMCUnitCell(
+    cell_vectors=cell_vectors,
+    basis_points=basis_points)
+
+# -----------------------------------------------------------------------------
+# Lattice
+
+lattice = KMCLattice(
+    unit_cell=unit_cell,
+    repetitions=(1,1,1),
+    periodic=(False, False, False))
+
+# -----------------------------------------------------------------------------
+# SitesMap
+
+types = ['ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure']
+
+possible_types = ['A','CDEFGHI','ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure',
+                  'B']
+
+sitesmap = KMCSitesMap(
+    lattice=lattice,
+    types=types,
+    possible_types=possible_types)
+"""
+        self.assertEqual(script, ref_script)
         # }}}
 
 if __name__ == '__main__':

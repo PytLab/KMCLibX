@@ -105,7 +105,7 @@ class KMCSitesMap(KMCConfiguration):
             mangled_name = self.__mangled_name("__possible_types")
             cpp_possible_types = Backend.StdMapStringInt(getattr(self, mangled_name))
 
-            # Send in the coordinates and types to construct the backend configuration.
+            # Send in the coordinates and types to construct the backend sitesmap.
             cpp_sitesmap = Backend.SitesMap(cpp_coords, cpp_types, cpp_possible_types)
 
             # Set attribute.
@@ -123,4 +123,79 @@ class KMCSitesMap(KMCConfiguration):
 
         # Return mangled variable name.
         return "_" + parent_class_name + private_varname
+
+    def _script(self, variable_name="sitesmap"):
+        """
+        Generate a KMCLib Python script representation of this sitesmap.
+
+        :param variable_name: A name to use as variable name for
+                              the KMCSitesMap in the generated script.
+        :type variable_name: str
+
+        :returns: A KMCLib Python script, as a string,
+                  that can generate this sitesmap.
+        """
+        # Get the lattice script.
+        lattice_script = self.lattice()._script(variable_name="lattice")
+
+        # Get the types string.
+        types_string = "types = "
+        indent = " "*9
+        line = "["
+        nT = len(self.types())
+        for i, t in enumerate(self.types()):
+            # Add the type.
+            line += "'" + t + "'"
+            if i == nT-1:
+                # Stop if we reach the end.
+                line += "]\n"
+                types_string += line
+                break
+            else:
+            # Add the separator.
+                line += ","
+
+            # Check if we should add a new line.
+            if len(line) > 50:
+                types_string += line + "\n" + indent
+                line = ""
+
+        # Generate the possible types string.
+        possible_types_string = "possible_types = "
+        indent = " "*18
+        line = "["
+        possible_types = [t for t in list(set(self.possibleTypes().keys())) if t != "*"]
+
+        nT = len(possible_types)
+        for i, t in enumerate(possible_types):
+            # Add the type.
+            line += "'" + t + "'"
+            if i == nT - 1:
+                # Stop if we reach the end.
+                line += "]\n"
+                possible_types_string += line
+                break
+            else:
+            # Add the separator.
+                line += ","
+
+            # Check if we should add a new line.
+            if len(line) > 50:
+                possible_types_string += line + "\n" + indent
+                line = ""
+
+        # Setup the sitesmap string.
+        sitesmap_string = (variable_name + " = KMCSitesMap(\n" +
+                           "    lattice=lattice,\n" +
+                           "    types=types,\n" +
+                           "    possible_types=possible_types)\n")
+
+        # Add the comment.
+        comment_string = ("\n# ---------------------------------------------" +
+                          "--------------------------------\n" +
+                          "# SitesMap\n\n")
+
+        # Return the script.
+        return (lattice_script + comment_string + types_string + "\n" +
+                possible_types_string + "\n" + sitesmap_string)
 
