@@ -49,7 +49,7 @@ def sortCoordinatesDistance(coordinates, center, types1, types2=None, co_sort=No
     :returns: The sorted coordinates, distances and sorted types.
     """
     if types2 is None:
-        types2 = [ t for t in types1 ]
+        types2 = [t for t in types1]
 
     ret_co_sort = True
     if co_sort is None:
@@ -58,31 +58,36 @@ def sortCoordinatesDistance(coordinates, center, types1, types2=None, co_sort=No
 
     # Get the types.
     dt = coordinates.dtype
-    dtype = [('x',dt),
-             ('y',dt),
-             ('z',dt),
-             ('d',dt),
+    dtype = [('x', dt),
+             ('y', dt),
+             ('z', dt),
+             ('d', dt),
              ('type1', numpy.array(types1).dtype),
              ('type2', numpy.array(types2).dtype),
              ('co_sort', numpy.array(co_sort).dtype)]
 
     # Calculate the distance form the center.
     origin = coordinates[center]
-    distances = numpy.array([ numpy.linalg.norm(coord) for coord in coordinates ])
+    distances = numpy.array([numpy.linalg.norm(coord - origin) for coord in coordinates])
 
     # Setup the data to sort.
-    to_sort = numpy.array([ (c[0],c[1],c[2],d,t1,t2,cs) for (c,d,t1,t2,cs) in zip(coordinates,distances,types1, types2, co_sort)],
+    to_sort = numpy.array([(c[0], c[1], c[2], d, t1, t2, cs)
+                           for (c, d, t1, t2, cs) in zip(coordinates,
+                                                         distances,
+                                                         types1,
+                                                         types2,
+                                                         co_sort)],
                           dtype=dtype)
 
     # Sort.
-    sorted_list = numpy.sort(to_sort, order=['d','type1','x','y','z'])
+    sorted_list = numpy.sort(to_sort, order=['d', 'type1', 'x', 'y', 'z'])
 
     # Extract the info.
-    coordinates = numpy.array([[c[0],c[1],c[2]] for c in sorted_list])
-    distances   = numpy.array([c[3] for c in sorted_list])
-    types1      = [c[4] for c in sorted_list]
-    types2      = [c[5] for c in sorted_list]
-    co_sort     = [c[6] for c in sorted_list]
+    coordinates = numpy.array([[c[0], c[1], c[2]] for c in sorted_list])
+    distances = numpy.array([c[3] for c in sorted_list])
+    types1 = [c[4] for c in sorted_list]
+    types2 = [c[5] for c in sorted_list]
+    co_sort = [c[6] for c in sorted_list]
 
     # Done.
     if ret_co_sort:
