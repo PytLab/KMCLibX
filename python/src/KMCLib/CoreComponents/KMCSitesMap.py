@@ -8,7 +8,6 @@
 
 from ..Utilities.ConversionUtilities import stringListToStdVectorString
 from ..Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
-from ..Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
 from ..Backend import Backend
 from .KMCConfiguration import KMCConfiguration
 
