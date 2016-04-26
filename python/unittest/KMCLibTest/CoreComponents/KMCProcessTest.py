@@ -233,6 +233,7 @@ class KMCProcessTest(unittest.TestCase):
 
     def testEqualOperator(self):
         """ Test the equal operator. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -359,6 +360,112 @@ class KMCProcessTest(unittest.TestCase):
         # Check.
         eq = (p1 == p7)
         self.assertFalse( eq )
+        # }}}
+
+    def testEqualOperatorSiteTypes(self):
+        """ Test the equal operator with site types. """
+        # {{{
+        # ---------------------------------------------------------------------
+        # Set the input, site types are different.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
+        basis_sites = [0]
+        site_types1 = ["M", "N"]
+        site_types2 = ["K", "T"]
+
+        # Construct.
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types1)
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types2)
+
+        # Check, should not be equal.
+        eq = (p1 == p2)
+        self.assertFalse(eq)
+
+        # ---------------------------------------------------------------------
+        # Construct two process with same site types.
+        site_types1 = ["M", "N"]
+        site_types2 = ["M", "N"]
+
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types1)
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types2)
+
+        # Check, should be equal.
+        eq = (p1 == p2)
+        self.assertTrue(eq)
+
+        # ---------------------------------------------------------------------
+        # Construct two process, one site type is None.
+        site_types1 = ["M", "N"]
+
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types1)
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+
+        # Check, should not be equal.
+        eq = (p1 == p2)
+        self.assertFalse(eq)
+
+        # ---------------------------------------------------------------------
+        # Construct two process, one site type is None.
+
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+
+        # Check, should be equal.
+        eq = (p1 == p2)
+        self.assertTrue(eq)
+        # }}}
 
     def testEqualOperatorMoveVectors(self):
         """ Test the equal operator w.r.t. the move vectors. """
