@@ -427,6 +427,14 @@ class KMCProcess(object):
         """
         return self.__elements_after
 
+    def siteTypes(self):
+        """
+        Query for the site types.
+
+        :returns: The site types stored on the class.
+        """
+        return self.__site_types
+
     def _script(self, variable_name="process"):
         """
         Generate a script representation of an instance.
