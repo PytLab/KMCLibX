@@ -33,7 +33,8 @@ class KMCProcess(object):
                  elements_after=None,
                  move_vectors=None,
                  basis_sites=None,
-                 rate_constant=None):
+                 rate_constant=None,
+                 site_types=None):
         """
         Constructor for the KMCProcess.
 
@@ -69,6 +70,10 @@ class KMCProcess(object):
         :param rate_constant: The rate constant associated with this process.
         :type rate_constant: float
 
+        :param site_types: The site types, as a list of strings, on which the
+                           process is performed. If no site types is provided,
+                           then the default value None would be used in Process object.
+
         """
         # Check the coordinates.
         coordinates = checkCoordinateList(coordinates)
@@ -81,17 +86,23 @@ class KMCProcess(object):
         elements_before = checkTypes(elements_before, len(coordinates))
         elements_after = checkTypes(elements_after,  len(coordinates))
 
+        # Check site types.
+        if site_types:
+            site_types = checkTypes(site_types, len(coordinates))
+
         # Check that the elements represents a valid move.
         self.__checkValidMoveElements(elements_before, elements_after)
 
         # All types checking done.
         self.__elements_before = elements_before
         self.__elements_after = elements_after
+        self.__site_types = site_types
 
         # Check that the move vectors are compatible with the elements.
         self.__move_vectors = self.__checkValidMoveVectors(move_vectors)
 
-        # Sort the coordinates and co-sort the elements and move vectors.
+        # Sort the coordinates and co-sort the elements and move vectors
+        # or site types if set.
         self.__sortCoordinatesElementsAndMoveVectors()
 
         # Check the list of basis sites.
@@ -101,6 +112,7 @@ class KMCProcess(object):
 
         if len(basis_sites) == 0:
             msg = "The list of available basis sites for a process may not be empty."
+            raise Error(msg)
 
         # Passed the  tests.
         self.__basis_sites = basis_sites
@@ -275,12 +287,13 @@ class KMCProcess(object):
                                     types2=self.__elements_after,
                                     co_sort=original_indexing)
 
+        # Offer old index, get new index.
+        old_to_new_index = []
+        for i in range(len(new_to_old_index)):
+            old_to_new_index.append(new_to_old_index.index(i))
+
         # Fix the move vectors.
         if len(self.__move_vectors) > 0:
-            old_to_new_index = []
-            for i in range(len(new_to_old_index)):
-                old_to_new_index.append(new_to_old_index.index(i))
-
             # Fixt the move vector indexing.
             move_vector_index = []
             for v in self.__move_vectors:
@@ -298,6 +311,18 @@ class KMCProcess(object):
 
             # Set the move vectors.
             self.__move_vectors = new_move_vectors
+
+        if self.__site_types:
+            # Fix the site types, if site_types is set.
+            sorted_site_types = ["*"]*len(self.__coordinates)
+
+            # Get the sorted site types.
+            for old_index in xrange(len(self.__site_types)):
+                new_index = old_to_new_index[old_index]
+                sorted_site_types[new_index] = self.__site_types[old_index]
+
+            # Set the site types.
+            self.__site_types = sorted_site_types
 
         # Set the new data on the class.
         self.__coordinates = sorted_coords
