@@ -17,19 +17,21 @@ from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 # Import the module to test.
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
 
+
 # Implementing the tests.
 class KMCProcessTest(unittest.TestCase):
     """ Class for testing the KMCProcess class """
 
     def testConstruction(self):
         """ Test that the KMCProcess class can be constructed. """
-        # Set the input.
-        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        # {{{
+        # Set the input (no site types).
+        coordinates = [[0.0, 0.0, 0.0], [1.0, 2.0, 3.0]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
         basis_sites = [0]
-        move_vectors = [(0, [1.0,2.0,3.0]),
-                        (1, [-1.0,-2.0,-3.0])]
+        move_vectors = [(0, [1.0, 2.0, 3.0]),
+                        (1, [-1.0, -2.0, -3.0])]
 
         # Construct.
         p = KMCProcess(coordinates=coordinates,
@@ -40,7 +42,49 @@ class KMCProcessTest(unittest.TestCase):
                        rate_constant=1.0)
 
         # Check that we got a valid instance.
-        self.assertTrue( isinstance(p, KMCProcess) )
+        self.assertTrue(isinstance(p, KMCProcess))
+
+        # Check private attribute values.
+        self.assertTrue(numpy.allclose(p._KMCProcess__coordinates, coordinates))
+        self.assertListEqual(p._KMCProcess__elements_before, elements_before)
+        self.assertListEqual(p._KMCProcess__elements_after, elements_after)
+        self.assertListEqual(p._KMCProcess__basis_sites, basis_sites)
+        self.assertListEqual(p._KMCProcess__move_vectors, move_vectors)
+        self.assertIsNone(p._KMCProcess__site_types)
+        # }}}
+
+    def testConstructionWithSiteTypes(self):
+        """ Test that the KMCProcess class can be constructed with site types. """
+        # {{{
+        # Set the input (no site types).
+        coordinates = [[0.0, 0.0, 0.0], [1.0, 2.0, 3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        site_types = ["M", "N"]
+        basis_sites = [0]
+        move_vectors = [(0, [1.0, 2.0, 3.0]),
+                        (1, [-1.0, -2.0, -3.0])]
+
+        # Construct.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       move_vectors=move_vectors,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0,
+                       site_types=site_types)
+
+        # Check that we got a valid instance.
+        self.assertTrue(isinstance(p, KMCProcess))
+
+        # Check private attribute values.
+        self.assertTrue(numpy.allclose(p._KMCProcess__coordinates, coordinates))
+        self.assertListEqual(p._KMCProcess__elements_before, elements_before)
+        self.assertListEqual(p._KMCProcess__elements_after, elements_after)
+        self.assertListEqual(p._KMCProcess__basis_sites, basis_sites)
+        self.assertListEqual(p._KMCProcess__move_vectors, move_vectors)
+        self.assertListEqual(p._KMCProcess__site_types, site_types)
+        # }}}
 
     def testConstructionSorting(self):
         """ Test that the coordinates elements and move vectors gets sorted """
@@ -116,7 +160,6 @@ class KMCProcessTest(unittest.TestCase):
             # Check the vector.
             norm = numpy.linalg.norm(numpy.array(ref[1]) - numpy.array(ret[1]))
             self.assertAlmostEqual( norm, 0.0, 10 )
-
 
     def testEqualOperator(self):
         """ Test the equal operator. """
@@ -556,7 +599,6 @@ class KMCProcessTest(unittest.TestCase):
                                                move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=[3.459]) )
-
 
     def testConstructionFailMoveVectors(self):
         """ Test that the wrong move vector input gives and error. """
