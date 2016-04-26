@@ -1001,6 +1001,7 @@ class KMCProcessTest(unittest.TestCase):
 
     def testScript(self):
         """ Test that the process can generate its own valid script. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -1025,6 +1026,7 @@ class KMCProcessTest(unittest.TestCase):
 
 elements_before = ['A','B']
 elements_after  = ['B','A']
+site_types = None
 move_vectors    = [(  0,[   1.000000e+00,   2.000000e+00,   3.000000e+00]),
                    (  1,[  -1.000000e+00,  -2.000000e+00,  -3.000000e+00])]
 basis_sites     = [0,1,4]
@@ -1036,7 +1038,8 @@ process = KMCProcess(
     elements_after=elements_after,
     move_vectors=move_vectors,
     basis_sites=basis_sites,
-    rate_constant=rate_constant)
+    rate_constant=rate_constant,
+    site_types=site_types)
 
 """
         # Check.
@@ -1076,6 +1079,7 @@ process = KMCProcess(
 
 elements_before = ['A','B','C']
 elements_after  = ['C','A','B']
+site_types = None
 move_vectors    = None
 basis_sites     = [0,1,4]
 rate_constant   =    1.000000e+00
@@ -1086,13 +1090,61 @@ process = KMCProcess(
     elements_after=elements_after,
     move_vectors=move_vectors,
     basis_sites=basis_sites,
-    rate_constant=rate_constant)
+    rate_constant=rate_constant,
+    site_types=site_types)
 
 """
         self.assertEqual(script, ref_script)
 
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        site_types = ["M", "N"]
+        move_vectors = [(0, [1.0, 2.0, 3.0]),
+                        (1, [-1.0, -2.0, -3.0])]
+        basis_sites = [0, 1, 4]
+
+        # Construct with given move vectors.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       move_vectors=move_vectors,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0,
+                       site_types=site_types)
+
+        # Get the script.
+        script = p._script()
+
+        ref_script = """coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e+00,   2.000000e+00,   3.000000e+00]]
+
+elements_before = ['A','B']
+elements_after  = ['B','A']
+site_types = ['M','N']
+move_vectors    = [(  0,[   1.000000e+00,   2.000000e+00,   3.000000e+00]),
+                   (  1,[  -1.000000e+00,  -2.000000e+00,  -3.000000e+00])]
+basis_sites     = [0,1,4]
+rate_constant   =    1.000000e+00
+
+process = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    move_vectors=move_vectors,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant,
+    site_types=site_types)
+
+"""
+        # Check.
+        self.assertEqual(ref_script, script)
+    # }}}
+
     def testLocalConfigurations(self):
         """ Test that the local configurations are correctly set up """
+        # {{{
         coordinates = numpy.array([[1.0,2.0,3.0], [2.3,5.5,3.2]])
         elements1 = ["First", "Second"]
         elements2 = ["Second", "First"]
@@ -1119,6 +1171,7 @@ process = KMCProcess(
         # Check types.
         self.assertAlmostEqual( c1.types(), ref_c1.types() )
         self.assertAlmostEqual( c2.types(), ref_c2.types() )
+        # }}}
 
     def testElementsBefore(self):
         """ Test the elements before query function. """
