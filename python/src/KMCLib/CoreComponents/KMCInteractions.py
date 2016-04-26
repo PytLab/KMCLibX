@@ -11,11 +11,12 @@
 
 import inspect
 
-from KMCLib.CoreComponents.KMCProcess import KMCProcess
-from KMCLib.Utilities.CheckUtilities import checkSequenceOf
-from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
-from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
+from KMCLib.Utilities.CheckUtilities import checkSequenceOf
+from KMCLib.Exceptions.Error import Error
+from KMCLib.CoreComponents.KMCProcess import KMCProcess
+from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
+from KMCLib.CoreComponents.KMCSitesMap import KMCSitesMap
 
 
 class KMCInteractions(object):
@@ -26,11 +27,14 @@ class KMCInteractions(object):
 
     def __init__(self,
                  processes=None,
+                 sitesmap=None,
                  implicit_wildcards=None):
         """
         Constructor for the KMCInteractions.
 
         :param processes: A list of possible processes in the simulation.
+
+        :param sitesmap: KMCSitesMap object on which all processes are performed.
 
         :param implicit_wildcards: A flag indicating if implicit wildcards should be used in
                                    the matching of processes with the configuration. The default
@@ -41,6 +45,21 @@ class KMCInteractions(object):
         self.__processes = checkSequenceOf(processes, KMCProcess,
                                            msg="The 'processes' input must be " +
                                                "a list of KMCProcess instances.")
+
+        # Check that the sitesmap is of the correct type.
+        if sitesmap and not isinstance(sitesmap, KMCSitesMap):
+            msg = ("The sitesmap given to the KMCInteractions constructor" +
+                   "must be of type KMCSitesMap.")
+            raise Error(msg)
+
+        # Check if process has site types.
+        if not sitesmap:
+            for i, process in enumerate(processes):
+                if process.siteTypes():
+                    msg = "Site types in process%d are set, sitesmap must be supplied." % i
+                    raise Error(msg)
+
+        self.__sitesmap = sitesmap
 
         # Check the implicit wildcard flag.
         if implicit_wildcards is None:
@@ -55,6 +74,13 @@ class KMCInteractions(object):
 
         # Set the rate calculator.
         self.__rate_calculator = None
+
+    def sitesMap(self):
+        """
+        Query for SitesMap object stored.
+        :returns: The stored sitesmap object.
+        """
+        return self.__sitesmap
 
     def rateCalculator(self):
         """
@@ -127,8 +153,9 @@ class KMCInteractions(object):
             for process_number, process in enumerate(self.__processes):
                 all_elements = list(set(process.elementsBefore() + process.elementsAfter()))
                 if (not all([(e in possible_types) for e in all_elements])):
-                    raise Error("Process %i contains elements not present in the list of " +
-                                "possible types of the configuration." % (process_number))
+                    msg = (("Process %i contains elements not present in the list of " +
+                            "possible types of the configuration.") % process_number)
+                    raise Error(msg)
 
             # Setup the correct type of backend process objects
             # depending on the presence of a rate calculator.
