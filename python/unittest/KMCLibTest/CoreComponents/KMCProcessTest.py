@@ -258,7 +258,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p2)
-        self.assertTrue( eq )
+        self.assertTrue(eq)
 
         # Set the input again, different coordinates.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0001]]
@@ -273,7 +273,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p3)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different length.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.],[1.0,2.0,3.0]]
@@ -291,7 +291,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p4)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different basis sites.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
@@ -308,7 +308,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p5)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different length of the basis sites.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
@@ -325,7 +325,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p6)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different elements before.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
@@ -342,7 +342,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p7)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different elements after.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
@@ -359,7 +359,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p7)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
         # }}}
 
     def testEqualOperatorSiteTypes(self):
@@ -469,6 +469,7 @@ class KMCProcessTest(unittest.TestCase):
 
     def testEqualOperatorMoveVectors(self):
         """ Test the equal operator w.r.t. the move vectors. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -495,21 +496,21 @@ class KMCProcessTest(unittest.TestCase):
 
         # The same move vectors should be reconstructed, so there are equal.
         eq = (p1 == p2)
-        self.assertTrue( eq )
+        self.assertTrue(eq)
 
         # If se explicitly set the move vectors to empty on p2 they are not equal.
         p2._KMCProcess__move_vectors = []
         eq = (p1 == p2)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # And the other way around.
         eq = (p2 == p1)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Now, make the other one empty also.
         p1._KMCProcess__move_vectors = []
         eq = (p1 == p2)
-        self.assertTrue( eq )
+        self.assertTrue(eq)
 
         # Set explicitly to different vectors.
         p1._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
@@ -518,23 +519,25 @@ class KMCProcessTest(unittest.TestCase):
         p2._KMCProcess__move_vectors = move_vectors = [(1, [1.0,2.0,3.0]),
                                                        (0, [-1.0,-2.0,-3.0])]
         eq = (p1 == p2)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # And the vector.
         p2._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
                                                        (1, [-1.0,-2.1,-3.0])]
         eq = (p1 == p2)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # The length.
         p2._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
                                                        (1, [-1.0,-2.1,-3.0]),
                                                        (2, [ 1.0,-2.1,-3.0])]
         eq = (p1 == p2)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
+        # }}}
 
     def testEqualOperatorUnsorted(self):
         """ Test the equal operator for unsorted coordinates. """
+        # {{{
         # Set the first input.
         coordinates_1     = [[0.0, 0.0, 0.0],
                              [1.0, 3.0, 1.0],
@@ -573,10 +576,60 @@ class KMCProcessTest(unittest.TestCase):
 
         # These should be equal despite differing order.
         eq = (p1 == p2)
-        self.assertTrue( eq )
+        self.assertTrue(eq)
+        # }}}
+
+    def testEqualOperatorUnsortedWithSiteTypes(self):
+        """ Test the equal operator for unsorted coordinates with site type set. """
+        # {{{
+        # Set the first input.
+        coordinates_1 = [[0.0, 0.0, 0.0],
+                         [1.0, 3.0, 1.0],
+                         [1.0, 2.0, 3.0]]
+        elements_before_1 = ["A", "C", "B"]
+        elements_after_1 = ["B", "C", "A"]
+        move_vectors_1 = [(0, [1.0,2.0,3.0]),
+                          (2, [-1.0,-2.0,-3.0])]
+        basis_sites_1 = [0]
+        site_types_1 = ["M", "N", "K"]
+
+        # Set the second input.
+        coordinates_2 = [[0.0, 0.0, 0.0],
+                         [1.0, 2.0, 3.0],
+                         [1.0, 3.0, 1.0],]
+        elements_before_2 = ["A", "B", "C"]
+        elements_after_2 = ["B", "A", "C"]
+        move_vectors_2 = [(0, [1.0,2.0,3.0]),
+                          (1, [-1.0,-2.0,-3.0])]
+        basis_sites_2 = [0]
+        site_types_2 = ["M", "K", "N"]
+
+        # Construct.
+        p1 = KMCProcess(coordinates=coordinates_1,
+                        elements_before=elements_before_1,
+                        elements_after=elements_after_1,
+                        move_vectors=move_vectors_1,
+                        basis_sites=basis_sites_1,
+                        rate_constant=1.0,
+                        site_types=site_types_1)
+
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates_2,
+                        elements_before=elements_before_2,
+                        elements_after=elements_after_2,
+                        move_vectors=move_vectors_2,
+                        basis_sites=basis_sites_2,
+                        rate_constant=1.0,
+                        site_types=site_types_2)
+
+        # These should be equal despite differing order.
+        eq = (p1 == p2)
+        self.assertTrue(eq)
+        # }}}
 
     def testConstructionFailCoordinates(self):
         """ Test that construction fails with the wrong coordinates format. """
+        # {{{
         # Set the input.
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
@@ -636,10 +689,12 @@ class KMCProcessTest(unittest.TestCase):
                                                move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
+        # }}}
 
     def testConstructionFailElements(self):
         """ Test that construction fails with the wrong elements format. """
 
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -663,9 +718,11 @@ class KMCProcessTest(unittest.TestCase):
                                                move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
+        # }}}
 
     def testConstructionFailNumberOfSites(self):
         """ Test that construction fails mismatch in the number of sites. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0], [1.2,3.4,5.6]]
         elements_before = ["A", "B"]
@@ -705,9 +762,11 @@ class KMCProcessTest(unittest.TestCase):
                                                basis_sites=basis_sites,
                                                move_vectors=move_vectors,
                                                rate_constant=1.0) )
+        # }}}
 
     def testConstructionFailBasisSites(self):
         """ Test that construction fails with the wrong basis sites input. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -741,9 +800,11 @@ class KMCProcessTest(unittest.TestCase):
                                                basis_sites=basis_sites,
                                                move_vectors=move_vectors,
                                                rate_constant=1.0) )
+        # }}}
 
     def testConstructionFailRate(self):
         """ Test that construction fails with a wrong rate. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -776,9 +837,11 @@ class KMCProcessTest(unittest.TestCase):
                                                move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=[3.459]) )
+        # }}}
 
     def testConstructionFailMoveVectors(self):
         """ Test that the wrong move vector input gives and error. """
+        # {{{
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
@@ -842,9 +905,11 @@ class KMCProcessTest(unittest.TestCase):
                                                move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
+        # }}}
 
     def testReconstructMoveVectors(self):
         """ Test that the helper function to reconstruct move vectors works as intended. """
+        # {{{
         # Get an empty process.
         process = KMCProcess.__new__(KMCProcess)
 
@@ -882,6 +947,57 @@ class KMCProcessTest(unittest.TestCase):
         move_vectors = process._KMCProcess__reconstructMoveVectors()
 
         self.assertTrue( move_vectors is None )
+        # }}}
+
+    def testConstructionFailSiteTypes(self):
+        """ Test that construction fails with wrong site types provided. """
+        # {{{
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0], [1.2,3.4,5.6]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
+        basis_sites = [0]
+
+        # Use string instead of string list.
+        site_types = "M, N"
+        self.assertRaises(Error,
+                          KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          move_vectors=move_vectors,
+                          rate_constant=1.0,
+                          site_types=site_types)
+
+        # Use longer length.
+        site_types = ["M", "N", "N"]
+        self.assertRaises(Error,
+                          KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          move_vectors=move_vectors,
+                          rate_constant=1.0,
+                          site_types=site_types)
+
+        # Use int list.
+        site_types = [1, 2]
+        self.assertRaises(Error,
+                          KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          move_vectors=move_vectors,
+                          rate_constant=1.0,
+                          site_types=site_types)
+
+        # }}}
+
 
     def testScript(self):
         """ Test that the process can generate its own valid script. """
