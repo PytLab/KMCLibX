@@ -537,6 +537,31 @@ class KMCProcess(object):
                 elements_after_string += line + "\n" + indent
                 line = ""
 
+        # Setup the site types.
+        site_types_string = "site_types = "
+        indent = " "*14
+        if not self.__site_types:
+            site_types_string += "None\n"
+        else:
+            line = "["
+            nT = len(self.__site_types)
+            for i, t in enumerate(self.__site_types):
+                # Add the type.
+                line += "'" + t + "'"
+                if i == nT-1:
+                    # Stop if we reach the end.
+                    line += "]\n"
+                    site_types_string += line
+                    break
+                else:
+                # Add the separator.
+                    line += ","
+
+                # Check if we should add a new line.
+                if len(line) > 50:
+                    site_types_string += line + "\n" + indent
+                    line = ""
+
         # Setup the move vector string.
         if len(self.__move_vectors) == 0:
             move_vectors_string = "move_vectors    = None\n"
@@ -546,7 +571,8 @@ class KMCProcess(object):
             vector_template = "[" + ff + "," + ff + "," + ff + "]"
             for i, (index, vector) in enumerate(self.__move_vectors):
 
-                move_vectors_string += "( %2i," % (index) + vector_template % (vector[0], vector[1], vector[2])
+                move_vectors_string += ("( %2i," % (index) +
+                                        vector_template % (vector[0], vector[1], vector[2]))
 
                 if i < len(self.__move_vectors)-1:
                     move_vectors_string += "),\n" + indent
@@ -570,13 +596,15 @@ class KMCProcess(object):
             "    coordinates=coordinates,\n" + \
             "    elements_before=elements_before,\n" + \
             "    elements_after=elements_after,\n" + \
-            "    move_vectors=move_vectors,\n" +\
+            "    move_vectors=move_vectors,\n" + \
             "    basis_sites=basis_sites,\n" + \
-            "    rate_constant=rate_constant)\n"
+            "    rate_constant=rate_constant,\n" + \
+            "    site_types=site_types)\n"
 
         return (coords_string + "\n" +
                 elements_before_string +
                 elements_after_string +
+                site_types_string +
                 move_vectors_string +
                 basis_sites_string + "\n" +
                 rate_constant_string + "\n\n" +
