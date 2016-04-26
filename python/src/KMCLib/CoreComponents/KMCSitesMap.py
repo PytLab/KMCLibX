@@ -6,11 +6,11 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
-from ..Utilities.ConversionUtilities import stringListToStdVectorString
-from ..Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
-from ..Backend import Backend
-from ..Exceptions.Error import Error
-from .KMCConfiguration import KMCConfiguration
+from KMCLib.Backend import Backend
+from KMCLib.Exceptions.Error import Error
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
+from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
 
 
 class KMCSitesMap(KMCConfiguration):
