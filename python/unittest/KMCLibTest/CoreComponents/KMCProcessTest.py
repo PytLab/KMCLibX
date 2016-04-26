@@ -157,6 +157,80 @@ class KMCProcessTest(unittest.TestCase):
         self.assertIsNone(p._KMCProcess__site_types)
         # }}}
 
+    def testConstructionSortingWithSiteTypes(self):
+        """ Test that the coordinates elements, site types and move vectors gets sorted """
+        # {{{
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],
+                       [3.0, 3.0, 3.0],
+                       [1.0, 1.0, 1.0],
+                       [1.1, 1.1, 1.1],
+                       [1.5, 1.5, 1.5],
+                       [2.5, 2.5, 2.5]]
+
+        elements_before = ["A", "B", "C", "P", "D", "E"]
+        elements_after =  ["B", "C", "D", "P", "A", "E"]
+        site_types = ["M", "K", "N", "X", "Y", "Z"]
+        basis_sites = [0]
+        rate_constant = 1.0
+
+        move_vectors = [(0, [ 1.5, 1.5, 1.5]),
+                        (1, [-3.0, -3.0, -3.0]),
+                        (2, [ 2.0, 2.0, 2.0]),
+                        (4, [-0.5, -0.5, -0.5])]
+
+        # Construct.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       move_vectors=move_vectors,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0,
+                       site_types=site_types)
+
+        # Get the configurations out.
+        config_before = p.localConfigurations()[0]
+        config_after  = p.localConfigurations()[1]
+
+        # Check that the coordinates, elements and move vectors
+        # have been sorted.
+
+        ref_coords = numpy.array([[ 0., 0., 0. ],
+                                  [ 1., 1., 1. ],
+                                  [ 1.1, 1.1, 1.1],
+                                  [ 1.5, 1.5, 1.5],
+                                  [ 2.5, 2.5, 2.5],
+                                  [ 3., 3., 3.]])
+
+        # Before move.
+        coords = config_before.coordinates()
+        self.assertTrue(numpy.allclose(coords, ref_coords))
+
+        # After move.
+        coords = config_after.coordinates()
+        self.assertTrue(numpy.allclose(coords, ref_coords))
+
+        # Check the elements before move.
+        ref_types = ["A", "C", "P", "D", "E", "B"]
+        self.assertListEqual(ref_types, config_before.types())
+
+        # Check the elements after move.
+        ref_types = ["B", "D", "P", "A", "E", "C"]
+        self.assertListEqual(ref_types, config_after.types())
+
+        # Check the move vectors after move.
+        ref_vectors = [(0, [ 1.5, 1.5, 1.5]),
+                       (1, [ 2.0, 2.0, 2.0]),
+                       (3, [-0.5, -0.5, -0.5]),
+                       (5, [-3.0, -3.0, -3.0])]
+        ret_vectors = p.moveVectors()
+        self.assertListEqual(ref_vectors, ret_vectors)
+
+        # Check site types.
+        ref_site_types = ["M", "N", "X", "Y", "Z", "K"]
+        self.assertListEqual(ref_site_types, p.siteTypes())
+        # }}}
+
     def testEqualOperator(self):
         """ Test the equal operator. """
         # Set the input.
