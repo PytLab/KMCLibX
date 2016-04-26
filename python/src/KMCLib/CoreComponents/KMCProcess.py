@@ -336,7 +336,8 @@ class KMCProcess(object):
             return False
 
         # Check the basis sites.
-        elif not all([s1 == s2 for s1, s2 in zip(other.basisSites(), self.basisSites())]):
+        elif not all([s1 == s2 for s1, s2 in zip(other.basisSites(),
+                                                 self.basisSites())]):
             return False
 
         # Check the number of atoms in the local configurations.
@@ -367,11 +368,29 @@ class KMCProcess(object):
         if len(self.__move_vectors) != len(other._KMCProcess__move_vectors):
             return False
 
-            # For each move vector, loop through the others and find the one that matches.
+        # For each move vector, loop through the others and find the one that matches.
         for v1, v2 in zip(self.__move_vectors, other._KMCProcess__move_vectors):
             if v1[0] != v2[0]:
                 return False
             elif numpy.linalg.norm(numpy.array(v1[1])-numpy.array(v2[1])) > 1.0e-8:
+                return False
+
+        # Check the site types.
+        site_types_self = self.siteTypes()
+        site_types_other = other.siteTypes()
+
+        # If one is None and another is not.
+        if not all((site_types_self, site_types_other)):
+            if any((site_types_self, site_types_other)):
+                return False
+        # If both are not None.
+        else:
+            # Check length.
+            if len(site_types_self) != len(site_types_other):
+                return False
+            # Check each type.
+            if not all([t1 == t2 for t1, t2 in zip(site_types_self,
+                                                   site_types_other)]):
                 return False
 
         # Passed all tests, return true.
