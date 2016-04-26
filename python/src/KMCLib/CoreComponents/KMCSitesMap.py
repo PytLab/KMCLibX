@@ -9,6 +9,7 @@
 from ..Utilities.ConversionUtilities import stringListToStdVectorString
 from ..Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from ..Backend import Backend
+from ..Exceptions.Error import Error
 from .KMCConfiguration import KMCConfiguration
 
 
@@ -126,6 +127,30 @@ class KMCSitesMap(KMCConfiguration):
 
         # Return mangled variable name.
         return "_" + parent_class_name + private_varname
+
+    def siteTypesMapping(self, site_types):
+        """ 
+        Helper function to map site types from string list to int list
+        according to possible_site_types.
+
+        :param site_types: A string list of site types.
+
+        :returns: A corresponding integer site types list.
+        """
+        int_site_types = []
+        possible_types = self.possibleTypes()
+
+        for site_type in site_types:
+            # Check site type validity.
+            if site_type not in possible_types:
+                msg = "Type '%s' is not in possible types." % site_type
+                raise Error(msg)
+
+            # Collect int site type.
+            int_site_type = possible_types[site_type]
+            int_site_types.append(int_site_type)
+
+        return int_site_types
 
     def _script(self, variable_name="sitesmap"):
         """
