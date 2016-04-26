@@ -88,6 +88,7 @@ class KMCProcessTest(unittest.TestCase):
 
     def testConstructionSorting(self):
         """ Test that the coordinates elements and move vectors gets sorted """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],
                        [3.0, 3.0, 3.0],
@@ -102,9 +103,9 @@ class KMCProcessTest(unittest.TestCase):
         rate_constant = 1.0
 
         move_vectors = [(0, [ 1.5, 1.5, 1.5]),
-                        (1, [-3.0,-3.0,-3.0]),
+                        (1, [-3.0, -3.0, -3.0]),
                         (2, [ 2.0, 2.0, 2.0]),
-                        (4, [-0.5,-0.5,-0.5])]
+                        (4, [-0.5, -0.5, -0.5])]
 
         # Construct.
         p = KMCProcess(coordinates=coordinates,
@@ -121,45 +122,40 @@ class KMCProcessTest(unittest.TestCase):
         # Check that the coordinates, elements and move vectors
         # have been sorted.
 
-        ref_coords = numpy.array([[ 0.,  0.,  0. ],
-                                  [ 1.,  1.,  1. ],
+        ref_coords = numpy.array([[ 0., 0., 0. ],
+                                  [ 1., 1., 1. ],
                                   [ 1.1, 1.1, 1.1],
                                   [ 1.5, 1.5, 1.5],
                                   [ 2.5, 2.5, 2.5],
-                                  [ 3.,  3.,  3.]])
+                                  [ 3., 3., 3.]])
 
         # Before move.
         coords = config_before.coordinates()
-        norm = numpy.linalg.norm(ref_coords - coords)
-        self.assertAlmostEqual( norm, 0.0, 10 )
+        self.assertTrue(numpy.allclose(coords, ref_coords))
 
         # After move.
         coords = config_after.coordinates()
-        norm = numpy.linalg.norm(ref_coords - coords)
-        self.assertAlmostEqual( norm, 0.0, 10 )
+        self.assertTrue(numpy.allclose(coords, ref_coords))
 
         # Check the elements before move.
         ref_types = ["A", "C", "P", "D", "E", "B"]
-        self.assertEqual( ref_types, config_before.types() )
+        self.assertListEqual(ref_types, config_before.types())
 
         # Check the elements after move.
         ref_types = ["B", "D", "P", "A", "E", "C"]
-        self.assertEqual( ref_types, config_after.types() )
+        self.assertListEqual(ref_types, config_after.types())
 
+        # Check the move vectors after move.
         ref_vectors = [(0, [ 1.5, 1.5, 1.5]),
                        (1, [ 2.0, 2.0, 2.0]),
-                       (3, [-0.5,-0.5,-0.5]),
-                       (5, [-3.0,-3.0,-3.0])]
-
+                       (3, [-0.5, -0.5, -0.5]),
+                       (5, [-3.0, -3.0, -3.0])]
         ret_vectors = p.moveVectors()
+        self.assertListEqual(ref_vectors, ret_vectors)
 
-        for ref, ret in zip(ref_vectors, ret_vectors):
-            # Check the 'from' index.
-            self.assertEqual(ref[0], ret[0])
-
-            # Check the vector.
-            norm = numpy.linalg.norm(numpy.array(ref[1]) - numpy.array(ret[1]))
-            self.assertAlmostEqual( norm, 0.0, 10 )
+        # Check site types.
+        self.assertIsNone(p._KMCProcess__site_types)
+        # }}}
 
     def testEqualOperator(self):
         """ Test the equal operator. """
