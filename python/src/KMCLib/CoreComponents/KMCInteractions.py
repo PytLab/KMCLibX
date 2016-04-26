@@ -9,13 +9,9 @@
 #
 
 
-import numpy
 import inspect
 
-from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
-from KMCLib.Utilities.CheckUtilities import checkSequence
-from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
 from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Exceptions.Error import Error
@@ -252,7 +248,7 @@ class KMCInteractions(object):
 
         kmc_interactions_string = variable_name + " = KMCInteractions(\n" + \
             "    processes=processes,\n" + \
-            "    implicit_wildcards=%s)\n"%(implicit)
+            "    implicit_wildcards=%s)\n" % (implicit)
 
         # Return the script.
         return comment_string + processes_script + processes_string + "\n" + \
