@@ -25,7 +25,6 @@ class KMCSitesMapTest(unittest.TestCase):
 
     def testConstructionShortFormat(self):
         """ Test that the KMCSitesMap class can be constructed. """
-
         # {{{
         # Setup a valid KMCUnitCell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
@@ -468,6 +467,82 @@ class KMCSitesMapTest(unittest.TestCase):
         self.assertTrue(isinstance(cpp_backend, Backend.SitesMap))
         # }}}
 
+    def testSiteTypesMapping(self):
+        """ Test that we can map the site types correctly. """
+        # {{{
+        # Setup a valid KMCUnitCell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.5, 0.5, 0.5],
+                                              [0.25, 0.25, 0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4, 4, 1),
+                             periodic=(True, True, False))
+
+        types = ['a', 'a', 'a', 'a', 'b', 'b',
+                 'a', 'a', 'a', 'b', 'b', 'b',
+                 'b', 'b', 'a', 'a', 'b', 'a',
+                 'b', 'b', 'b', 'a', 'b', 'a',
+                 'b', 'a', 'a', 'a', 'b', 'b',
+                 'b', 'b', 'b', 'b', 'b', 'b',
+                 'a', 'a', 'a', 'a', 'b', 'b',
+                 'b', 'b', 'a', 'b', 'b', 'a']
+
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=types,
+                               possible_types=['a', 'c', 'b'])
+
+        site_types = ["a", "b", "c", "a", "c"]
+        ret_int_types = sitesmap.siteTypesMapping(site_types)
+        ref_int_types = [1, 3, 2, 1, 2]
+
+        # Check.
+        self.assertListEqual(ret_int_types, ref_int_types)
+
+        # }}}
+
+    def testSiteTypesMappingFail(self):
+        """ Test that site mapping should be failed when providing unlisted site types. """
+        # {{{
+        # Setup a valid KMCUnitCell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.5, 0.5, 0.5],
+                                              [0.25, 0.25, 0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4, 4, 1),
+                             periodic=(True, True, False))
+
+        types = ['a', 'a', 'a', 'a', 'b', 'b',
+                 'a', 'a', 'a', 'b', 'b', 'b',
+                 'b', 'b', 'a', 'a', 'b', 'a',
+                 'b', 'b', 'b', 'a', 'b', 'a',
+                 'b', 'a', 'a', 'a', 'b', 'b',
+                 'b', 'b', 'b', 'b', 'b', 'b',
+                 'a', 'a', 'a', 'a', 'b', 'b',
+                 'b', 'b', 'a', 'b', 'b', 'a']
+
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=types,
+                               possible_types=['a', 'c', 'b'])
+
+        site_types = ["a", "b", "c", "a", "x"]
+
+        # Check.
+        self.assertRaises(Error, sitesmap.siteTypesMapping, site_types=site_types)
+
+        # }}}
+
     def testScript(self):
         """ Test that we can generate a valid script. """
         # [{{
@@ -495,8 +570,8 @@ class KMCSitesMapTest(unittest.TestCase):
                                            
         # Setup the sitesmap.
         sitesmap = KMCSitesMap(lattice=lattice,
-                                  types=types,
-                                  possible_types=['a', 'c', 'b'])
+                               types=types,
+                               possible_types=['a', 'c', 'b'])
 
         # Get the script.
         script = sitesmap._script()
@@ -607,3 +682,5 @@ sitesmap = KMCSitesMap(
 
 if __name__ == '__main__':
     unittest.main()
+    #suite = unittest.TestLoader().loadTestsFromTestCase(KMCSitesMapTest)
+    #unittest.TextTestRunner(verbosity=2).run(suite)
