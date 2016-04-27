@@ -139,9 +139,10 @@ class KMCLatticeModel(object):
             msg = " KMCLib: WARNING: No trajectory filename given -> no trajectory will be saved."
             prettyPrint(msg)
 
-        elif not isinstance(trajectory_filename, str):
+        elif not (isinstance(trajectory_filename, str) and
+                  isinstance(trajectory_filename, unicode)):
             msg = ("The 'trajectory_filename' input to the KMCLattice model " +
-                   "run function must be given as string.")
+                   "run function must be given as str or unicode.")
             raise Error(msg)
 
         # Check the analysis type.
