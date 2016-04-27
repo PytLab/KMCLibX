@@ -48,7 +48,7 @@ class KMCInteractions(object):
 
         # Check that the sitesmap is of the correct type.
         if sitesmap and not isinstance(sitesmap, KMCSitesMap):
-            msg = ("The sitesmap given to the KMCInteractions constructor" +
+            msg = ("The sitesmap given to the KMCInteractions constructor " +
                    "must be of type KMCSitesMap.")
             raise Error(msg)
 
