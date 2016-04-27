@@ -133,6 +133,72 @@ class KMCInteractionsTest(unittest.TestCase):
 
         # }}}
 
+    def testConstructionWithSitesMapFails(self):
+        """ Test that the KMCInteractions construction fails with improper sitesmap provided. """
+        # {{{
+        # A first process.
+        coords = [[1.0, 2.0, 3.4], [12.0, 13.0, -1.0], [1.1, 1.2, 1.3]]
+        types0 = ["A", "*", "B"]
+        types1 = ["B", "*", "A"]
+        site_types1 = ["M", "M", "M"]
+        rate_0_1 = 3.5
+        process_0 = KMCProcess(coords, types0, types1,
+                               basis_sites=[0, 1, 3],
+                               rate_constant=rate_0_1,
+                               site_types=site_types1)
+
+        # A second process.
+        coords = [[1.0, 2.0, 3.4], [1.1, 1.2, 1.3]]
+        types0 = ["A", "C"]
+        types1 = ["C", "A"]
+        site_types2 = ["M", "N"]
+        rate_0_1 = 1.5
+        process_1 = KMCProcess(coords, types0, types1,
+                               basis_sites=[0, 1, 3],
+                               rate_constant=rate_0_1,
+                               site_types=site_types2)
+
+        processes = [process_0, process_1]
+
+        # Setup a sitesmap.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.5, 0.5, 0.5],
+                                              [0.25, 0.25, 0.75]])
+
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4, 4, 1),
+                             periodic=(True, True, False))
+
+        types = ['a', 'a', 'a', 'a', 'b', 'b',
+                 'a', 'a', 'a', 'b', 'b', 'b',
+                 'b', 'b', 'a', 'a', 'b', 'a',
+                 'b', 'b', 'b', 'a', 'b', 'a',
+                 'b', 'a', 'a', 'a', 'b', 'b',
+                 'b', 'b', 'b', 'b', 'b', 'b',
+                 'a', 'a', 'a', 'a', 'b', 'b',
+                 'b', 'b', 'a', 'b', 'b', 'a']
+
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=types,
+                               possible_types=['a', 'c', 'b'])
+
+        # Interactions object constrution fails when processes have sites type
+        # and no sitesmap is passed to interactions.
+        regex = r"Site types in process\d+ are set, sitesmap must be supplied."
+        self.assertRaisesRegexp(Error, regex, KMCInteractions, processes=processes)
+
+        # If sitesmap is not instance of SitesMap class, construction fails too.
+        regex = (r"The sitesmap given to the KMCInteractions constructor" + 
+                 r" must be of type KMCSitesMap.")
+        self.assertRaisesRegexp(Error, regex, KMCInteractions,
+                                processes=processes,
+                                sitesmap="sitesmap")
+
+        # }}}
+
     def testConstructionWithCustomRates(self):
         """ Test construction with custom rates. """
         # {{{
