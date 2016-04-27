@@ -192,6 +192,13 @@ class KMCInteractions(object):
                 for v in process.moveVectors():
                     cpp_move_vectors.push_back(Backend.Coordinate(v[1][0], v[1][1], v[1][2]))
 
+                # Setup the site types.
+                if self.__sitesmap:
+                    int_site_types = self.__sitesmap.siteTypesMapping(process.siteTypes())
+                    cpp_site_types = Backend.StdVectorInt(int_site_types)
+                else:
+                    cpp_site_types = Backend.StdVectorInt()
+
                 # Construct and store the C++ process.
                 if self.__rate_calculator is not None:
                     # Set the cutoff correctly.
@@ -214,7 +221,8 @@ class KMCInteractions(object):
                                                             cpp_basis,
                                                             cpp_move_origins,
                                                             cpp_move_vectors,
-                                                            process_number))
+                                                            process_number,
+                                                            cpp_site_types))
 
             # Construct the C++ interactions object.
             if self.__rate_calculator is not None:
