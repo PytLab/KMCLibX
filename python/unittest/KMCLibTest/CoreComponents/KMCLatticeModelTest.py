@@ -1076,258 +1076,218 @@ STEP 1000
         # Check that this backend object is stored on the class.
         self.assertTrue(model._KMCLatticeModel__backend == cpp_model)
 
-#    def testScript(self):
-#        """ Test that a script can be created. """
-#        # Setup a unitcell.
-#        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
-#                                                          [0.0,3.2,0.0],
-#                                                          [0.0,0.5,3.0]]),
-#                                basis_points=[[0.0,0.0,0.0],
-#                                              [0.5,0.5,0.5],
-#                                              [0.25,0.25,0.75]])
-#
-#        # Setup the lattice.
-#        lattice = KMCLattice(unit_cell=unit_cell,
-#                             repetitions=(4,4,1),
-#                             periodic=(True,True,False))
-#
-#        types = ['A','A','A','A','B','B',
-#                 'A','A','A','B','B','B',
-#                 'B','B','A','A','B','A',
-#                 'B','B','B','A','B','A',
-#                 'B','A','A','A','B','B',
-#                 'B','B','B','B','B','B',
-#                 'A','A','A','A','B','B',
-#                 'B','B','A','B','B','A']
-#
-#        # Setup the configuration.
-#        config = KMCConfiguration(lattice=lattice,
-#                                  types=types,
-#                                  possible_types=['A','C','B'])
-#
-#        # A first process.
-#        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-#        types0 = ["A","B"]
-#        types1 = ["B","A"]
-#        rate_0_1 = 3.5
-#        process_0 = KMCProcess(coords,
-#                               types0,
-#                               types1,
-#                               basis_sites=[0],
-#                               rate_constant=rate_0_1)
-#
-#        # A second process.
-#        types0 = ["A","C"]
-#        types1 = ["C","A"]
-#        rate_0_1 = 1.5
-#        process_1 = KMCProcess(coords,
-#                               types0,
-#                               types1,
-#                               basis_sites=[0],
-#                               rate_constant=rate_0_1)
-#
-#        # Construct the interactions object.
-#        processes = [process_0, process_1]
-#        interactions = KMCInteractions(processes)
-#
-#        # Construct the model.
-#        model = KMCLatticeModel(config, interactions)
-#
-#        # Get the script.
-#        script = model._script()
-#
-#        ref_script = """
-## -----------------------------------------------------------------------------
-## Unit cell
-#
-#cell_vectors = [[   2.800000e+00,   0.000000e+00,   0.000000e+00],
-#                [   0.000000e+00,   3.200000e+00,   0.000000e+00],
-#                [   0.000000e+00,   5.000000e-01,   3.000000e+00]]
-#
-#basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-#                [   5.000000e-01,   5.000000e-01,   5.000000e-01],
-#                [   2.500000e-01,   2.500000e-01,   7.500000e-01]]
-#
-#unit_cell = KMCUnitCell(
-#    cell_vectors=cell_vectors,
-#    basis_points=basis_points)
-#
-## -----------------------------------------------------------------------------
-## Lattice
-#
-#lattice = KMCLattice(
-#    unit_cell=unit_cell,
-#    repetitions=(4,4,1),
-#    periodic=(True, True, False))
-#
-## -----------------------------------------------------------------------------
-## Configuration
-#
-#types = ['A','A','A','A','B','B','A','A','A','B','B','B','B',
-#         'B','A','A','B','A','B','B','B','A','B','A','B','A',
-#         'A','A','B','B','B','B','B','B','B','B','A','A','A',
-#         'A','B','B','B','B','A','B','B','A']
-#
-#possible_types = ['A','C','B']
-#
-#configuration = KMCConfiguration(
-#    lattice=lattice,
-#    types=types,
-#    possible_types=possible_types)
-#
-## -----------------------------------------------------------------------------
-## Interactions
-#
-#coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-#               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-#
-#elements_before = ['A','B']
-#elements_after  = ['B','A']
-#move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
-#                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
-#basis_sites     = [0]
-#rate_constant   =    3.500000e+00
-#
-#process_0 = KMCProcess(
-#    coordinates=coordinates,
-#    elements_before=elements_before,
-#    elements_after=elements_after,
-#    move_vectors=move_vectors,
-#    basis_sites=basis_sites,
-#    rate_constant=rate_constant)
-#
-#coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-#               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-#
-#elements_before = ['A','C']
-#elements_after  = ['C','A']
-#move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
-#                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
-#basis_sites     = [0]
-#rate_constant   =    1.500000e+00
-#
-#process_1 = KMCProcess(
-#    coordinates=coordinates,
-#    elements_before=elements_before,
-#    elements_after=elements_after,
-#    move_vectors=move_vectors,
-#    basis_sites=basis_sites,
-#    rate_constant=rate_constant)
-#
-#processes = [process_0,
-#             process_1]
-#
-#interactions = KMCInteractions(
-#    processes=processes,
-#    implicit_wildcards=True)
-#
-## -----------------------------------------------------------------------------
-## Lattice model
-#
-#model = KMCLatticeModel(
-#    configuration=configuration,
-#    interactions=interactions)
-#"""
-#        self.assertEqual(script, ref_script)
-#
-#        # Get the script again, with a different variable name.
-#        script = model._script(variable_name="my_model")
-#
-#        ref_script = """
-## -----------------------------------------------------------------------------
-## Unit cell
-#
-#cell_vectors = [[   2.800000e+00,   0.000000e+00,   0.000000e+00],
-#                [   0.000000e+00,   3.200000e+00,   0.000000e+00],
-#                [   0.000000e+00,   5.000000e-01,   3.000000e+00]]
-#
-#basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-#                [   5.000000e-01,   5.000000e-01,   5.000000e-01],
-#                [   2.500000e-01,   2.500000e-01,   7.500000e-01]]
-#
-#unit_cell = KMCUnitCell(
-#    cell_vectors=cell_vectors,
-#    basis_points=basis_points)
-#
-## -----------------------------------------------------------------------------
-## Lattice
-#
-#lattice = KMCLattice(
-#    unit_cell=unit_cell,
-#    repetitions=(4,4,1),
-#    periodic=(True, True, False))
-#
-## -----------------------------------------------------------------------------
-## Configuration
-#
-#types = ['A','A','A','A','B','B','A','A','A','B','B','B','B',
-#         'B','A','A','B','A','B','B','B','A','B','A','B','A',
-#         'A','A','B','B','B','B','B','B','B','B','A','A','A',
-#         'A','B','B','B','B','A','B','B','A']
-#
-#possible_types = ['A','C','B']
-#
-#configuration = KMCConfiguration(
-#    lattice=lattice,
-#    types=types,
-#    possible_types=possible_types)
-#
-## -----------------------------------------------------------------------------
-## Interactions
-#
-#coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-#               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-#
-#elements_before = ['A','B']
-#elements_after  = ['B','A']
-#move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
-#                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
-#basis_sites     = [0]
-#rate_constant   =    3.500000e+00
-#
-#process_0 = KMCProcess(
-#    coordinates=coordinates,
-#    elements_before=elements_before,
-#    elements_after=elements_after,
-#    move_vectors=move_vectors,
-#    basis_sites=basis_sites,
-#    rate_constant=rate_constant)
-#
-#coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-#               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-#
-#elements_before = ['A','C']
-#elements_after  = ['C','A']
-#move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
-#                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
-#basis_sites     = [0]
-#rate_constant   =    1.500000e+00
-#
-#process_1 = KMCProcess(
-#    coordinates=coordinates,
-#    elements_before=elements_before,
-#    elements_after=elements_after,
-#    move_vectors=move_vectors,
-#    basis_sites=basis_sites,
-#    rate_constant=rate_constant)
-#
-#processes = [process_0,
-#             process_1]
-#
-#interactions = KMCInteractions(
-#    processes=processes,
-#    implicit_wildcards=True)
-#
-## -----------------------------------------------------------------------------
-## Lattice model
-#
-#my_model = KMCLatticeModel(
-#    configuration=configuration,
-#    interactions=interactions)
-#"""
-#
-#        # Check.
-#        self.assertEqual(script, ref_script)
+    def testScript(self):
+        """ Test that a script can be created. """
+        # Setup a unitcell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.5, 0.5, 0.5],
+                                              [0.25, 0.25, 0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4, 4, 1),
+                             periodic=(True, True, False))
+
+        types = ['A', 'A', 'A', 'A', 'B', 'B',
+                 'A', 'A', 'A', 'B', 'B', 'B',
+                 'B', 'B', 'A', 'A', 'B', 'A',
+                 'B', 'B', 'B', 'A', 'B', 'A',
+                 'B', 'A', 'A', 'A', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B',
+                 'A', 'A', 'A', 'A', 'B', 'B',
+                 'B', 'B', 'A', 'B', 'B', 'A']
+
+        site_types = ['a', 'a', 'a', 'a', 'b', 'b',
+                      'a', 'a', 'a', 'b', 'b', 'b',
+                      'b', 'b', 'a', 'a', 'b', 'a',
+                      'b', 'b', 'b', 'a', 'b', 'a',
+                      'b', 'a', 'a', 'a', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b',
+                      'a', 'a', 'a', 'a', 'b', 'b',
+                      'b', 'b', 'a', 'b', 'b', 'a']
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=['A','C','B'])
+
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=site_types,
+                               possible_types=['a', 'c', 'b'])
+
+        # A first process.
+        coords = [[1.0, 2.0, 3.4], [1.1, 1.2, 1.3]]
+        types0 = ["A", "B"]
+        types1 = ["B", "A"]
+        rate_0_1 = 3.5
+        process_0 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=[0],
+                               rate_constant=rate_0_1)
+
+        # A second process.
+        types0 = ["A", "C"]
+        types1 = ["C", "A"]
+        rate_0_1 = 1.5
+        process_1 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=[0],
+                               rate_constant=rate_0_1)
+
+        # Construct the interactions object.
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Construct the model.
+        model = KMCLatticeModel(config, sitesmap, interactions)
+
+        # Get the script.
+        script = model._script()
+
+        ref_script = """
+# -----------------------------------------------------------------------------
+# Unit cell
+
+cell_vectors = [[   2.800000e+00,   0.000000e+00,   0.000000e+00],
+                [   0.000000e+00,   3.200000e+00,   0.000000e+00],
+                [   0.000000e+00,   5.000000e-01,   3.000000e+00]]
+
+basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+                [   5.000000e-01,   5.000000e-01,   5.000000e-01],
+                [   2.500000e-01,   2.500000e-01,   7.500000e-01]]
+
+unit_cell = KMCUnitCell(
+    cell_vectors=cell_vectors,
+    basis_points=basis_points)
+
+# -----------------------------------------------------------------------------
+# Lattice
+
+lattice = KMCLattice(
+    unit_cell=unit_cell,
+    repetitions=(4,4,1),
+    periodic=(True, True, False))
+
+# -----------------------------------------------------------------------------
+# Configuration
+
+types = ['A','A','A','A','B','B','A','A','A','B','B','B','B',
+         'B','A','A','B','A','B','B','B','A','B','A','B','A',
+         'A','A','B','B','B','B','B','B','B','B','A','A','A',
+         'A','B','B','B','B','A','B','B','A']
+
+possible_types = ['A','C','B']
+
+configuration = KMCConfiguration(
+    lattice=lattice,
+    types=types,
+    possible_types=possible_types)
+
+# -----------------------------------------------------------------------------
+# Unit cell
+
+cell_vectors = [[   2.800000e+00,   0.000000e+00,   0.000000e+00],
+                [   0.000000e+00,   3.200000e+00,   0.000000e+00],
+                [   0.000000e+00,   5.000000e-01,   3.000000e+00]]
+
+basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+                [   5.000000e-01,   5.000000e-01,   5.000000e-01],
+                [   2.500000e-01,   2.500000e-01,   7.500000e-01]]
+
+unit_cell = KMCUnitCell(
+    cell_vectors=cell_vectors,
+    basis_points=basis_points)
+
+# -----------------------------------------------------------------------------
+# Lattice
+
+lattice = KMCLattice(
+    unit_cell=unit_cell,
+    repetitions=(4,4,1),
+    periodic=(True, True, False))
+
+# -----------------------------------------------------------------------------
+# SitesMap
+
+types = ['a','a','a','a','b','b','a','a','a','b','b','b','b',
+         'b','a','a','b','a','b','b','b','a','b','a','b','a',
+         'a','a','b','b','b','b','b','b','b','b','a','a','a',
+         'a','b','b','b','b','a','b','b','a']
+
+possible_types = ['a','c','b']
+
+sitesmap = KMCSitesMap(
+    lattice=lattice,
+    types=types,
+    possible_types=possible_types)
+
+# -----------------------------------------------------------------------------
+# Interactions
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+elements_before = ['A','B']
+elements_after  = ['B','A']
+site_types = None
+move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
+                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
+basis_sites     = [0]
+rate_constant   =    3.500000e+00
+
+process_0 = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    move_vectors=move_vectors,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant,
+    site_types=site_types)
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+elements_before = ['A','C']
+elements_after  = ['C','A']
+site_types = None
+move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
+                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
+basis_sites     = [0]
+rate_constant   =    1.500000e+00
+
+process_1 = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    move_vectors=move_vectors,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant,
+    site_types=site_types)
+
+processes = [process_0,
+             process_1]
+
+interactions = KMCInteractions(
+    processes=processes,
+    sitesmap=None,
+    implicit_wildcards=True)
+
+# -----------------------------------------------------------------------------
+# Lattice model
+
+model = KMCLatticeModel(
+    configuration=configuration,
+    sitesmap=sitesmap,
+    interactions=interactions)
+"""
+        # Check.
+        self.assertEqual(script, ref_script)
 
 
 if __name__ == '__main__':
