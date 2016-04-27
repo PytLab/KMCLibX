@@ -270,21 +270,34 @@ class KMCInteractions(object):
             else:
                 processes_string += ",\n"
 
-        # Add a comment line.
-        comment_string = """
-# -----------------------------------------------------------------------------
-# Interactions
+        # Get sitesmap construction string.
+        if self.__sitesmap:
+            sitesmap_script = self.__sitesmap._script("sitesmap")
+        else:
+            sitesmap_script = ""
 
-"""
+        # Add a comment line.
+        comment_string = "\n# " + "-"*77 + "\n# Interactions\n\n"
+
+        # implicit wildcard string.
         if self.__implicit_wildcards:
             implicit = "True"
         else:
             implicit = "False"
 
-        kmc_interactions_string = variable_name + " = KMCInteractions(\n" + \
-            "    processes=processes,\n" + \
-            "    implicit_wildcards=%s)\n" % (implicit)
+        # Sitesmap.
+        if self.__sitesmap:
+            sitesmap = "sitesmap"
+        else:
+            sitesmap = "None"
+
+        kmc_interactions_string = (
+            variable_name +
+            " = KMCInteractions(\n" +
+            "    processes=processes,\n" +
+            "    sitesmap=%s,\n"
+            "    implicit_wildcards=%s)\n") % (sitesmap, implicit)
 
         # Return the script.
-        return comment_string + processes_script + processes_string + "\n" + \
-            kmc_interactions_string
+        return (comment_string + processes_script + processes_string +
+                sitesmap_script + "\n" + kmc_interactions_string)
