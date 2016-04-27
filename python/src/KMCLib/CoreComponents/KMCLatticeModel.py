@@ -139,7 +139,7 @@ class KMCLatticeModel(object):
             msg = " KMCLib: WARNING: No trajectory filename given -> no trajectory will be saved."
             prettyPrint(msg)
 
-        elif not (isinstance(trajectory_filename, str) and
+        elif not (isinstance(trajectory_filename, str) or
                   isinstance(trajectory_filename, unicode)):
             msg = ("The 'trajectory_filename' input to the KMCLattice model " +
                    "run function must be given as str or unicode.")
@@ -270,22 +270,21 @@ class KMCLatticeModel(object):
         # Get the configuration and interactions scripts.
         configuration_script = self.__configuration._script(variable_name="configuration")
         interactions_script = self.__interactions._script(variable_name="interactions")
+        sitesmap_script = self.__sitesmap._script(variable_name="sitesmap")
 
         # Setup the lattice model string.
-        lattice_model_string = variable_name + """ = KMCLatticeModel(
-    configuration=configuration,
-    interactions=interactions)
-"""
+        lattice_model_string = (variable_name +
+                                " = KMCLatticeModel(\n" +
+                                "    configuration=configuration,\n" +
+                                "    sitesmap=sitesmap,\n" +
+                                "    interactions=interactions)\n")
 
         # And a comment string.
-        comment_string = """
-# -----------------------------------------------------------------------------
-# Lattice model
+        comment_string = "\n# " + "-"*77 + "\n# Lattice model\n\n"
 
-"""
         # Return the script.
-        return configuration_script + interactions_script + \
-            comment_string + lattice_model_string
+        return (configuration_script + sitesmap_script + interactions_script +
+                comment_string + lattice_model_string)
 
     def __printMatchInfo(self, cpp_model):
         """ """
