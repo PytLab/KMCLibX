@@ -581,8 +581,108 @@ class KMCLatticeModelTest(unittest.TestCase):
             self.assertAlmostEqual(fraction, target, 3)
         # }}}
 
+    def testRun2WithSiteTypes(self):
+        """ Test the run of an A-B flip model with site types provided. """
+        # {{{
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Sitesmap.
+        site_types = ['b']*100
+        possible_site_types = ['a', 'b']
+        sitesmap = KMCSitesMap(
+            lattice=lattice,
+            types=site_types,
+            possible_types=possible_site_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0,
+                               site_types=['b'])
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0,
+                               site_types=['b'])
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes, sitesmap)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, sitesmap, interactions)
+
+        # Run the model with a trajectory file.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
+        trajectory_filename = str(os.path.join(name, "ab_flip_traj.py"))
+        self.__files_to_remove.append(trajectory_filename)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500,
+                                                  seed=2013)
+
+        # Run the model for 1000 steps.
+        ab_flip_model.run(control_parameters,
+                          trajectory_filename=trajectory_filename)
+
+        # Read the first last frames from the trajectory file and check that
+        # the fraction of A is close to 20% in the last, and 0 in the first.
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
+
+            # Count the first frame.
+            elem = local_dict["types"][0]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
+            self.assertEqual(nA, 0)
+            self.assertEqual(nB, 100)
+
+            # Count the last frame.
+            elem = local_dict["types"][-1]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
+
+            # Note that the average should be 20.0% over a long run.
+            # It is pure luck that it is exact at this particular
+            # step with the presently used random number seed.
+            fraction =  nA * 100.0 / (nA + nB)
+            target = 20.0
+            self.assertAlmostEqual(fraction, target, 3)
+        # }}}
+
     def testCustomRatesRun(self):
         """ Test the run of an A-B flip model with custom rates. """
+        # {{{
         # Cell.
         cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
                         [   0.000000e+00,   1.000000e+00,   0.000000e+00],
@@ -670,9 +770,11 @@ class KMCLatticeModelTest(unittest.TestCase):
             # step the A population is 74%.
             value = 1.0 * nA / (nA + nB)
             self.assertAlmostEqual(0.74, value, 2)
+        # }}}
 
     def testRunWithAnalysis(self):
         """ Test that the analyis plugins get called correctly. """
+        # {{{
         # Cell.
         cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
                         [   0.000000e+00,   1.000000e+00,   0.000000e+00],
@@ -772,9 +874,11 @@ class KMCLatticeModelTest(unittest.TestCase):
         self.assertTrue(ap2.setup_called)
         self.assertTrue(ap2.finalize_called)
         self.assertEqual(ap2.register_step_counts, 3)
+        # }}}
 
     def testRunFailAnalysis(self):
         """ Test that the analyis plugins get called correctly. """
+        # {{{
         # Cell.
         cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
                         [   0.000000e+00,   1.000000e+00,   0.000000e+00],
@@ -852,9 +956,11 @@ class KMCLatticeModelTest(unittest.TestCase):
         self.assertRaises( Error,
                            lambda : ab_flip_model.run(control_parameters,
                                                       analysis=[AnalysisProxy1(), "AP3"]) )
+        # }}}
 
     def testRunTrajectory(self):
         """ Test the run of an A-B flip model with trajectory output. """
+        # {{{
         # Cell.
         cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
                         [   0.000000e+00,   1.000000e+00,   0.000000e+00],
@@ -1058,9 +1164,11 @@ STEP 1000
                            lambda : ab_flip_model.run(control_parameters,
                                                       trajectory_filename=xyz_trajectory_filename,
                                                       trajectory_type=123) )
+        # }}}
 
     def testRunRngType(self):
         """ Test that it is possible to run with each of the supported PRNG:s. """
+        # {{{
         # Cell.
         cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
                         [   0.000000e+00,   1.000000e+00,   0.000000e+00],
@@ -1156,9 +1264,11 @@ STEP 1000
         self.assertAlmostEqual(t_RANLUX24, 389.712162523, 5)
         self.assertAlmostEqual(t_RANLUX48, 390.544423280, 5)
         self.assertAlmostEqual(t_MINSTD,   384.712302086, 5)
+        # }}}
 
     def testRunRngTypeDevice(self):
         """ Test to use the PRNG DEVICE. """
+        # {{{
         # Cell.
         cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
                         [   0.000000e+00,   1.000000e+00,   0.000000e+00],
@@ -1232,44 +1342,46 @@ STEP 1000
             # Get the simulation time out.
             t_DEVICE = ab_flip_model_DEVICE._KMCLatticeModel__cpp_timer.simulationTime()
             self.assertTrue(t_DEVICE < 410.0 and t_DEVICE > 370.0)
+        # }}}
 
     def testBackend(self):
         """ Test that the backend object is correctly constructed. """
+        # {{{
         # Setup a unitcell.
-        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
-                                                          [0.0,3.2,0.0],
-                                                          [0.0,0.5,3.0]]),
-                                basis_points=[[0.0,0.0,0.0],
-                                              [0.5,0.5,0.5],
-                                              [0.25,0.25,0.75]])
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.5, 0.5, 0.5],
+                                              [0.25, 0.25, 0.75]])
 
         # Setup the lattice.
         lattice = KMCLattice(unit_cell=unit_cell,
-                             repetitions=(4,4,1),
-                             periodic=(True,True,False))
+                             repetitions=(4, 4, 1),
+                             periodic=(True, True, False))
 
-        types = ['A','A','A','A','B','B',
-                 'A','A','A','B','B','B',
-                 'B','B','A','A','B','A',
-                 'B','B','B','A','B','A',
-                 'B','A','A','A','B','B',
-                 'B','B','B','B','B','B',
-                 'A','A','A','A','B','B',
-                 'B','B','A','B','B','A']
+        types = ['A', 'A', 'A', 'A', 'B', 'B',
+                 'A', 'A', 'A', 'B', 'B', 'B',
+                 'B', 'B', 'A', 'A', 'B', 'A',
+                 'B', 'B', 'B', 'A', 'B', 'A',
+                 'B', 'A', 'A', 'A', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B',
+                 'A', 'A', 'A', 'A', 'B', 'B',
+                 'B', 'B', 'A', 'B', 'B', 'A']
 
-        site_types = ['a','a','a','a','b','b',
-                      'a','a','a','b','b','b',
-                      'b','b','a','a','b','a',
-                      'b','b','b','a','b','a',
-                      'b','a','a','a','b','b',
-                      'b','b','b','b','b','b',
-                      'a','a','a','a','b','b',
-                      'b','b','a','b','b','a']
+        site_types = ['a', 'a', 'a', 'a', 'b', 'b',
+                      'a', 'a', 'a', 'b', 'b', 'b',
+                      'b', 'b', 'a', 'a', 'b', 'a',
+                      'b', 'b', 'b', 'a', 'b', 'a',
+                      'b', 'a', 'a', 'a', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b',
+                      'a', 'a', 'a', 'a', 'b', 'b',
+                      'b', 'b', 'a', 'b', 'b', 'a']
 
         # Setup the configuration.
         config = KMCConfiguration(lattice=lattice,
                                   types=types,
-                                  possible_types=['A','C','B'])
+                                  possible_types=['A', 'C', 'B'])
 
         # Setup the sitesmap.
         sitesmap = KMCSitesMap(lattice=lattice,
@@ -1277,10 +1389,10 @@ STEP 1000
                                possible_types=['a', 'c', 'b'])
 
         # A first process.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types0 = ["A","B"]
-        types1 = ["B","A"]
-        sites  = [0,1,2,3,4]
+        coords = [[1.0, 2.0, 3.4], [1.1, 1.2, 1.3]]
+        types0 = ["A", "B"]
+        types1 = ["B", "A"]
+        sites  = [0, 1, 2, 3, 4]
         rate_0_1 = 3.5
         process_0 = KMCProcess(coords,
                                types0,
@@ -1289,8 +1401,8 @@ STEP 1000
                                rate_constant=rate_0_1)
 
         # A second process.
-        types0 = ["A","C"]
-        types1 = ["C","A"]
+        types0 = ["A", "C"]
+        types1 = ["C", "A"]
         rate_0_1 = 1.5
         process_1 = KMCProcess(coords,
                                types0,
@@ -1310,9 +1422,93 @@ STEP 1000
 
         # Check that this backend object is stored on the class.
         self.assertTrue(model._KMCLatticeModel__backend == cpp_model)
+        # }}}
+
+    def testBackendWithSiteTypes(self):
+        """ Test that the backend object is correctly constructed with site types provided. """
+        # {{{
+        # Setup a unitcell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
+                                                          [0.0, 3.2, 0.0],
+                                                          [0.0, 0.5, 3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.5, 0.5, 0.5],
+                                              [0.25, 0.25, 0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4, 4, 1),
+                             periodic=(True, True, False))
+
+        types = ['A', 'A', 'A', 'A', 'B', 'B',
+                 'A', 'A', 'A', 'B', 'B', 'B',
+                 'B', 'B', 'A', 'A', 'B', 'A',
+                 'B', 'B', 'B', 'A', 'B', 'A',
+                 'B', 'A', 'A', 'A', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B',
+                 'A', 'A', 'A', 'A', 'B', 'B',
+                 'B', 'B', 'A', 'B', 'B', 'A']
+
+        site_types = ['a', 'a', 'a', 'a', 'b', 'b',
+                      'a', 'a', 'a', 'b', 'b', 'b',
+                      'b', 'b', 'a', 'a', 'b', 'a',
+                      'b', 'b', 'b', 'a', 'b', 'a',
+                      'b', 'a', 'a', 'a', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b',
+                      'a', 'a', 'a', 'a', 'b', 'b',
+                      'b', 'b', 'a', 'b', 'b', 'a']
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=['A', 'C', 'B'])
+
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=site_types,
+                               possible_types=['a', 'c', 'b'])
+
+        # A first process.
+        coords = [[1.0, 2.0, 3.4], [1.1, 1.2, 1.3]]
+        types0 = ["A", "B"]
+        types1 = ["B", "A"]
+        sites  = [0, 1, 2, 3, 4]
+        rate_0_1 = 3.5
+        process_0 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1,
+                               site_types=['a', 'b'])
+
+        # A second process.
+        types0 = ["A", "C"]
+        types1 = ["C", "A"]
+        rate_0_1 = 1.5
+        process_1 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1,
+                               site_types=['b', 'b'])
+
+        # Construct the interactions object.
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes=processes, sitesmap=sitesmap)
+
+        # Construct the model.
+        model = KMCLatticeModel(config, sitesmap, interactions)
+
+        # Get the c++ backend out.
+        cpp_model = model._backend()
+
+        # Check that this backend object is stored on the class.
+        self.assertTrue(model._KMCLatticeModel__backend == cpp_model)
+        # }}}
 
     def testScript(self):
         """ Test that a script can be created. """
+        # {{{
         # Setup a unitcell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8, 0.0, 0.0],
                                                           [0.0, 3.2, 0.0],
@@ -1523,6 +1719,8 @@ model = KMCLatticeModel(
 """
         # Check.
         self.assertEqual(script, ref_script)
+        
+        # }}}
 
 
 if __name__ == '__main__':
