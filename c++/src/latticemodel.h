@@ -41,7 +41,7 @@ public:
      *                         and possible processes in the system.
      */
     LatticeModel(Configuration & configuration,
-                 const SitesMap & sitesmap,
+                 SitesMap & sitesmap,
                  SimulationTimer & simulation_timer,
                  const LatticeMap & lattice_map,
                  const Interactions & interactions);
@@ -83,7 +83,7 @@ private:
     Configuration & configuration_;
 
     /// A reference to the sites map given at construction.
-    const SitesMap & sitesmap_;
+    SitesMap & sitesmap_;
 
     /// A reference to the timer given at construction.
     SimulationTimer & simulation_timer_;
