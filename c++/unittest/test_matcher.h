@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -33,8 +34,9 @@ public:
     CPPUNIT_TEST( testCalculateMatchingProcess );
     CPPUNIT_TEST( testUpdateProcesses );
     CPPUNIT_TEST( testCalculateMatchingInteractions );
-    CPPUNIT_TEST( testCalculateMatchingInteractionsWithSiteType );
-    CPPUNIT_TEST( testCalculateMatchingInteractionsWithSiteType2 );
+    CPPUNIT_TEST( testCalculateMatchingInteractionsWithSiteTypes );
+    CPPUNIT_TEST( testCalculateMatchingInteractionsWithSiteTypes2 );
+    CPPUNIT_TEST( testCalculateMatchingInteractionsWithSiteTypes2D );
     CPPUNIT_TEST( testUpdateRates );
     CPPUNIT_TEST( testUpdateSingleRate );
     CPPUNIT_TEST_SUITE_END();
@@ -48,8 +50,9 @@ public:
     void testCalculateMatchingProcess();
     void testUpdateProcesses();
     void testCalculateMatchingInteractions();
-    void testCalculateMatchingInteractionsWithSiteType();
-    void testCalculateMatchingInteractionsWithSiteType2();
+    void testCalculateMatchingInteractionsWithSiteTypes();
+    void testCalculateMatchingInteractionsWithSiteTypes2();
+    void testCalculateMatchingInteractionsWithSiteTypes2D();
     void testUpdateRates();
     void testUpdateSingleRate();
 

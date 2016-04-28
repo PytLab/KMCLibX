@@ -53,6 +53,7 @@ def printHeader(output=None):
     prettyPrint("# -----------------------------------------------------------------------------", output)
     prettyPrint("# KMCLibX version " + __version__, output)
     prettyPrint("# Distributed under the " + __license__ + " license", output)
+    prettyPrint("#", output)
     prettyPrint("# " + __copyright__, output)
     prettyPrint("# Developed by " + __author__ + " <" + __email__ + ">", output)
     prettyPrint("#", output)

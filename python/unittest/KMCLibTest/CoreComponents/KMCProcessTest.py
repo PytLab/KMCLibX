@@ -17,19 +17,21 @@ from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 # Import the module to test.
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
 
+
 # Implementing the tests.
 class KMCProcessTest(unittest.TestCase):
     """ Class for testing the KMCProcess class """
 
     def testConstruction(self):
         """ Test that the KMCProcess class can be constructed. """
-        # Set the input.
-        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        # {{{
+        # Set the input (no site types).
+        coordinates = [[0.0, 0.0, 0.0], [1.0, 2.0, 3.0]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
         basis_sites = [0]
-        move_vectors = [(0, [1.0,2.0,3.0]),
-                        (1, [-1.0,-2.0,-3.0])]
+        move_vectors = [(0, [1.0, 2.0, 3.0]),
+                        (1, [-1.0, -2.0, -3.0])]
 
         # Construct.
         p = KMCProcess(coordinates=coordinates,
@@ -40,10 +42,53 @@ class KMCProcessTest(unittest.TestCase):
                        rate_constant=1.0)
 
         # Check that we got a valid instance.
-        self.assertTrue( isinstance(p, KMCProcess) )
+        self.assertTrue(isinstance(p, KMCProcess))
+
+        # Check private attribute values.
+        self.assertTrue(numpy.allclose(p._KMCProcess__coordinates, coordinates))
+        self.assertListEqual(p._KMCProcess__elements_before, elements_before)
+        self.assertListEqual(p._KMCProcess__elements_after, elements_after)
+        self.assertListEqual(p._KMCProcess__basis_sites, basis_sites)
+        self.assertListEqual(p._KMCProcess__move_vectors, move_vectors)
+        self.assertIsNone(p._KMCProcess__site_types)
+        # }}}
+
+    def testConstructionWithSiteTypes(self):
+        """ Test that the KMCProcess class can be constructed with site types. """
+        # {{{
+        # Set the input (no site types).
+        coordinates = [[0.0, 0.0, 0.0], [1.0, 2.0, 3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        site_types = ["M", "N"]
+        basis_sites = [0]
+        move_vectors = [(0, [1.0, 2.0, 3.0]),
+                        (1, [-1.0, -2.0, -3.0])]
+
+        # Construct.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       move_vectors=move_vectors,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0,
+                       site_types=site_types)
+
+        # Check that we got a valid instance.
+        self.assertTrue(isinstance(p, KMCProcess))
+
+        # Check private attribute values.
+        self.assertTrue(numpy.allclose(p._KMCProcess__coordinates, coordinates))
+        self.assertListEqual(p._KMCProcess__elements_before, elements_before)
+        self.assertListEqual(p._KMCProcess__elements_after, elements_after)
+        self.assertListEqual(p._KMCProcess__basis_sites, basis_sites)
+        self.assertListEqual(p._KMCProcess__move_vectors, move_vectors)
+        self.assertListEqual(p._KMCProcess__site_types, site_types)
+        # }}}
 
     def testConstructionSorting(self):
         """ Test that the coordinates elements and move vectors gets sorted """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],
                        [3.0, 3.0, 3.0],
@@ -58,9 +103,9 @@ class KMCProcessTest(unittest.TestCase):
         rate_constant = 1.0
 
         move_vectors = [(0, [ 1.5, 1.5, 1.5]),
-                        (1, [-3.0,-3.0,-3.0]),
+                        (1, [-3.0, -3.0, -3.0]),
                         (2, [ 2.0, 2.0, 2.0]),
-                        (4, [-0.5,-0.5,-0.5])]
+                        (4, [-0.5, -0.5, -0.5])]
 
         # Construct.
         p = KMCProcess(coordinates=coordinates,
@@ -77,49 +122,118 @@ class KMCProcessTest(unittest.TestCase):
         # Check that the coordinates, elements and move vectors
         # have been sorted.
 
-        ref_coords = numpy.array([[ 0.,  0.,  0. ],
-                                  [ 1.,  1.,  1. ],
+        ref_coords = numpy.array([[ 0., 0., 0. ],
+                                  [ 1., 1., 1. ],
                                   [ 1.1, 1.1, 1.1],
                                   [ 1.5, 1.5, 1.5],
                                   [ 2.5, 2.5, 2.5],
-                                  [ 3.,  3.,  3.]])
+                                  [ 3., 3., 3.]])
 
         # Before move.
         coords = config_before.coordinates()
-        norm = numpy.linalg.norm(ref_coords - coords)
-        self.assertAlmostEqual( norm, 0.0, 10 )
+        self.assertTrue(numpy.allclose(coords, ref_coords))
 
         # After move.
         coords = config_after.coordinates()
-        norm = numpy.linalg.norm(ref_coords - coords)
-        self.assertAlmostEqual( norm, 0.0, 10 )
+        self.assertTrue(numpy.allclose(coords, ref_coords))
 
         # Check the elements before move.
         ref_types = ["A", "C", "P", "D", "E", "B"]
-        self.assertEqual( ref_types, config_before.types() )
+        self.assertListEqual(ref_types, config_before.types())
 
         # Check the elements after move.
         ref_types = ["B", "D", "P", "A", "E", "C"]
-        self.assertEqual( ref_types, config_after.types() )
+        self.assertListEqual(ref_types, config_after.types())
 
+        # Check the move vectors after move.
         ref_vectors = [(0, [ 1.5, 1.5, 1.5]),
                        (1, [ 2.0, 2.0, 2.0]),
-                       (3, [-0.5,-0.5,-0.5]),
-                       (5, [-3.0,-3.0,-3.0])]
-
+                       (3, [-0.5, -0.5, -0.5]),
+                       (5, [-3.0, -3.0, -3.0])]
         ret_vectors = p.moveVectors()
+        self.assertListEqual(ref_vectors, ret_vectors)
 
-        for ref, ret in zip(ref_vectors, ret_vectors):
-            # Check the 'from' index.
-            self.assertEqual(ref[0], ret[0])
+        # Check site types.
+        self.assertIsNone(p._KMCProcess__site_types)
+        # }}}
 
-            # Check the vector.
-            norm = numpy.linalg.norm(numpy.array(ref[1]) - numpy.array(ret[1]))
-            self.assertAlmostEqual( norm, 0.0, 10 )
+    def testConstructionSortingWithSiteTypes(self):
+        """ Test that the coordinates elements, site types and move vectors gets sorted """
+        # {{{
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],
+                       [3.0, 3.0, 3.0],
+                       [1.0, 1.0, 1.0],
+                       [1.1, 1.1, 1.1],
+                       [1.5, 1.5, 1.5],
+                       [2.5, 2.5, 2.5]]
 
+        elements_before = ["A", "B", "C", "P", "D", "E"]
+        elements_after =  ["B", "C", "D", "P", "A", "E"]
+        site_types = ["M", "K", "N", "X", "Y", "Z"]
+        basis_sites = [0]
+        rate_constant = 1.0
+
+        move_vectors = [(0, [ 1.5, 1.5, 1.5]),
+                        (1, [-3.0, -3.0, -3.0]),
+                        (2, [ 2.0, 2.0, 2.0]),
+                        (4, [-0.5, -0.5, -0.5])]
+
+        # Construct.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       move_vectors=move_vectors,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0,
+                       site_types=site_types)
+
+        # Get the configurations out.
+        config_before = p.localConfigurations()[0]
+        config_after  = p.localConfigurations()[1]
+
+        # Check that the coordinates, elements and move vectors
+        # have been sorted.
+
+        ref_coords = numpy.array([[ 0., 0., 0. ],
+                                  [ 1., 1., 1. ],
+                                  [ 1.1, 1.1, 1.1],
+                                  [ 1.5, 1.5, 1.5],
+                                  [ 2.5, 2.5, 2.5],
+                                  [ 3., 3., 3.]])
+
+        # Before move.
+        coords = config_before.coordinates()
+        self.assertTrue(numpy.allclose(coords, ref_coords))
+
+        # After move.
+        coords = config_after.coordinates()
+        self.assertTrue(numpy.allclose(coords, ref_coords))
+
+        # Check the elements before move.
+        ref_types = ["A", "C", "P", "D", "E", "B"]
+        self.assertListEqual(ref_types, config_before.types())
+
+        # Check the elements after move.
+        ref_types = ["B", "D", "P", "A", "E", "C"]
+        self.assertListEqual(ref_types, config_after.types())
+
+        # Check the move vectors after move.
+        ref_vectors = [(0, [ 1.5, 1.5, 1.5]),
+                       (1, [ 2.0, 2.0, 2.0]),
+                       (3, [-0.5, -0.5, -0.5]),
+                       (5, [-3.0, -3.0, -3.0])]
+        ret_vectors = p.moveVectors()
+        self.assertListEqual(ref_vectors, ret_vectors)
+
+        # Check site types.
+        ref_site_types = ["M", "N", "X", "Y", "Z", "K"]
+        self.assertListEqual(ref_site_types, p.siteTypes())
+        # }}}
 
     def testEqualOperator(self):
         """ Test the equal operator. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -144,7 +258,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p2)
-        self.assertTrue( eq )
+        self.assertTrue(eq)
 
         # Set the input again, different coordinates.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0001]]
@@ -159,7 +273,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p3)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different length.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.],[1.0,2.0,3.0]]
@@ -177,7 +291,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p4)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different basis sites.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
@@ -194,7 +308,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p5)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different length of the basis sites.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
@@ -211,7 +325,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p6)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different elements before.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
@@ -228,7 +342,7 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p7)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Set the input again, different elements after.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
@@ -245,10 +359,117 @@ class KMCProcessTest(unittest.TestCase):
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p7)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
+        # }}}
+
+    def testEqualOperatorSiteTypes(self):
+        """ Test the equal operator with site types. """
+        # {{{
+        # ---------------------------------------------------------------------
+        # Set the input, site types are different.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
+        basis_sites = [0]
+        site_types1 = ["M", "N"]
+        site_types2 = ["K", "T"]
+
+        # Construct.
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types1)
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types2)
+
+        # Check, should not be equal.
+        eq = (p1 == p2)
+        self.assertFalse(eq)
+
+        # ---------------------------------------------------------------------
+        # Construct two process with same site types.
+        site_types1 = ["M", "N"]
+        site_types2 = ["M", "N"]
+
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types1)
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types2)
+
+        # Check, should be equal.
+        eq = (p1 == p2)
+        self.assertTrue(eq)
+
+        # ---------------------------------------------------------------------
+        # Construct two process, one site type is None.
+        site_types1 = ["M", "N"]
+
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0,
+                        site_types=site_types1)
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+
+        # Check, should not be equal.
+        eq = (p1 == p2)
+        self.assertFalse(eq)
+
+        # ---------------------------------------------------------------------
+        # Construct two process, one site type is None.
+
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+
+        # Check, should be equal.
+        eq = (p1 == p2)
+        self.assertTrue(eq)
+        # }}}
 
     def testEqualOperatorMoveVectors(self):
         """ Test the equal operator w.r.t. the move vectors. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -275,21 +496,21 @@ class KMCProcessTest(unittest.TestCase):
 
         # The same move vectors should be reconstructed, so there are equal.
         eq = (p1 == p2)
-        self.assertTrue( eq )
+        self.assertTrue(eq)
 
         # If se explicitly set the move vectors to empty on p2 they are not equal.
         p2._KMCProcess__move_vectors = []
         eq = (p1 == p2)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # And the other way around.
         eq = (p2 == p1)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # Now, make the other one empty also.
         p1._KMCProcess__move_vectors = []
         eq = (p1 == p2)
-        self.assertTrue( eq )
+        self.assertTrue(eq)
 
         # Set explicitly to different vectors.
         p1._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
@@ -298,23 +519,25 @@ class KMCProcessTest(unittest.TestCase):
         p2._KMCProcess__move_vectors = move_vectors = [(1, [1.0,2.0,3.0]),
                                                        (0, [-1.0,-2.0,-3.0])]
         eq = (p1 == p2)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # And the vector.
         p2._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
                                                        (1, [-1.0,-2.1,-3.0])]
         eq = (p1 == p2)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
 
         # The length.
         p2._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
                                                        (1, [-1.0,-2.1,-3.0]),
                                                        (2, [ 1.0,-2.1,-3.0])]
         eq = (p1 == p2)
-        self.assertFalse( eq )
+        self.assertFalse(eq)
+        # }}}
 
     def testEqualOperatorUnsorted(self):
         """ Test the equal operator for unsorted coordinates. """
+        # {{{
         # Set the first input.
         coordinates_1     = [[0.0, 0.0, 0.0],
                              [1.0, 3.0, 1.0],
@@ -353,10 +576,60 @@ class KMCProcessTest(unittest.TestCase):
 
         # These should be equal despite differing order.
         eq = (p1 == p2)
-        self.assertTrue( eq )
+        self.assertTrue(eq)
+        # }}}
+
+    def testEqualOperatorUnsortedWithSiteTypes(self):
+        """ Test the equal operator for unsorted coordinates with site type set. """
+        # {{{
+        # Set the first input.
+        coordinates_1 = [[0.0, 0.0, 0.0],
+                         [1.0, 3.0, 1.0],
+                         [1.0, 2.0, 3.0]]
+        elements_before_1 = ["A", "C", "B"]
+        elements_after_1 = ["B", "C", "A"]
+        move_vectors_1 = [(0, [1.0,2.0,3.0]),
+                          (2, [-1.0,-2.0,-3.0])]
+        basis_sites_1 = [0]
+        site_types_1 = ["M", "N", "K"]
+
+        # Set the second input.
+        coordinates_2 = [[0.0, 0.0, 0.0],
+                         [1.0, 2.0, 3.0],
+                         [1.0, 3.0, 1.0],]
+        elements_before_2 = ["A", "B", "C"]
+        elements_after_2 = ["B", "A", "C"]
+        move_vectors_2 = [(0, [1.0,2.0,3.0]),
+                          (1, [-1.0,-2.0,-3.0])]
+        basis_sites_2 = [0]
+        site_types_2 = ["M", "K", "N"]
+
+        # Construct.
+        p1 = KMCProcess(coordinates=coordinates_1,
+                        elements_before=elements_before_1,
+                        elements_after=elements_after_1,
+                        move_vectors=move_vectors_1,
+                        basis_sites=basis_sites_1,
+                        rate_constant=1.0,
+                        site_types=site_types_1)
+
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates_2,
+                        elements_before=elements_before_2,
+                        elements_after=elements_after_2,
+                        move_vectors=move_vectors_2,
+                        basis_sites=basis_sites_2,
+                        rate_constant=1.0,
+                        site_types=site_types_2)
+
+        # These should be equal despite differing order.
+        eq = (p1 == p2)
+        self.assertTrue(eq)
+        # }}}
 
     def testConstructionFailCoordinates(self):
         """ Test that construction fails with the wrong coordinates format. """
+        # {{{
         # Set the input.
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
@@ -416,10 +689,12 @@ class KMCProcessTest(unittest.TestCase):
                                                move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
+        # }}}
 
     def testConstructionFailElements(self):
         """ Test that construction fails with the wrong elements format. """
 
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -443,9 +718,11 @@ class KMCProcessTest(unittest.TestCase):
                                                move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
+        # }}}
 
     def testConstructionFailNumberOfSites(self):
         """ Test that construction fails mismatch in the number of sites. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0], [1.2,3.4,5.6]]
         elements_before = ["A", "B"]
@@ -485,9 +762,11 @@ class KMCProcessTest(unittest.TestCase):
                                                basis_sites=basis_sites,
                                                move_vectors=move_vectors,
                                                rate_constant=1.0) )
+        # }}}
 
     def testConstructionFailBasisSites(self):
         """ Test that construction fails with the wrong basis sites input. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -521,9 +800,11 @@ class KMCProcessTest(unittest.TestCase):
                                                basis_sites=basis_sites,
                                                move_vectors=move_vectors,
                                                rate_constant=1.0) )
+        # }}}
 
     def testConstructionFailRate(self):
         """ Test that construction fails with a wrong rate. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -556,10 +837,11 @@ class KMCProcessTest(unittest.TestCase):
                                                move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=[3.459]) )
-
+        # }}}
 
     def testConstructionFailMoveVectors(self):
         """ Test that the wrong move vector input gives and error. """
+        # {{{
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
@@ -623,9 +905,11 @@ class KMCProcessTest(unittest.TestCase):
                                                move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
+        # }}}
 
     def testReconstructMoveVectors(self):
         """ Test that the helper function to reconstruct move vectors works as intended. """
+        # {{{
         # Get an empty process.
         process = KMCProcess.__new__(KMCProcess)
 
@@ -663,9 +947,61 @@ class KMCProcessTest(unittest.TestCase):
         move_vectors = process._KMCProcess__reconstructMoveVectors()
 
         self.assertTrue( move_vectors is None )
+        # }}}
+
+    def testConstructionFailSiteTypes(self):
+        """ Test that construction fails with wrong site types provided. """
+        # {{{
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0], [1.2,3.4,5.6]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
+        basis_sites = [0]
+
+        # Use string instead of string list.
+        site_types = "M, N"
+        self.assertRaises(Error,
+                          KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          move_vectors=move_vectors,
+                          rate_constant=1.0,
+                          site_types=site_types)
+
+        # Use longer length.
+        site_types = ["M", "N", "N"]
+        self.assertRaises(Error,
+                          KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          move_vectors=move_vectors,
+                          rate_constant=1.0,
+                          site_types=site_types)
+
+        # Use int list.
+        site_types = [1, 2]
+        self.assertRaises(Error,
+                          KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          move_vectors=move_vectors,
+                          rate_constant=1.0,
+                          site_types=site_types)
+
+        # }}}
+
 
     def testScript(self):
         """ Test that the process can generate its own valid script. """
+        # {{{
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
@@ -690,6 +1026,7 @@ class KMCProcessTest(unittest.TestCase):
 
 elements_before = ['A','B']
 elements_after  = ['B','A']
+site_types = None
 move_vectors    = [(  0,[   1.000000e+00,   2.000000e+00,   3.000000e+00]),
                    (  1,[  -1.000000e+00,  -2.000000e+00,  -3.000000e+00])]
 basis_sites     = [0,1,4]
@@ -701,7 +1038,8 @@ process = KMCProcess(
     elements_after=elements_after,
     move_vectors=move_vectors,
     basis_sites=basis_sites,
-    rate_constant=rate_constant)
+    rate_constant=rate_constant,
+    site_types=site_types)
 
 """
         # Check.
@@ -741,6 +1079,7 @@ process = KMCProcess(
 
 elements_before = ['A','B','C']
 elements_after  = ['C','A','B']
+site_types = None
 move_vectors    = None
 basis_sites     = [0,1,4]
 rate_constant   =    1.000000e+00
@@ -751,13 +1090,61 @@ process = KMCProcess(
     elements_after=elements_after,
     move_vectors=move_vectors,
     basis_sites=basis_sites,
-    rate_constant=rate_constant)
+    rate_constant=rate_constant,
+    site_types=site_types)
 
 """
         self.assertEqual(script, ref_script)
 
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        site_types = ["M", "N"]
+        move_vectors = [(0, [1.0, 2.0, 3.0]),
+                        (1, [-1.0, -2.0, -3.0])]
+        basis_sites = [0, 1, 4]
+
+        # Construct with given move vectors.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       move_vectors=move_vectors,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0,
+                       site_types=site_types)
+
+        # Get the script.
+        script = p._script()
+
+        ref_script = """coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e+00,   2.000000e+00,   3.000000e+00]]
+
+elements_before = ['A','B']
+elements_after  = ['B','A']
+site_types = ['M','N']
+move_vectors    = [(  0,[   1.000000e+00,   2.000000e+00,   3.000000e+00]),
+                   (  1,[  -1.000000e+00,  -2.000000e+00,  -3.000000e+00])]
+basis_sites     = [0,1,4]
+rate_constant   =    1.000000e+00
+
+process = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    move_vectors=move_vectors,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant,
+    site_types=site_types)
+
+"""
+        # Check.
+        self.assertEqual(ref_script, script)
+    # }}}
+
     def testLocalConfigurations(self):
         """ Test that the local configurations are correctly set up """
+        # {{{
         coordinates = numpy.array([[1.0,2.0,3.0], [2.3,5.5,3.2]])
         elements1 = ["First", "Second"]
         elements2 = ["Second", "First"]
@@ -784,6 +1171,7 @@ process = KMCProcess(
         # Check types.
         self.assertAlmostEqual( c1.types(), ref_c1.types() )
         self.assertAlmostEqual( c2.types(), ref_c2.types() )
+        # }}}
 
     def testElementsBefore(self):
         """ Test the elements before query function. """

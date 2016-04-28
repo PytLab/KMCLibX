@@ -20,6 +20,7 @@ from CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from CoreComponents.KMCInteractions import KMCInteractions
 from CoreComponents.KMCProcess import KMCProcess
 from CoreComponents.KMCConfiguration import KMCConfiguration
+from CoreComponents.KMCSitesMap import KMCSitesMap
 from CoreComponents.KMCLattice import KMCLattice
 from CoreComponents.KMCLatticeModel import KMCLatticeModel
 from CoreComponents.KMCUnitCell import KMCUnitCell
@@ -35,7 +36,7 @@ from Utilities.PrintUtilities import printHeader
 
 
 __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
-           'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',
+           'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell', 'KMCSitesMap',
            'KMCControlParameters', 'KMCInteractionsFromScript',
            'KMCConfigurationFromScript', 'KMCRateCalculatorPlugin',
            'KMCAnalysisPlugin', 'KMCProcess', 'OnTheFlyMSD',

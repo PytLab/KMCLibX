@@ -2,6 +2,7 @@
 
 
 # Copyright (c)  2013-2014  Mikael Leetmaa
+# Copyright (c)  2016-2019  Shao Zhengjiang
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -16,12 +17,14 @@ from KMCLib.Analysis.OnTheFlyMSD import OnTheFlyMSD
 from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
 from KMCLib.CoreComponents.KMCLattice import KMCLattice
 from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCSitesMap import KMCSitesMap
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.Backend.Backend import MPICommons
 from KMCLib.Backend import Backend
+
 
 # Implement the test.
 class OnTheFlyMSDTest(unittest.TestCase):
@@ -36,6 +39,7 @@ class OnTheFlyMSDTest(unittest.TestCase):
 
     def testCalculation(self):
         """ Test a calculation with the on-the-fly MSD analysis. """
+        # {{{
         # Setup a system, a periodic 10 atoms long 1D chain.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[1.0,0.0,0.0],
                                                           [0.0,1.0,0.0],
@@ -54,6 +58,12 @@ class OnTheFlyMSDTest(unittest.TestCase):
         config = KMCConfiguration(lattice=lattice,
                                   types=types,
                                   possible_types=["A","B"])
+
+        site_types = ["a"]*10*10*10
+        site_types[5] = 'b'
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=site_types,
+                               possible_types=['a', 'b'])
 
         # Setup a diffusion process to the left.
         coordinates_p0 = [[0.0, 0.0, 0.0],[-1.0, 0.0, 0.0]]
@@ -108,6 +118,7 @@ class OnTheFlyMSDTest(unittest.TestCase):
                                        implicit_wildcards=True)
 
         model = KMCLatticeModel(configuration=config,
+                                sitesmap=sitesmap,
                                 interactions=interactions)
 
         # Setup the analysis.
@@ -174,9 +185,11 @@ class OnTheFlyMSDTest(unittest.TestCase):
 
         ref_bin_counters = (59930, 59996, 59545, 59256, 59064, 59076, 58284, 58294, 57817, 57349)
         self.assertEqual(bin_counters, ref_bin_counters)
+        # }}}
 
     def testCalculationFlipped(self):
         """ Test a calculation with the on-the-fly MSD analysis. """
+        # {{{
         # Setup a system, a periodic 10 atoms long 1D chain.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[0.0,1.0,0.0],
                                                           [0.0,0.0,1.0],
@@ -195,6 +208,12 @@ class OnTheFlyMSDTest(unittest.TestCase):
         config = KMCConfiguration(lattice=lattice,
                                   types=types,
                                   possible_types=["A","B"])
+
+        site_types = ["a"]*10*10*10
+        site_types[5] = 'b'
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=site_types,
+                               possible_types=['a', 'b'])
 
         # Setup a diffusion process to the left.
         coordinates_p0 = [[0.0, 0.0, 0.0],[-1.0, 0.0, 0.0]]
@@ -249,6 +268,7 @@ class OnTheFlyMSDTest(unittest.TestCase):
                                        implicit_wildcards=True)
 
         model = KMCLatticeModel(configuration=config,
+                                sitesmap=sitesmap,
                                 interactions=interactions)
 
         # Setup the analysis.
@@ -315,9 +335,11 @@ class OnTheFlyMSDTest(unittest.TestCase):
 
         ref_bin_counters = (59930, 59996, 59545, 59256, 59064, 59076, 58284, 58294, 57817, 57349)
         self.assertEqual(bin_counters, ref_bin_counters)
+        # }}}
 
     def testCalculationNonOrthogonal(self):
         """ Test a calculation with the on-the-fly MSD analysis. """
+        # {{{
         # Setup a system, a periodic 10 atoms long 1D chain.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.0,1.0,0.0],
                                                           [0.0,1.0,0.0],
@@ -336,6 +358,12 @@ class OnTheFlyMSDTest(unittest.TestCase):
         config = KMCConfiguration(lattice=lattice,
                                   types=types,
                                   possible_types=["A","B"])
+
+        site_types = ["a"]*10*10*10
+        site_types[5] = 'b'
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=site_types,
+                               possible_types=['a', 'b'])
 
         # Setup a diffusion process to the left.
         coordinates_p0 = [[0.0, 0.0, 0.0],[-1.0, 0.0, 0.0]]
@@ -390,6 +418,7 @@ class OnTheFlyMSDTest(unittest.TestCase):
                                        implicit_wildcards=True)
 
         model = KMCLatticeModel(configuration=config,
+                                sitesmap=sitesmap,
                                 interactions=interactions)
 
         # Setup the analysis.
@@ -456,9 +485,11 @@ class OnTheFlyMSDTest(unittest.TestCase):
 
         ref_bin_counters = (59930, 59996, 59545, 59256, 59064, 59076, 58284, 58294, 57817, 57349)
         self.assertEqual(bin_counters, ref_bin_counters)
+        # }}}
 
     def testPrintResults(self):
         """ Test that the results gets printed as expected. """
+        # {{{
         # Fill an object with data.
         ref_results = numpy.array([[  2.83900934,   8.52281124,  14.09108351,  20.00585490,  25.26096208,
                                      30.09109804,  36.62202664,  43.47434981,  50.79520993,  58.25866865],
@@ -520,10 +551,12 @@ class OnTheFlyMSDTest(unittest.TestCase):
             self.assertEqual(stream.getvalue(), ref_value)
         else:
             self.assertEqual(stream.getvalue(), "")
+        # }}}
 
 
     def testFinalizeNoCoordinateTransform(self):
         """ Test finalization. """
+        # {{{
         msd = OnTheFlyMSD.__new__(OnTheFlyMSD)
 
         # Replace the getBackendResults function.
@@ -678,6 +711,7 @@ class OnTheFlyMSDTest(unittest.TestCase):
         self.assertAlmostEqual(std_4_4, msd._OnTheFlyMSD__std_dev[4][4], 10)
         self.assertAlmostEqual(std_5_6, msd._OnTheFlyMSD__std_dev[5][6], 10)
         self.assertAlmostEqual(std_6_5, msd._OnTheFlyMSD__std_dev[6][5], 10)
+        # }}}
 
     def testResultsQuery(self):
         """ Test the result query function. """

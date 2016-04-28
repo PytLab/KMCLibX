@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -40,7 +41,7 @@ public:
      *                         and possible processes in the system.
      */
     LatticeModel(Configuration & configuration,
-                 const SitesMap & sitesmap,
+                 SitesMap & sitesmap,
                  SimulationTimer & simulation_timer,
                  const LatticeMap & lattice_map,
                  const Interactions & interactions);
@@ -82,7 +83,7 @@ private:
     Configuration & configuration_;
 
     /// A reference to the sites map given at construction.
-    const SitesMap & sitesmap_;
+    SitesMap & sitesmap_;
 
     /// A reference to the timer given at construction.
     SimulationTimer & simulation_timer_;

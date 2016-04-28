@@ -39,6 +39,21 @@ configuration = KMCConfiguration(
     possible_types=possible_types)
 
 # -----------------------------------------------------------------------------
+# Sitesmap
+site_types = ['a','a','a','a','b','b','a','a','a','b','b','b','b',
+              'b','a','a','b','a','b','b','b','a','b','a','b','a',
+              'a','a','b','b','b','b','b','b','b','b','a','a','a',
+              'a','b','b','b','b','a','b','b','a']
+
+possible_site_types = ['a','c','b']
+
+sitesmap = KMCSitesMap(
+    lattice=lattice,
+    types=site_types,
+    possible_types=possible_site_types)
+
+
+# -----------------------------------------------------------------------------
 # Interactions
 
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
@@ -78,5 +93,6 @@ interactions = KMCInteractions(processes=processes)
 
 model = KMCLatticeModel(
     configuration=configuration,
+    sitesmap=sitesmap,
     interactions=interactions)
 

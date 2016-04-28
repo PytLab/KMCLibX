@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -22,7 +23,7 @@
 // -----------------------------------------------------------------------------
 //
 LatticeModel::LatticeModel(Configuration & configuration,
-                           const SitesMap & sitesmap,
+                           SitesMap & sitesmap,
                            SimulationTimer & simulation_timer,
                            const LatticeMap & lattice_map,
                            const Interactions & interactions) :
@@ -44,8 +45,11 @@ LatticeModel::LatticeModel(Configuration & configuration,
 //
 void LatticeModel::calculateInitialMatching()
 {
-    // Calculate the match lists.
+    // Calculate the match lists of configuration.
     configuration_.initMatchLists(lattice_map_, interactions_.maxRange());
+
+    // Calculate the match lists of sitesmap.
+    sitesmap_.initMatchLists(lattice_map_, interactions_.maxRange());
 
     // Update the interactions matchlists.
     interactions_.updateProcessMatchLists(configuration_, lattice_map_);

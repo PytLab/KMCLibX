@@ -18,8 +18,8 @@ from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfFloats
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
-from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.Exceptions.Error import Error
+from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 
 
 class KMCProcess(object):
@@ -33,7 +33,8 @@ class KMCProcess(object):
                  elements_after=None,
                  move_vectors=None,
                  basis_sites=None,
-                 rate_constant=None):
+                 rate_constant=None,
+                 site_types=None):
         """
         Constructor for the KMCProcess.
 
@@ -69,6 +70,10 @@ class KMCProcess(object):
         :param rate_constant: The rate constant associated with this process.
         :type rate_constant: float
 
+        :param site_types: The site types, as a list of strings, on which the
+                           process is performed. If no site types is provided,
+                           then the default value None would be used in Process object.
+
         """
         # Check the coordinates.
         coordinates = checkCoordinateList(coordinates)
@@ -81,17 +86,23 @@ class KMCProcess(object):
         elements_before = checkTypes(elements_before, len(coordinates))
         elements_after = checkTypes(elements_after,  len(coordinates))
 
+        # Check site types.
+        if site_types:
+            site_types = checkTypes(site_types, len(coordinates))
+
         # Check that the elements represents a valid move.
         self.__checkValidMoveElements(elements_before, elements_after)
 
         # All types checking done.
         self.__elements_before = elements_before
         self.__elements_after = elements_after
+        self.__site_types = site_types
 
         # Check that the move vectors are compatible with the elements.
         self.__move_vectors = self.__checkValidMoveVectors(move_vectors)
 
-        # Sort the coordinates and co-sort the elements and move vectors.
+        # Sort the coordinates and co-sort the elements and move vectors
+        # or site types if set.
         self.__sortCoordinatesElementsAndMoveVectors()
 
         # Check the list of basis sites.
@@ -101,6 +112,7 @@ class KMCProcess(object):
 
         if len(basis_sites) == 0:
             msg = "The list of available basis sites for a process may not be empty."
+            raise Error(msg)
 
         # Passed the  tests.
         self.__basis_sites = basis_sites
@@ -275,12 +287,13 @@ class KMCProcess(object):
                                     types2=self.__elements_after,
                                     co_sort=original_indexing)
 
+        # Offer old index, get new index.
+        old_to_new_index = []
+        for i in range(len(new_to_old_index)):
+            old_to_new_index.append(new_to_old_index.index(i))
+
         # Fix the move vectors.
         if len(self.__move_vectors) > 0:
-            old_to_new_index = []
-            for i in range(len(new_to_old_index)):
-                old_to_new_index.append(new_to_old_index.index(i))
-
             # Fixt the move vector indexing.
             move_vector_index = []
             for v in self.__move_vectors:
@@ -299,6 +312,18 @@ class KMCProcess(object):
             # Set the move vectors.
             self.__move_vectors = new_move_vectors
 
+        if self.__site_types:
+            # Fix the site types, if site_types is set.
+            sorted_site_types = ["*"]*len(self.__coordinates)
+
+            # Get the sorted site types.
+            for old_index in xrange(len(self.__site_types)):
+                new_index = old_to_new_index[old_index]
+                sorted_site_types[new_index] = self.__site_types[old_index]
+
+            # Set the site types.
+            self.__site_types = sorted_site_types
+
         # Set the new data on the class.
         self.__coordinates = sorted_coords
         self.__elements_before = sorted_types_before
@@ -311,7 +336,8 @@ class KMCProcess(object):
             return False
 
         # Check the basis sites.
-        elif not all([s1 == s2 for s1, s2 in zip(other.basisSites(), self.basisSites())]):
+        elif not all([s1 == s2 for s1, s2 in zip(other.basisSites(),
+                                                 self.basisSites())]):
             return False
 
         # Check the number of atoms in the local configurations.
@@ -342,11 +368,29 @@ class KMCProcess(object):
         if len(self.__move_vectors) != len(other._KMCProcess__move_vectors):
             return False
 
-            # For each move vector, loop through the others and find the one that matches.
+        # For each move vector, loop through the others and find the one that matches.
         for v1, v2 in zip(self.__move_vectors, other._KMCProcess__move_vectors):
             if v1[0] != v2[0]:
                 return False
             elif numpy.linalg.norm(numpy.array(v1[1])-numpy.array(v2[1])) > 1.0e-8:
+                return False
+
+        # Check the site types.
+        site_types_self = self.siteTypes()
+        site_types_other = other.siteTypes()
+
+        # If one is None and another is not.
+        if not all((site_types_self, site_types_other)):
+            if any((site_types_self, site_types_other)):
+                return False
+        # If both are not None.
+        else:
+            # Check length.
+            if len(site_types_self) != len(site_types_other):
+                return False
+            # Check each type.
+            if not all([t1 == t2 for t1, t2 in zip(site_types_self,
+                                                   site_types_other)]):
                 return False
 
         # Passed all tests, return true.
@@ -401,6 +445,14 @@ class KMCProcess(object):
         :returns: The elements before stored on the class.
         """
         return self.__elements_after
+
+    def siteTypes(self):
+        """
+        Query for the site types.
+
+        :returns: The site types stored on the class.
+        """
+        return self.__site_types
 
     def _script(self, variable_name="process"):
         """
@@ -485,6 +537,31 @@ class KMCProcess(object):
                 elements_after_string += line + "\n" + indent
                 line = ""
 
+        # Setup the site types.
+        site_types_string = "site_types = "
+        indent = " "*14
+        if not self.__site_types:
+            site_types_string += "None\n"
+        else:
+            line = "["
+            nT = len(self.__site_types)
+            for i, t in enumerate(self.__site_types):
+                # Add the type.
+                line += "'" + t + "'"
+                if i == nT-1:
+                    # Stop if we reach the end.
+                    line += "]\n"
+                    site_types_string += line
+                    break
+                else:
+                # Add the separator.
+                    line += ","
+
+                # Check if we should add a new line.
+                if len(line) > 50:
+                    site_types_string += line + "\n" + indent
+                    line = ""
+
         # Setup the move vector string.
         if len(self.__move_vectors) == 0:
             move_vectors_string = "move_vectors    = None\n"
@@ -494,7 +571,8 @@ class KMCProcess(object):
             vector_template = "[" + ff + "," + ff + "," + ff + "]"
             for i, (index, vector) in enumerate(self.__move_vectors):
 
-                move_vectors_string += "( %2i," % (index) + vector_template % (vector[0], vector[1], vector[2])
+                move_vectors_string += ("( %2i," % (index) +
+                                        vector_template % (vector[0], vector[1], vector[2]))
 
                 if i < len(self.__move_vectors)-1:
                     move_vectors_string += "),\n" + indent
@@ -518,13 +596,15 @@ class KMCProcess(object):
             "    coordinates=coordinates,\n" + \
             "    elements_before=elements_before,\n" + \
             "    elements_after=elements_after,\n" + \
-            "    move_vectors=move_vectors,\n" +\
+            "    move_vectors=move_vectors,\n" + \
             "    basis_sites=basis_sites,\n" + \
-            "    rate_constant=rate_constant)\n"
+            "    rate_constant=rate_constant,\n" + \
+            "    site_types=site_types)\n"
 
         return (coords_string + "\n" +
                 elements_before_string +
                 elements_after_string +
+                site_types_string +
                 move_vectors_string +
                 basis_sites_string + "\n" +
                 rate_constant_string + "\n\n" +
