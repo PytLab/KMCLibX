@@ -53,6 +53,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
     def testConstruction(self):
         """ Test the construction of the lattice model """
+        # {{{
         # Setup a unitcell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
                                                           [0.0,3.2,0.0],
@@ -134,10 +135,102 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Check that it has the correct configuration stored.
         self.assertTrue(model._KMCLatticeModel__configuration == config)
+        # }}}
+
+    def testConstructionWithSiteTypes(self):
+        """ Test the construction of the lattice model with site types provided. """
+        # {{{
+        # Setup a unitcell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
+                                                          [0.0,3.2,0.0],
+                                                          [0.0,0.5,3.0]]),
+                                basis_points=[[0.0,0.0,0.0],
+                                              [0.5,0.5,0.5],
+                                              [0.25,0.25,0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4,4,1),
+                             periodic=(True,True,False))
+
+        types = ['A','A','A','A','B','B',
+                 'A','A','A','B','B','B',
+                 'B','B','A','A','B','A',
+                 'B','B','B','A','B','A',
+                 'B','A','A','A','B','B',
+                 'B','B','B','B','B','B',
+                 'A','A','A','A','B','B',
+                 'B','B','A','B','B','A']
+
+        site_types = ['a','a','a','a','b','b',
+                      'a','a','a','b','b','b',
+                      'b','b','a','a','b','a',
+                      'b','b','b','a','b','a',
+                      'b','a','a','a','b','b',
+                      'b','b','b','b','b','b',
+                      'a','a','a','a','b','b',
+                      'b','b','a','b','b','a']
+
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=site_types,
+                               possible_types=['a','c','b'])
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=['A','C','B'])
+
+        # A first process.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types0 = ["A","B"]
+        types1 = ["B","A"]
+        site_types = ["a", "b"]
+        sites  = [0,1,2]
+        rate_0_1 = 3.5
+        process_0 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               site_types=site_types,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1)
+
+        # A second process.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types0 = ["A","C"]
+        types1 = ["C","A"]
+        site_types = ["a", "b"]
+        sites  = [0,1,2]
+        rate_0_1 = 1.5
+        process_1 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               site_types=site_types,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1)
+
+        # Construct the interactions object.
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes=processes, sitesmap=sitesmap)
+
+        # Construct the model.
+        model = KMCLatticeModel(config, sitesmap, interactions)
+
+        # Check that it has the attribute _backend which is None
+        self.assertTrue(hasattr(model,"_KMCLatticeModel__backend"))
+        self.assertTrue(model._KMCLatticeModel__backend is None)
+
+        # Check that it has the correct interactions stored.
+        self.assertTrue(model._KMCLatticeModel__interactions == interactions)
+
+        # Check that it has the correct configuration stored.
+        self.assertTrue(model._KMCLatticeModel__configuration == config)
+        # }}}
 
 
     def testRunImplicitWildcards(self):
         """ Test that ta valid model can run for a few steps. """
+        # {{{
         # Setup a unitcell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[1.0,0.0,0.0],
                                                           [0.0,1.0,0.0],
@@ -250,9 +343,150 @@ class KMCLatticeModelTest(unittest.TestCase):
         control_parameters = KMCControlParameters(number_of_steps=10,
                                                   dump_interval=1)
         model.run(control_parameters)
+        # }}}
+
+    def testRunImplicitWildcardsWithSiteTypes(self):
+        """ Test that ta valid model can run for a few steps with sites types provided. """
+        # {{{
+        # Setup a unitcell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[1.0,0.0,0.0],
+                                                          [0.0,1.0,0.0],
+                                                          [0.0,0.0,1.0]]),
+                                basis_points=[[0.0,0.0,0.0]])
+        # And a lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(10,10,1),
+                             periodic=(True,True,False))
+
+        # Set the stating configuration types.
+        types = ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'A', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B']
+
+        site_types = ['b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b', 'b', 'a', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                      'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b']
+
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=site_types,
+                               possible_types=["a", "b"])
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=["A", "B"])
+
+        # Generate the interactions with a distance so large that we get a
+        # layer of implicite wildcards in the C++ matchlists.
+        sites = [0]
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+                       [   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                       [  -1.000000e+00,   0.000000e+00,   0.000000e+00],
+                       [   0.000000e+00,  -1.000000e+00,   0.000000e+00],
+                       [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                       [   2.000000e+00,   2.000000e+00,   0.000000e+00]]
+
+        site_types = ["a", "b", "b", "b", "b", "b"]
+
+        types0 = ['A', 'B', 'B', 'B', 'B', 'A']
+        types1 = ['B', 'B', 'A', 'B', 'B', 'A']
+        process_0 = KMCProcess(coordinates, types0, types1, None, sites, 1.0, site_types)
+
+        types0 = ['A', 'B', 'B', 'B', 'B', 'B']
+        types1 = ['B', 'B', 'A', 'B', 'B', 'B']
+        process_1 = KMCProcess(coordinates, types0, types1, None, sites, 1.0, site_types)
+
+        types0 = ['A', 'B', 'B', 'B', 'B', 'B']
+        types1 = ['B', 'B', 'B', 'A', 'B', 'B']
+        process_2 = KMCProcess(coordinates, types0, types1, None, sites, 1.0, site_types)
+
+        types0 = ['A', 'B', 'B', 'B', 'B', 'B']
+        types1 = ['B', 'B', 'B', 'B', 'A', 'B']
+        site_types3 = ["*", "*", "*", "*", "*", "*"]
+        process_3 = KMCProcess(coordinates, types0, types1, None, sites, 1.0, site_types3)
+
+        # Processes.
+        processes = [process_0,
+                     process_1,
+                     process_2,
+                     process_3]
+
+        # No implicit wildcards.
+        interactions = KMCInteractions(processes=processes,
+                                       sitesmap=sitesmap,
+                                       implicit_wildcards=False)
+
+        # Create the model.
+        model = KMCLatticeModel(config, sitesmap, interactions)
+
+        # Get the match types out.
+        match_types = [l.match_type
+                       for l in model._backend().interactions().processes()[0].matchList()]
+
+        ret_site_types = [l.site_type
+                          for l in model._backend().interactions().processes()[0].matchList()]
+
+        # This does not have wildcards added.
+        ref_match_types = [1, 2, 2, 2, 2, 1]
+        self.assertEqual(match_types, ref_match_types)
+
+        # This does not have wildcatds added.
+        ref_site_types = [1, 2, 2, 2, 2, 2]
+        #self.assertListEqual(ref_site_types, ret_site_types)
+
+        # Create with implicit wildcards - this is default behavior.
+        interactions = KMCInteractions(processes=processes, sitesmap=sitesmap)
+
+        # Create the model.
+        model = KMCLatticeModel(config, sitesmap, interactions)
+
+        # Check the process matchlists again.
+        match_types = [l.match_type
+                       for l in model._backend().interactions().processes()[0].matchList()]
+        ret_site_types = [l.site_type
+                          for l in model._backend().interactions().processes()[0].matchList()]
+
+        ref_match_types = [1, 2, 2, 2, 2,
+                           0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 1]
+
+        ref_site_types = [1, 2, 2, 2, 2,
+                          0, 0, 0, 0, 0,
+                          0, 0, 0, 0, 0,
+                          0, 0, 0, 0, 0,
+                          0, 0, 0, 0, 2]
+
+        # This one has the wildcards (zeroes) added.
+        self.assertEqual(match_types, ref_match_types)
+
+        # This one has the wildcards (zeroes) added.
+        #self.assertEqual(ref_site_types, ret_site_types)
+
+        # Setup the run paramters.
+        control_parameters = KMCControlParameters(number_of_steps=10,
+                                                  dump_interval=1)
+        model.run(control_parameters)
+        # }}}
 
     def testRun2(self):
         """ Test the run of an A-B flip model. """
+        # {{{
         # Cell.
         cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
                         [   0.000000e+00,   1.000000e+00,   0.000000e+00],
@@ -345,6 +579,7 @@ class KMCLatticeModelTest(unittest.TestCase):
             fraction =  nA * 100.0 / (nA + nB)
             target = 20.0
             self.assertAlmostEqual(fraction, target, 3)
+        # }}}
 
     def testCustomRatesRun(self):
         """ Test the run of an A-B flip model with custom rates. """
