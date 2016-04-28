@@ -27,12 +27,14 @@ public:
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testSetupAndQuery );
     CPPUNIT_TEST( testSingleStepFunction );
-    //CPPUNIT_TEST( testTiming );
+    CPPUNIT_TEST( testSingleStepFunction2D );
+    CPPUNIT_TEST( testTiming );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
     void testSetupAndQuery();
     void testSingleStepFunction();
+    void testSingleStepFunction2D();
     void testTiming();
 
 };

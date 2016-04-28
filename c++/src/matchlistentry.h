@@ -1,36 +1,109 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
-
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
 
-
-/*! \file  matchlistentry.h
- *  \brief File for the MatchListEntry class definition.
+/* ******************************************************************
+ *  file   : matchlistentry.h
+ *  brief  : File for the MatchListEntry class definition.
+ *  author : zjshao
+ *  date   : 2016-04-09
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------
+ *  zjshao     2016-04-09   1.2          Initial creation.
+ *
+ *  ------------------------------------------------------
+ * ******************************************************************
  */
 
 #ifndef __MATCHLISTENTRY__
 #define __MATCHLISTENTRY__
 
-#include "coordinate.h"
 #include <cmath>
+#include <stdexcept>
 
-/// A minimal struct to replace the MatchListEntry class.
-struct MinimalMatchListEntry {
+#include "coordinate.h"
 
-    /// Flag for indicating if we have a move coordinate.
-    bool has_move_coordinate;
+
+/// The base class for the match list entries.
+class MinimalMatchListEntry {
+
+public:
+    /// The distance.
+    double distance;
+
+    /// The Coordinate.
+    Coordinate coordinate;
 
     /// The match type integer.
     int match_type;
 
-    /// The update type integer.
-    int update_type;
+    /* Class functions. */
+    /*! brief constructor function
+     */
+    inline MinimalMatchListEntry();
 
+    /*! \brief virtual destructor function
+     */
+    virtual ~MinimalMatchListEntry() {}
+    
+    /*! \brief 'less than' operator overloading for sorting matchlists.
+     */
+    virtual bool operator<(const MinimalMatchListEntry & other) const;
+
+    /*! \brief 'equal' for comparing points(positions) of matchlist entry.
+     *  NOTE: This == operator dose not compare match types.
+     */
+    virtual bool samePoint(const MinimalMatchListEntry & other) const;
+
+    /*! \brief 'equal' for comparing type and positions.
+     *  NOTE: This function compare type firstly,
+     *        then compare distance and coordinate
+     */
+    virtual bool match(const MinimalMatchListEntry & other) const;
+};
+
+
+/// Forward declaration.
+class ProcessMatchListEntry;
+
+/// Match list entry for configuration match list.
+class ConfigMatchListEntry : public MinimalMatchListEntry {
+
+public:
     /// The index in the global structure.
     int index;
+
+    /* Class functions.*/
+
+    /* \brief Default constructor.
+     */
+    inline ConfigMatchListEntry();
+
+    /* \brief Defualt destructor.
+     */
+    virtual ~ConfigMatchListEntry() {}
+    
+    /*! \brief explicit type coversion
+     *         ProcessMatchListEntry -> ConfigMatchListEntry.
+     */
+    inline explicit ConfigMatchListEntry(const ProcessMatchListEntry & pe);
+
+};
+
+/// Forward declaration.
+class SiteMatchListEntry;
+
+/// Match list entry for process match list.
+class ProcessMatchListEntry : public MinimalMatchListEntry {
+
+public:
+
+    /// Flag for indicating if we have a move coordinate.
+    bool has_move_coordinate;
 
     /// The move vector cell component in the a direction.
     int move_cell_i;
@@ -44,97 +117,131 @@ struct MinimalMatchListEntry {
     /// The basis component of the move vector.
     int move_basis;
 
-    /// The distance.
-    double distance;
-
-    /// The coordinate.
-    Coordinate coordinate;
-
     /// The move coordinate.
     Coordinate move_coordinate;
+
+    /// The update type.
+    int update_type;
+
+    /// The site type the entry's elements on.
+    int site_type;
+
+    /* Class functions.*/
+    
+    /* \brief Default constructor.
+     */
+    inline ProcessMatchListEntry();
+
+    /* \brief Defualt destructor.
+     */
+    virtual ~ProcessMatchListEntry() {}
+
+    /*! \brief explicit type coversion
+     *         ConfigMatchListEntry -> ProcessMatchListEntry.
+     */
+    inline explicit ProcessMatchListEntry(const ConfigMatchListEntry & ce);
+
+    /*! \brief overloaded match function.
+     *         Matching SiteMatchListEntry object.
+     */
+    bool match(const SiteMatchListEntry & se) const;
+
+    /* \brief overloaded match function,
+     *        Matching MinimalMatchListEntry object or
+     *        ConfigMatchListEntry object(by up-cast conversion)
+     */
+    bool match(const MinimalMatchListEntry & me) const;
+    
 
 };
 
 
-/*! \brief The epsilon value for comparing lattice positions.
- */
-static double epsi__ = 1.0e-5;
+/// Match list entry for sitesmap match list.
+
+class SiteMatchListEntry : public MinimalMatchListEntry {
+
+public:
+    /// The index in the global structrue.
+    int index;
+
+    /* Class functions.*/
+
+    /* \brief Default constructor.
+     */
+    inline SiteMatchListEntry();
+
+    /* \brief Defualt destructor.
+     */
+    virtual ~SiteMatchListEntry() {}
+
+    /* \brief overloaded match function.
+     */
+    bool match(const ProcessMatchListEntry & pe) const;
+
+};
 
 
-/*! \brief 'equal' for comparing points. NOTE: This operator does not
- *         compare match types.
- */
-inline
-bool operator==(const MinimalMatchListEntry & m1,
-                const MinimalMatchListEntry & m2)
+// --------------------------------------------------------------- //
+// INLINE FUNCITON IMPLIMENTATION CODE
+// --------------------------------------------------------------- //
+
+
+// ---------------------------------------------------------------
+//
+MinimalMatchListEntry::MinimalMatchListEntry() :
+    distance(0.0),
+    coordinate(Coordinate(0.0, 0.0, 0.0)),
+    match_type(0)
 {
-    // Check the distance.
-    if (std::fabs(m2.distance - m1.distance) > epsi__)
-    {
-        return false;
-    }
-    // Check the coordinate.
-    else if (std::fabs(m2.coordinate.x() - m1.coordinate.x()) > epsi__)
-    {
-        return false;
-    }
-    else if (std::fabs(m2.coordinate.y() - m1.coordinate.y()) > epsi__)
-    {
-        return false;
-    }
-    else if (std::fabs(m2.coordinate.z() - m1.coordinate.z()) > epsi__)
-    {
-        return false;
-    }
-    return true;
+    // NOTHING HERE.
 }
 
 
-
-/*! \brief 'not equal' for comparing entries.
- */
-inline
-bool operator!=(const MinimalMatchListEntry & m1,
-                const MinimalMatchListEntry & m2)
+// ---------------------------------------------------------------
+//
+ConfigMatchListEntry::ConfigMatchListEntry() :
+    index(0)
 {
-    // Handle the wildcard case.
-    if (m1.match_type == 0)
-    {
-        return false;
-    }
-    // Check the type.
-    else if (m2.match_type != m1.match_type)
-    {
-        return true;
-    }
-    else
-    {
-        return !(m1 == m2);
-    }
+    // NOTHING HERE.
 }
 
 
-/*! \brief 'less than' for sorting matchlists.
- */
-inline
-bool operator<(const MinimalMatchListEntry & m1,
-               const MinimalMatchListEntry & m2)
+ConfigMatchListEntry::ConfigMatchListEntry(const ProcessMatchListEntry & pe) :
+    MinimalMatchListEntry(pe)
 {
-
-    // Sort along distance, type and coordinate.
-    if (std::fabs(m2.distance - m1.distance) < epsi__)
-    {
-        // If the distances are practically the same,
-        // check the coordinate.
-        return (m1.coordinate < m2.coordinate);
-    }
-    else
-    {
-        // Sort wrt. distance.
-        return (m1.distance < m2.distance);
-    }
+    // NOTHING HERE.
 }
 
 
-#endif // __MATCHLISTENTRY__
+// ---------------------------------------------------------------
+//
+ProcessMatchListEntry::ProcessMatchListEntry() :
+    has_move_coordinate(false),
+    move_cell_i(0),
+    move_cell_j(0),
+    move_cell_k(0),
+    move_basis(0),
+    move_coordinate(Coordinate(0.0, 0.0, 0.0)),
+    update_type(0),
+    site_type(0)
+{
+    // NOTHING HERE.
+}
+
+
+ProcessMatchListEntry::ProcessMatchListEntry(const ConfigMatchListEntry & ce) :
+    MinimalMatchListEntry(ce)
+{
+    // NOTHING HERE.
+}
+
+
+// ---------------------------------------------------------------
+//
+SiteMatchListEntry::SiteMatchListEntry() :
+    index(0)
+{
+    // NOTHING HERE.
+}
+#endif  // __MATHCLISTENTRY__
 

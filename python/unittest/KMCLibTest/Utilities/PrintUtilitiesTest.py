@@ -2,6 +2,7 @@
 
 
 # Copyright (c)  2013 - 2015  Mikael Leetmaa
+# Copyright (c)  2016 - 2019  Shao Zhengjiang
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -73,9 +74,13 @@ class PrintUtilitiesTest(unittest.TestCase):
             # Check.
             if MPICommons.myRank() == 0:
                 ref_str = """# -----------------------------------------------------------------------------
-# KMCLib version 1.1.01
-# Distributed under the GPLv3 license
-# Copyright (C)  2012-2015  Mikael Leetmaa
+# KMCLibX version 2.0.0
+# Distributed under the GPLv3.0 license
+#
+# Copyright (C)  2016-2019  Shao Zhengjiang
+# Developed by Shao Zhengjiang <shaozhengjiang@gmail.com>
+#
+# KMCLibX is developed based on KMCLib (https://github.com/leetmaa/KMCLib)
 # Developed by Mikael Leetmaa <leetmaa@kth.se>
 #
 # This program is distributed in the hope that it will be useful

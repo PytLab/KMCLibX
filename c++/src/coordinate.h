@@ -7,8 +7,20 @@
 
 
 
-/*! \file  coordinate.h
- *  \brief File for the coordinate class definition.
+/*  ****************************************************************
+ *  file   : coordinate.h
+ *  brief  : File for the coordinate class definition.
+ *  author : zjshao
+ *  date   : 2016-04-09
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ---------------------------------------------------------------------
+ *  zjshao     2016-04-09   1.2          Add insertion overload function,
+ *                                       and toString inline function.
+ *
+ *  ---------------------------------------------------------------------
+ * ******************************************************************
  */
 
 #ifndef __COORDINATE__
@@ -16,6 +28,9 @@
 
 #include <cmath>
 #include <vector>
+#include <iostream>
+#include <cstdlib>
+#include <string>
 
 /*! \brief Class for representing a coordinate.
  */
@@ -158,6 +173,11 @@ public:
      */
     void print() const;
 
+    /* \brief Covert coordinate to string.
+     */
+    inline
+    const std::string toString() const;
+
 protected:
 
 private:
@@ -172,6 +192,15 @@ private:
     double z_;
 
 };
+
+
+/*! \brief  function for overloading 'insertion' operator.
+ *  \author zjshao
+ *  \date   2016-04-09
+ */
+inline
+std::ostream & operator<<(std::ostream & os, const Coordinate & c);
+
 
 // -----------------------------------------------------------------------------
 // INLINE FUNCTION DEFINITIONS FOLLOW
@@ -328,6 +357,29 @@ double & Coordinate::operator[](const int index)
 
 // -----------------------------------------------------------------------------
 //
+std::ostream & operator<<(std::ostream & os, const Coordinate & c)
+{
+    os.precision(3);
+
+    // Use scienfic notation.
+    os << std::scientific;
+
+    // Show coordinate.
+    os << "( ";
+    os.width(8);
+    os << c.x() << ", ";
+    os.width(8);
+    os << c.y() << ", ";
+    os.width(8);
+    os << c.z() << ", ";
+    os << " )";
+
+    return os;
+}
+
+
+// -----------------------------------------------------------------------------
+//
 double Coordinate::distance(const Coordinate & other) const
 {
     // PERFOMME:
@@ -365,6 +417,26 @@ std::vector<double> Coordinate::data() const
     tmp[1] = y_;
     tmp[2] = z_;
     return tmp;
+}
+
+
+// -----------------------------------------------------------------------------
+// author: zjshao
+// date  : 2016-04-09
+// -----------------------------------------------------------------------------
+const std::string Coordinate::toString() const
+{
+    // Copy C string to a temp string.
+    // NOTE: If you change the format of string, please check 
+    //       the max length to provid enough space for string.
+    const size_t max_len = 120;
+    char temp_str[max_len];
+    snprintf(temp_str, max_len, "( %8.3f, %8.3f, %8.3f )", x_, y_, z_);
+
+    // Covert to string object.
+    std::string coord_str(temp_str);
+
+    return coord_str;
 }
 
 

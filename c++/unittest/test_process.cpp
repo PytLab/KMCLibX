@@ -21,6 +21,8 @@
 //
 void Test_Process::testConstruction()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
@@ -62,6 +64,10 @@ void Test_Process::testConstruction()
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[1], basis_sites[1] );
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[2], basis_sites[2] );
 
+    // Check the site type setting flag.
+    CPPUNIT_ASSERT( !process.hasSiteTypes() );
+
+    // }}}
 }
 
 
@@ -69,6 +75,8 @@ void Test_Process::testConstruction()
 //
 void Test_Process::testConstruction2()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
@@ -109,7 +117,8 @@ void Test_Process::testConstruction2()
     basis_sites[1] = 23;
     basis_sites[2] = 11;
     const double rate = 13.7;
-    Process process(config1, config2, rate, basis_sites, move_origins, move_vectors);
+    Process process(config1, config2, rate, basis_sites,
+                    move_origins, move_vectors);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
@@ -129,6 +138,11 @@ void Test_Process::testConstruction2()
     CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 1 );
     CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  1 );
     CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 0 );
+
+    // Check the site type setting flag.
+    CPPUNIT_ASSERT( !process.hasSiteTypes() );
+
+    // }}}
 }
 
 
@@ -136,6 +150,8 @@ void Test_Process::testConstruction2()
 //
 void Test_Process::testConstruction3()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
@@ -180,7 +196,8 @@ void Test_Process::testConstruction3()
     basis_sites[1] = 23;
     basis_sites[2] = 11;
     const double rate = 13.7;
-    Process process(config1, config2, rate, basis_sites, move_origins, move_vectors);
+    Process process(config1, config2, rate, basis_sites,
+                    move_origins, move_vectors);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
@@ -200,6 +217,11 @@ void Test_Process::testConstruction3()
     CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 1 );
     CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  1 );
     CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 0 );
+
+    // Check the site type setting flag.
+    CPPUNIT_ASSERT( !process.hasSiteTypes() );
+
+    // }}}
 }
 
 
@@ -207,11 +229,17 @@ void Test_Process::testConstruction3()
 //
 void Test_Process::testConstructionMoveVectors()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
     possible_types["B"] = 2;
     possible_types["C"] = 0;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+    possible_types["G"] = 7;
 
     // Setup the two configurations.
     std::vector<std::string> elements1;
@@ -285,7 +313,8 @@ void Test_Process::testConstructionMoveVectors()
     basis_sites[1] = 23;
     basis_sites[2] = 11;
     const double rate = 13.7;
-    Process process(config1, config2, rate, basis_sites, move_origins, move_vectors);
+    Process process(config1, config2, rate, basis_sites,
+                    move_origins, move_vectors);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
@@ -312,6 +341,8 @@ void Test_Process::testConstructionMoveVectors()
 
     CPPUNIT_ASSERT_EQUAL( id_moves[3].first,  6 );
     CPPUNIT_ASSERT_EQUAL( id_moves[3].second, 1 );
+
+    // }}}
 }
 
 
@@ -319,11 +350,17 @@ void Test_Process::testConstructionMoveVectors()
 //
 void Test_Process::testConstructionMoveVectors2()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
     possible_types["B"] = 2;
     possible_types["C"] = 0;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+    possible_types["G"] = 7;
 
     // Setup the two configurations.
     std::vector<std::string> elements1;
@@ -397,7 +434,8 @@ void Test_Process::testConstructionMoveVectors2()
     basis_sites[1] = 23;
     basis_sites[2] = 11;
     const double rate = 13.7;
-    Process process(config1, config2, rate, basis_sites, move_origins, move_vectors);
+    Process process(config1, config2, rate, basis_sites,
+                    move_origins, move_vectors);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
@@ -424,6 +462,8 @@ void Test_Process::testConstructionMoveVectors2()
 
     CPPUNIT_ASSERT_EQUAL( id_moves[3].first,  6 );
     CPPUNIT_ASSERT_EQUAL( id_moves[3].second, 1 );
+
+    // }}}
 }
 
 
@@ -431,6 +471,8 @@ void Test_Process::testConstructionMoveVectors2()
 //
 void Test_Process::testMatchList()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 123;
@@ -461,67 +503,161 @@ void Test_Process::testMatchList()
     const Configuration config1(coords, elements1, possible_types);
     const Configuration config2(coords, elements2, possible_types);
 
-    // Construct the process.
-    const std::vector<int> basis_sites(1,0);
-    const double rate = 13.7;
-    Process process(config1, config2, rate, basis_sites);
-
-    // Get the match list out.
-    const std::vector<MinimalMatchListEntry> & match_list = process.minimalMatchList();
-
-    // Check the size of the match list.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
-
-    // Get the first entry out and check.
+    // Construct the process with site types defined.
     {
-        const MinimalMatchListEntry entry = match_list[0];
-        CPPUNIT_ASSERT_EQUAL(entry.index, -1);
-        CPPUNIT_ASSERT_EQUAL(entry.match_type, 123);
-        CPPUNIT_ASSERT_EQUAL(entry.update_type, 0);
+        const std::vector<int> site_types = {1, 2, 3};
+        const std::vector<int> basis_sites(1,0);
+        const double rate = 13.7;
+        const std::vector<int> move_origins = {0};
+        const std::vector<Coordinate> move_vectors = {Coordinate(0.0, 0.0, 0.0)};
+        const int process_number = -1;
+        Process process(config1, config2, rate, basis_sites, move_origins,
+                        move_vectors, process_number, site_types);
 
-        // Make sure these coordinates are equal.
-        Coordinate check_coord(coords[0][0],coords[0][1],coords[0][2]);
-        CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord        < entry.coordinate) );
+        // Get the match list out.
+        const ProcessMatchList & match_list = process.matchList();
 
-        // Check the distance.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, 0.0, 1.0e-14);
+        // Check the size of the match list.
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
 
+        // Get the first entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[0];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 123);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 0);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[0][0],coords[0][1],coords[0][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, 0.0, 1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 1);
+        }
+
+        // Get the third entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[2];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 24);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 24);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[1][0],coords[1][1],coords[1][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
+                                         check_coord.distance(Coordinate(0.0,0.0,0.0)),
+                                         1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 3);
+
+        }
+
+        // Get the second entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[1];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 0);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 123);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[2][0],coords[2][1],coords[2][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
+                                         check_coord.distance(Coordinate(0.0,0.0,0.0)),
+                                         1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 2);
+        }
+
+        // Check the site type setting flag.
+        CPPUNIT_ASSERT( process.hasSiteTypes() );
+    }
+    // Construct the process without site types defined.
+    {
+        const std::vector<int> basis_sites(1,0);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
+
+        // Get the match list out.
+        const ProcessMatchList & match_list = process.matchList();
+
+        // Check the size of the match list.
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
+
+        // Get the first entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[0];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 123);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 0);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[0][0],coords[0][1],coords[0][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, 0.0, 1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 0);
+        }
+
+        // Get the third entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[2];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 24);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 24);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[1][0],coords[1][1],coords[1][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
+                                         check_coord.distance(Coordinate(0.0,0.0,0.0)),
+                                         1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 0);
+
+        }
+
+        // Get the second entry out and check.
+        {
+            const ProcessMatchListEntry entry = match_list[1];
+            CPPUNIT_ASSERT_EQUAL(entry.match_type, 0);
+            CPPUNIT_ASSERT_EQUAL(entry.update_type, 123);
+
+            // Make sure these coordinates are equal.
+            Coordinate check_coord(coords[2][0],coords[2][1],coords[2][2]);
+            CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+            CPPUNIT_ASSERT( !(check_coord < entry.coordinate) );
+
+            // Check the distance.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance,
+                                         check_coord.distance(Coordinate(0.0,0.0,0.0)), 
+                                         1.0e-14);
+
+            // Check the site type.
+            CPPUNIT_ASSERT_EQUAL(entry.site_type, 0);
+        }
+
+        // Check the site type setting flag.
+        CPPUNIT_ASSERT( !process.hasSiteTypes() );
     }
 
-    // Get the third entry out and check.
-    {
-        const MinimalMatchListEntry entry = match_list[2];
-        CPPUNIT_ASSERT_EQUAL(entry.index, -1);
-        CPPUNIT_ASSERT_EQUAL(entry.match_type, 24);
-        CPPUNIT_ASSERT_EQUAL(entry.update_type, 24);
-
-        // Make sure these coordinates are equal.
-        Coordinate check_coord(coords[1][0],coords[1][1],coords[1][2]);
-        CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord      < entry.coordinate) );
-
-        // Check the distance.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, check_coord.distance(Coordinate(0.0,0.0,0.0)), 1.0e-14);
-
-    }
-
-    // Get the second entry out and check.
-    {
-        const MinimalMatchListEntry entry = match_list[1];
-        CPPUNIT_ASSERT_EQUAL(entry.index, -1);
-        CPPUNIT_ASSERT_EQUAL(entry.match_type, 0);
-        CPPUNIT_ASSERT_EQUAL(entry.update_type, 123);
-
-        // Make sure these coordinates are equal.
-        Coordinate check_coord(coords[2][0],coords[2][1],coords[2][2]);
-        CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord      < entry.coordinate) );
-
-        // Check the distance.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, check_coord.distance(Coordinate(0.0,0.0,0.0)), 1.0e-14);
-
-    }
+    // }}}
 }
 
 
@@ -529,6 +665,8 @@ void Test_Process::testMatchList()
 //
 void Test_Process::testMatchListLong()
 {
+    // {{{
+
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
     possible_types["A"] = 0;
@@ -609,7 +747,7 @@ void Test_Process::testMatchListLong()
     Process process(config1, config2, rate, basis_sites);
 
     // Get the match list out.
-    const std::vector<MinimalMatchListEntry> match_list = process.minimalMatchList();
+    const ProcessMatchList match_list = process.matchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(process_coords.size()),
@@ -669,6 +807,7 @@ void Test_Process::testMatchListLong()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c8.y(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c8.z(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[8].distance, std::sqrt(0.25*3.0), 1.0e-14 );
+    // }}}
 
 }
 
@@ -677,6 +816,8 @@ void Test_Process::testMatchListLong()
 //
 void Test_Process::testAddAndRemoveSite()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
@@ -750,6 +891,7 @@ void Test_Process::testAddAndRemoveSite()
     // process.removeSite(1234);
 
     // DONE
+    // }}}
 }
 
 
@@ -757,6 +899,8 @@ void Test_Process::testAddAndRemoveSite()
 //
 void Test_Process::testPickSite()
 {
+    // {{{
+
     // Default construct a process.
     Process process;
 
@@ -799,6 +943,7 @@ void Test_Process::testPickSite()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter12 / n_loop,  1.0e-2);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter19 / n_loop,  1.0e-2);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter199 / n_loop, 1.0e-2);
+    // }}}
 
 }
 
@@ -807,6 +952,8 @@ void Test_Process::testPickSite()
 //
 void Test_Process::testAffectedIndices()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
@@ -847,6 +994,8 @@ void Test_Process::testAffectedIndices()
     // And access.
     CPPUNIT_ASSERT_EQUAL( process.affectedIndices()[1], 123 );
 
+    // }}}
+
 }
 
 
@@ -854,6 +1003,8 @@ void Test_Process::testAffectedIndices()
 //
 void Test_Process::testCutoffAndRange()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
@@ -891,6 +1042,8 @@ void Test_Process::testCutoffAndRange()
     // Test that the range is set by the largest index. (-4.4)
     CPPUNIT_ASSERT_EQUAL( process.range(), 5 );
 
+    // }}}
+
 }
 
 
@@ -898,6 +1051,8 @@ void Test_Process::testCutoffAndRange()
 //
 void Test_Process::testProcessNumber()
 {
+    // {{{
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
@@ -946,4 +1101,5 @@ void Test_Process::testProcessNumber()
     CPPUNIT_ASSERT_EQUAL( process2.processNumber(), -1 );
 
     // DONE
+    // }}}
 }

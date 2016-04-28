@@ -105,6 +105,12 @@ int Interactions::maxRange() const
 void Interactions::updateProcessMatchLists(const Configuration & configuration,
                                            const LatticeMap & lattice_map)
 {
+    // {{{
+
+    // NOTE: Do not check the site match list here, the coordinates in
+    //       site match list are assumed to be the same as that in
+    //       configuration match list.
+
     // Skip if we are not using implicit wildcards.
     if (!implicit_wildcards_)
     {
@@ -123,7 +129,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
         }
 
         // Get the match list for this process.
-        std::vector<MinimalMatchListEntry> & process_matchlist = p.minimalMatchList();
+        ProcessMatchList & process_matchlist = p.matchList();
 
         // Take out the basis position for the process.
         const int  basis_position = p.basisSites()[0];
@@ -134,12 +140,12 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
         const int jj    = lattice_map.repetitionsB() / 2;
         const int kk    = lattice_map.repetitionsC() / 2;
         const int index = lattice_map.indicesFromCell(ii, jj, kk)[basis_position];
-        const std::vector<MinimalMatchListEntry> config_matchlist = configuration.minimalMatchList(index);
+        const ConfigMatchList config_matchlist = configuration.matchList(index);
 
         // Perform the match where we add wildcards to fill the vacancies in the
         // process match list.
-        std::vector<MinimalMatchListEntry>::iterator it1 = process_matchlist.begin();
-        std::vector<MinimalMatchListEntry>::const_iterator it2 = config_matchlist.begin();
+        ProcessMatchList::iterator it1 = process_matchlist.begin();
+        ConfigMatchList::const_iterator it2 = config_matchlist.begin();
 
         // Insert the wildcards and update the indexing.
         int old_index = 0;
@@ -149,11 +155,13 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
         for ( ; it1 != process_matchlist.end() && it2 != config_matchlist.end(); ++it1, ++it2 )
         {
             // Check if there is a match in lattice point.
-            if( !((*it1) == (*it2)) )
+            if( !(*it1).samePoint(*it2) )
             {
                 // If not matching, add a wildcard entry to it1.
-                MinimalMatchListEntry wildcard_entry = (*it2);
+                ProcessMatchListEntry wildcard_entry(*it2);
                 wildcard_entry.match_type = 0;
+                wildcard_entry.update_type = 0;
+                wildcard_entry.site_type = 0;
 
                 it1 = process_matchlist.insert(it1, wildcard_entry);
                 // it1 now points to the newly inserted position.
@@ -181,6 +189,8 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
             id_moves[j].second = index_mapping[old_index_second];
         }
     }
+
+    //}}}
 }
 
 
@@ -190,10 +200,11 @@ int Interactions::totalAvailableSites() const
 {
     // Loop through and sum all available sites on all processes.
     size_t sum = 0;
-    for (size_t i = 0; i < process_pointers_.size(); ++i)
+    for (Process* const & process_pointer : process_pointers_)
     {
-        sum += process_pointers_[i]->nSites();
+        sum += process_pointer->nSites();
     }
+
     return static_cast<int>(sum);
 }
 
@@ -204,7 +215,7 @@ void Interactions::updateProbabilityTable()
 {
     // Loop over all processes.
     std::vector<Process*>::const_iterator it1 = process_pointers_.begin();
-    std::vector<std::pair<double,int> >::iterator it2 = probability_table_.begin();
+    std::vector<std::pair<double, int> >::iterator it2 = probability_table_.begin();
     const std::vector<Process*>::const_iterator end = process_pointers_.end();
 
     double previous_rate = 0.0;
@@ -248,7 +259,7 @@ int Interactions::pickProcessIndex() const
                                                                                          pairComp );
 
     // Find the index in the process list.
-    return it1-begin;
+    return it1 - begin;
 }
 
 

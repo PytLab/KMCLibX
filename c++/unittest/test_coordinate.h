@@ -34,6 +34,7 @@ public:
     CPPUNIT_TEST( testAccessOperator );
     CPPUNIT_TEST( testOuterProdDiag );
     CPPUNIT_TEST( testDotProduct );
+    CPPUNIT_TEST( testToString );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
@@ -46,6 +47,7 @@ public:
     void testAccessOperator();
     void testOuterProdDiag();
     void testDotProduct();
+    void testToString();
 
 };
 

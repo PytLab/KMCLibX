@@ -1,13 +1,23 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
 
-/*! \file  process.h
- *  \brief File for the Process class definition.
+/* ******************************************************************
+ *  file   : process.h
+ *  brief  : File for the Process class definition.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-04-10   1.2          Modify match list presentation.
+ *  zjshao     2016-04-10   2.0          Add site type.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
 
 #ifndef __PROCESS__
@@ -16,8 +26,10 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "matchlistentry.h"
 
+#include "matchlist.h"
+
+// Forward declarations.
 class Configuration;
 
 /*! \brief Class for defining a possible process int the system.
@@ -49,14 +61,16 @@ public:
      *                         i.e., if only elements are moved on the lattice and no
      *                         atom id moves are considered.
      *  \param process_number: The id number of the process.
+     *  \param site_types    : The site type on which the process is performed.
      */
     Process(const Configuration & first,
             const Configuration & second,
             const double rate,
             const std::vector<int> & basis_sites,
-            const std::vector<int> & move_origins=std::vector<int>(0),
-            const std::vector<Coordinate> & move_vectors=std::vector<Coordinate>(0),
-            const int process_number=-1);
+            const std::vector<int> & move_origins = {},
+            const std::vector<Coordinate> & move_vectors = {},
+            const int process_number = -1,
+            const std::vector<int> & site_types = {});
 
     /*! \brief Virtual destructor needed for use as base class.
      */
@@ -113,12 +127,12 @@ public:
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : The stored match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList() const { return minimal_match_list_; }
+    const ProcessMatchList & matchList() const { return match_list_; }
 
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : A reference to the stored match list.
      */
-    std::vector<MinimalMatchListEntry> & minimalMatchList() { return minimal_match_list_; }
+    ProcessMatchList & matchList() { return match_list_; }
 
     /*! \brief Query for the latest affected indices.
      *  \return : The affected indices from the last time the process was
@@ -162,6 +176,11 @@ public:
      */
     int processNumber() const { return process_number_; }
 
+    /*! \brief Query for the site type setting flag.
+     *  \return : Whether site type is set.
+     */
+    bool hasSiteTypes() const { return has_site_types_; }
+
 protected:
 
     /// The process number.
@@ -180,7 +199,7 @@ protected:
     std::vector<int> sites_;
 
     /// The match list for comparing against local configurations.
-    std::vector<MinimalMatchListEntry> minimal_match_list_;
+    ProcessMatchList match_list_;
 
     /*! \brief: The configuration indices that were affected last time
      *          the process was used to update a configuration.
@@ -192,6 +211,9 @@ protected:
 
     /// The atom id moves.
     std::vector< std::pair<int,int> > id_moves_;
+
+    /// The flag whether site type is set.
+    bool has_site_types_;
 
 private:
 

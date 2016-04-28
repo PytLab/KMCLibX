@@ -1,9 +1,10 @@
 """ Module for the KMCProcess class """
 
 
-# Copyright (c)  2013  Mikael Leetmaa
+# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2016-2019  Shao Zhengjiang
 #
-# This file is part of the KMCLib project distributed under the terms of the
+# This file is part of the KMCLibX project(based on KMCLib) distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
@@ -16,10 +17,10 @@ from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfFloats
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
-from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
-from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.Exceptions.Error import Error
+from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
+
 
 class KMCProcess(object):
     """
@@ -32,7 +33,8 @@ class KMCProcess(object):
                  elements_after=None,
                  move_vectors=None,
                  basis_sites=None,
-                 rate_constant=None):
+                 rate_constant=None,
+                 site_types=None):
         """
         Constructor for the KMCProcess.
 
@@ -68,6 +70,10 @@ class KMCProcess(object):
         :param rate_constant: The rate constant associated with this process.
         :type rate_constant: float
 
+        :param site_types: The site types, as a list of strings, on which the
+                           process is performed. If no site types is provided,
+                           then the default value None would be used in Process object.
+
         """
         # Check the coordinates.
         coordinates = checkCoordinateList(coordinates)
@@ -78,27 +84,35 @@ class KMCProcess(object):
 
         # Check the types.
         elements_before = checkTypes(elements_before, len(coordinates))
-        elements_after  = checkTypes(elements_after,  len(coordinates))
+        elements_after = checkTypes(elements_after,  len(coordinates))
+
+        # Check site types.
+        if site_types:
+            site_types = checkTypes(site_types, len(coordinates))
 
         # Check that the elements represents a valid move.
         self.__checkValidMoveElements(elements_before, elements_after)
 
         # All types checking done.
         self.__elements_before = elements_before
-        self.__elements_after  = elements_after
+        self.__elements_after = elements_after
+        self.__site_types = site_types
 
         # Check that the move vectors are compatible with the elements.
         self.__move_vectors = self.__checkValidMoveVectors(move_vectors)
 
-        # Sort the coordinates and co-sort the elements and move vectors.
+        # Sort the coordinates and co-sort the elements and move vectors
+        # or site types if set.
         self.__sortCoordinatesElementsAndMoveVectors()
 
         # Check the list of basis sites.
-        basis_sites = checkSequenceOfPositiveIntegers(basis_sites,
-                                                      msg="The basis_sites must be given as a list of positive integers.")
+        basis_sites = checkSequenceOfPositiveIntegers(
+            basis_sites,
+            msg="The basis_sites must be given as a list of positive integers.")
 
         if len(basis_sites) == 0:
             msg = "The list of available basis sites for a process may not be empty."
+            raise Error(msg)
 
         # Passed the  tests.
         self.__basis_sites = basis_sites
@@ -120,8 +134,8 @@ class KMCProcess(object):
         :param elements_after: The list of elements after the move.
         """
         # Check that the wildcards, if any, are not moved.
-        before = [ e == "*" for e in elements_before ]
-        after  = [ e == "*" for e in elements_after ]
+        before = [e == "*" for e in elements_before]
+        after = [e == "*" for e in elements_after]
 
         if len(before) != len(after) or before != after:
             raise Error("Wildcards must not move during a valid process.")
@@ -154,13 +168,13 @@ class KMCProcess(object):
         moved_elements = [] + self.__elements_before
         for (move_index, move_vector) in move_vectors:
             old_coord = self.__coordinates[move_index]
-            new_coord = numpy.array(old_coord) + numpy.array(move_vector)   #    <- Elementwise addition.
+            new_coord = numpy.array(old_coord) + numpy.array(move_vector)  # <- Elementwise addition.
 
             # Find which index this corresponds to.
             subtracted = self.__coordinates - new_coord
-            reduced    = numpy.abs(sum(abs(subtracted.transpose())))
-            boolean    = [ rr < 1.0e-8 for rr in reduced ]
-            new_index  = numpy.where(boolean)
+            reduced = numpy.abs(sum(abs(subtracted.transpose())))
+            boolean = [rr < 1.0e-8 for rr in reduced]
+            new_index = numpy.where(boolean)
             if len(new_index[0]) == 0:
                 raise Error("Each move_vector must move an atom to a valid lattice site.")
             new_index = new_index[0][0]
@@ -168,7 +182,8 @@ class KMCProcess(object):
             # Check that the the element at this position in the new elements
             # vector corresponds to the move.
             if self.__elements_before[move_index] != self.__elements_after[new_index]:
-                raise Error("The move vector for index %i does not match the elements after move."%(move_index))
+                raise Error("The move vector for index %i " +
+                            "does not match the elements after move." % (move_index))
 
             # Perform the move.
             moved_elements[new_index] = self.__elements_before[move_index]
@@ -176,7 +191,8 @@ class KMCProcess(object):
         # With all moves performed on the elements we check if we properly reconstructed
         # the elements after the move.
         if (self.__elements_after != moved_elements):
-            raise Error("Applying the move vectors to the elements_before does not generate the elements_after list.")
+            raise Error("Applying the move vectors to the elements_before " +
+                        "does not generate the elements_after list.")
 
         return move_vectors
 
@@ -199,10 +215,10 @@ class KMCProcess(object):
             return move_vectors
 
         # This is the error message.
-        msg = """The 'move_vectors' input to the KMCProcess constructor must be a
-list of tuples, where the first element of each tuple refers to an atom index
-and the second element is a cartesian vector of length 3, in internal
-coordinates defining where the moved index goes."""
+        msg = ("The 'move_vectors' input to the KMCProcess constructor must " +
+               "be a list of tuples, where the first element of each tuple " +
+               "refers to an atom index and the second element is a cartesian vector of length 3, " +
+               "in internal coordinates defining where the moved index goes.")
 
         # Check that we have a sequence.
         move_vectors = checkSequence(move_vectors, msg)
@@ -233,7 +249,7 @@ coordinates defining where the moved index goes."""
         pairs = []
         for i, (e1, e2) in enumerate(zip(self.__elements_before, self.__elements_after)):
             if e1 != e2:
-                pairs.append((e1,e2,i))
+                pairs.append((e1, e2, i))
 
         # Check the size.
         if len(pairs) != 2:
@@ -248,7 +264,7 @@ coordinates defining where the moved index goes."""
         index_1 = pairs[1][2]
 
         start = numpy.array(self.__coordinates[index_0])
-        end   = numpy.array(self.__coordinates[index_1])
+        end = numpy.array(self.__coordinates[index_1])
 
         vector_0 = numpy.array(end-start)
         vector_1 = numpy.array(start-end)
@@ -265,35 +281,48 @@ coordinates defining where the moved index goes."""
 
         # Sort, and co-sort coordinates and indices.
         (sorted_coords, dummy_distances, sorted_types_before, sorted_types_after, new_to_old_index) = \
-            sortCoordinatesDistance(coordinates = self.__coordinates,
-                                    center      = 0,
-                                    types1      = self.__elements_before,
-                                    types2      = self.__elements_after,
-                                    co_sort     = original_indexing)
+            sortCoordinatesDistance(coordinates=self.__coordinates,
+                                    center=0,
+                                    types1=self.__elements_before,
+                                    types2=self.__elements_after,
+                                    co_sort=original_indexing)
+
+        # Offer old index, get new index.
+        old_to_new_index = []
+        for i in range(len(new_to_old_index)):
+            old_to_new_index.append(new_to_old_index.index(i))
 
         # Fix the move vectors.
         if len(self.__move_vectors) > 0:
-            old_to_new_index = []
-            for i in range(len(new_to_old_index)):
-                old_to_new_index.append(new_to_old_index.index(i))
-
             # Fixt the move vector indexing.
             move_vector_index = []
             for v in self.__move_vectors:
-                move_vector_index.append( old_to_new_index[v[0]] )
+                move_vector_index.append(old_to_new_index[v[0]])
 
             # Setup and sort the backmapping.
             help_index = range(len(move_vector_index))
             to_sort = numpy.array(zip(help_index, move_vector_index))
-            sorted_indices = to_sort[numpy.argsort(to_sort[:,1])]
+            sorted_indices = to_sort[numpy.argsort(to_sort[:, 1])]
 
             # Construct the new move vectors.
             new_move_vectors = []
             for idx in sorted_indices:
-                new_move_vectors.append( (idx[1], self.__move_vectors[idx[0]][1]) )
+                new_move_vectors.append((idx[1], self.__move_vectors[idx[0]][1]))
 
             # Set the move vectors.
             self.__move_vectors = new_move_vectors
+
+        if self.__site_types:
+            # Fix the site types, if site_types is set.
+            sorted_site_types = ["*"]*len(self.__coordinates)
+
+            # Get the sorted site types.
+            for old_index in xrange(len(self.__site_types)):
+                new_index = old_to_new_index[old_index]
+                sorted_site_types[new_index] = self.__site_types[old_index]
+
+            # Set the site types.
+            self.__site_types = sorted_site_types
 
         # Set the new data on the class.
         self.__coordinates = sorted_coords
@@ -307,7 +336,8 @@ coordinates defining where the moved index goes."""
             return False
 
         # Check the basis sites.
-        elif not all([s1 == s2 for s1,s2 in zip(other.basisSites(),self.basisSites())]):
+        elif not all([s1 == s2 for s1, s2 in zip(other.basisSites(),
+                                                 self.basisSites())]):
             return False
 
         # Check the number of atoms in the local configurations.
@@ -327,22 +357,40 @@ coordinates defining where the moved index goes."""
         # Check the coordinates and types.
         if numpy.linalg.norm(coords_self - coords_other) > 0.00001:
             return False
-        elif not all([s1 == s2 for s1,s2 in zip(types_before_self,
-                                                types_before_other)]):
+        elif not all([s1 == s2 for s1, s2 in zip(types_before_self,
+                                                 types_before_other)]):
             return False
-        elif not all([s1 == s2 for s1,s2 in zip(types_after_self,
-                                                types_after_other)]):
+        elif not all([s1 == s2 for s1, s2 in zip(types_after_self,
+                                                 types_after_other)]):
             return False
 
         # Check the move vectors.
         if len(self.__move_vectors) != len(other._KMCProcess__move_vectors):
             return False
 
-            # For each move vector, loop through the others and find the one that matches.
-        for v1,v2 in zip(self.__move_vectors,other._KMCProcess__move_vectors):
+        # For each move vector, loop through the others and find the one that matches.
+        for v1, v2 in zip(self.__move_vectors, other._KMCProcess__move_vectors):
             if v1[0] != v2[0]:
                 return False
             elif numpy.linalg.norm(numpy.array(v1[1])-numpy.array(v2[1])) > 1.0e-8:
+                return False
+
+        # Check the site types.
+        site_types_self = self.siteTypes()
+        site_types_other = other.siteTypes()
+
+        # If one is None and another is not.
+        if not all((site_types_self, site_types_other)):
+            if any((site_types_self, site_types_other)):
+                return False
+        # If both are not None.
+        else:
+            # Check length.
+            if len(site_types_self) != len(site_types_other):
+                return False
+            # Check each type.
+            if not all([t1 == t2 for t1, t2 in zip(site_types_self,
+                                                   site_types_other)]):
                 return False
 
         # Passed all tests, return true.
@@ -398,6 +446,14 @@ coordinates defining where the moved index goes."""
         """
         return self.__elements_after
 
+    def siteTypes(self):
+        """
+        Query for the site types.
+
+        :returns: The site types stored on the class.
+        """
+        return self.__site_types
+
     def _script(self, variable_name="process"):
         """
         Generate a script representation of an instance.
@@ -422,12 +478,12 @@ coordinates defining where the moved index goes."""
         # For the first coordinate, if there are more than one coordinate.
         if len(self.__coordinates) > 1:
             c = self.__coordinates[0]
-            coords_string += coord_template%(c[0],c[1],c[2])
+            coords_string += coord_template % (c[0], c[1], c[2])
 
             # And the middle coordinates.
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "],\n"
             for c in self.__coordinates[1:-1]:
-                coords_string += coord_template%(c[0],c[1],c[2])
+                coords_string += coord_template % (c[0], c[1], c[2])
 
         # Add the last coordinate (which is also the first if there is only one coordinate).
         c = self.__coordinates[-1]
@@ -435,14 +491,14 @@ coordinates defining where the moved index goes."""
             coord_template = "[" + ff + "," + ff + "," + ff + "]]\n"
         else:
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "]]\n"
-        coords_string += coord_template%(c[0],c[1],c[2])
+        coords_string += coord_template % (c[0], c[1], c[2])
 
         # Setup the elements before string.
         elements_before_string = "elements_before = "
         indent = " "*19
         line = "["
         nT = len(self.__elements_before)
-        for i,t in enumerate(self.__elements_before):
+        for i, t in enumerate(self.__elements_before):
             # Add the type.
             line += "'" + t + "'"
             if i == nT-1:
@@ -464,7 +520,7 @@ coordinates defining where the moved index goes."""
         indent = " "*19
         line = "["
         nT = len(self.__elements_after)
-        for i,t in enumerate(self.__elements_after):
+        for i, t in enumerate(self.__elements_after):
             # Add the type.
             line += "'" + t + "'"
             if i == nT-1:
@@ -481,6 +537,31 @@ coordinates defining where the moved index goes."""
                 elements_after_string += line + "\n" + indent
                 line = ""
 
+        # Setup the site types.
+        site_types_string = "site_types = "
+        indent = " "*14
+        if not self.__site_types:
+            site_types_string += "None\n"
+        else:
+            line = "["
+            nT = len(self.__site_types)
+            for i, t in enumerate(self.__site_types):
+                # Add the type.
+                line += "'" + t + "'"
+                if i == nT-1:
+                    # Stop if we reach the end.
+                    line += "]\n"
+                    site_types_string += line
+                    break
+                else:
+                # Add the separator.
+                    line += ","
+
+                # Check if we should add a new line.
+                if len(line) > 50:
+                    site_types_string += line + "\n" + indent
+                    line = ""
+
         # Setup the move vector string.
         if len(self.__move_vectors) == 0:
             move_vectors_string = "move_vectors    = None\n"
@@ -490,7 +571,8 @@ coordinates defining where the moved index goes."""
             vector_template = "[" + ff + "," + ff + "," + ff + "]"
             for i, (index, vector) in enumerate(self.__move_vectors):
 
-                move_vectors_string += "( %2i,"%(index) + vector_template%(vector[0], vector[1], vector[2])
+                move_vectors_string += ("( %2i," % (index) +
+                                        vector_template % (vector[0], vector[1], vector[2]))
 
                 if i < len(self.__move_vectors)-1:
                     move_vectors_string += "),\n" + indent
@@ -499,30 +581,31 @@ coordinates defining where the moved index goes."""
 
         # Setup the basis sites list.
         basis_sites_string = "basis_sites     = ["
-        for j,b in enumerate(self.__basis_sites):
+        for j, b in enumerate(self.__basis_sites):
             if j == (len(self.__basis_sites)-1):
-                basis_sites_string += "%i]"%(b)
+                basis_sites_string += "%i]" % (b)
             else:
-                basis_sites_string += "%i,"%(b)
+                basis_sites_string += "%i," % (b)
 
         # Setup the rate constant string.
         rate_constant_string = "rate_constant   = " + ff
-        rate_constant_string = rate_constant_string%(self.__rate_constant)
+        rate_constant_string = rate_constant_string % (self.__rate_constant)
 
         # Get the script together.
         process_string = variable_name + " = KMCProcess(\n" + \
             "    coordinates=coordinates,\n" + \
             "    elements_before=elements_before,\n" + \
             "    elements_after=elements_after,\n" + \
-            "    move_vectors=move_vectors,\n" +\
+            "    move_vectors=move_vectors,\n" + \
             "    basis_sites=basis_sites,\n" + \
-            "    rate_constant=rate_constant)\n"
+            "    rate_constant=rate_constant,\n" + \
+            "    site_types=site_types)\n"
 
-        return coords_string + "\n" + \
-            elements_before_string + \
-            elements_after_string  + \
-            move_vectors_string    + \
-            basis_sites_string     + "\n" + \
-            rate_constant_string   + "\n\n" + \
-            process_string + "\n"
-
+        return (coords_string + "\n" +
+                elements_before_string +
+                elements_after_string +
+                site_types_string +
+                move_vectors_string +
+                basis_sites_string + "\n" +
+                rate_constant_string + "\n\n" +
+                process_string + "\n")

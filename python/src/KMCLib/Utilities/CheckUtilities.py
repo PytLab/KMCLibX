@@ -12,6 +12,7 @@ import numpy
 
 from KMCLib.Exceptions.Error import Error
 
+
 def checkIndexWithinBounds(index, list, msg=None):
     """
     Check that the given index is within the bounds of the list.
@@ -88,25 +89,25 @@ def checkCoordinateList(coordinates, varname="coordinates"):
     :returns:           A valid Nx3 numpy array of numbers.
     """
     # Check that it is a sequence.
-    coordinates = checkSequence(coordinates, "The %s must be given as a list of lists with dimensions Nx3"%(varname))
+    coordinates = checkSequence(coordinates, "The %s must be given as a list of lists with dimensions Nx3" % (varname))
 
     # Check that its length is not zero.
     if (len(coordinates) < 1):
-        raise Error("The '%s' parameter may not be an empty list."%(varname))
+        raise Error("The '%s' parameter may not be an empty list." % (varname))
 
     # Check each coordinate.
     for coord in coordinates:
 
         # Check that it is a sequence.
-        coord = checkSequence(coord, "The %s must be given as a list of lists with dimensions Nx3"%(varname))
+        coord = checkSequence(coord, "The %s must be given as a list of lists with dimensions Nx3" % (varname))
 
         # Make sure the length of the coordinate is 3.
         if len(coord) != 3:
-            raise Error("Each entry in the '%s' list must have exactly three elements."%(varname))
+            raise Error("Each entry in the '%s' list must have exactly three elements." % (varname))
 
         # Check that each element is a floating point number.
-        if not all([isinstance(c,float) for c in coord]):
-            raise Error("All '%s' entries must be given as floating point numbers."%(varname))
+        if not all([isinstance(c, float) for c in coord]):
+            raise Error("All '%s' entries must be given as floating point numbers." % (varname))
 
     # Convert to a numpy array and return.
     return numpy.array(coordinates)
@@ -214,7 +215,7 @@ def checkTypes(types, length):
 
     # Check eachg element.
     for t in types:
-        if not isinstance(t,str):
+        if not isinstance(t, str):
             raise Error("The 'types' parameter must be given as a list of strings.")
 
     # Check the length.
@@ -243,7 +244,7 @@ def checkPositiveInteger(parameter, default_parameter, parameter_name):
         parameter = default_parameter
 
     # The error message.
-    msg = "The parameter '%s' must be given as a positive integer."%(parameter_name)
+    msg = "The parameter '%s' must be given as a positive integer." % (parameter_name)
     # Check type.
     if not isinstance(parameter, int):
         raise Error(msg)

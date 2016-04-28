@@ -24,18 +24,30 @@ class Test_MatchListEntry : public CppUnit::TestCase {
 public:
 
     CPPUNIT_TEST_SUITE( Test_MatchListEntry );
-    CPPUNIT_TEST( testConstruction );
-    CPPUNIT_TEST( testNotEqualOperator );
-    CPPUNIT_TEST( testLessOperator );
-    CPPUNIT_TEST( testQuery );
+    CPPUNIT_TEST( testMinimalMatchListEntryConstruction );
+    CPPUNIT_TEST( testMinimalMatchListEntryMatch );
+    CPPUNIT_TEST( testMinimalMatchListEntryLessOperator );
+    CPPUNIT_TEST( testMinimalMatchListEntrySamePoint );
+    CPPUNIT_TEST( testProcessMatchListEntryConstruction );
+    CPPUNIT_TEST( testProcessMatchListEntrySamePoint );
+    CPPUNIT_TEST( testConfigMatchListEntryConstruction );
+    CPPUNIT_TEST( testConfigMatchListEntrySamePoint );
+    CPPUNIT_TEST( testSiteMatchListEntryConstruction );
+    CPPUNIT_TEST( testSiteAndProcessMatchListEntryMatch );
     CPPUNIT_TEST_SUITE_END();
 
-    void testConstruction();
-    void testNotEqualOperator();
-    void testLessOperator();
-    void testQuery();
+    void testMinimalMatchListEntryConstruction();
+    void testMinimalMatchListEntryMatch();
+    void testMinimalMatchListEntryLessOperator();
+    void testMinimalMatchListEntrySamePoint(); 
+    void testProcessMatchListEntryConstruction();
+    void testProcessMatchListEntrySamePoint();
+    void testConfigMatchListEntryConstruction();
+    void testConfigMatchListEntrySamePoint();
+    void testSiteMatchListEntryConstruction(); 
+    void testSiteAndProcessMatchListEntryMatch();
 
 };
 
-#endif
+#endif  // __TEST_MATCHLISTENTRY__
 
