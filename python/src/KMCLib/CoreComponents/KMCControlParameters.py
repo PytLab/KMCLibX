@@ -11,6 +11,7 @@ from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
 
+
 class KMCControlParameters(object):
     """
     Class for handling the control parameters that goes in to a KMC simulation.
@@ -86,7 +87,7 @@ class KMCControlParameters(object):
                                            "seed")
 
         # Check and set the random number generator type.
-        self.__rng_type  = self.__checkRngType(rng_type, "MT")
+        self.__rng_type = self.__checkRngType(rng_type, "MT")
 
     def __checkRngType(self, rng_type, default):
         """
@@ -152,4 +153,3 @@ class KMCControlParameters(object):
         Query for the pseudo random number generator type.
         """
         return self.__rng_type
-

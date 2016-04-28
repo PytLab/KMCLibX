@@ -1,9 +1,10 @@
 """ Module containing the KMCUnitCell class. """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2016-2019  Shao Zhengjiang
 #
-# This file is part of the KMCLib project distributed under the terms of the
+# This file is part of the KMCLibX project(based on KMCLib) distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
@@ -13,6 +14,7 @@ import numpy
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkCellVectors
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
+
 
 class KMCUnitCell(object):
     """ Class for describing a unitcell. """
@@ -87,9 +89,15 @@ class KMCUnitCell(object):
         cell_vector_b_str = indent + "[" + ff + "," + ff + "," + ff + "],\n"
         cell_vector_c_str = indent + "[" + ff + "," + ff + "," + ff + "]]\n"
 
-        cell_vector_a = cell_vector_a_str%(self.__cell_vectors[0][0], self.__cell_vectors[0][1], self.__cell_vectors[0][2])
-        cell_vector_b = cell_vector_b_str%(self.__cell_vectors[1][0], self.__cell_vectors[1][1], self.__cell_vectors[1][2])
-        cell_vector_c = cell_vector_c_str%(self.__cell_vectors[2][0], self.__cell_vectors[2][1], self.__cell_vectors[2][2])
+        cell_vector_a = cell_vector_a_str % (self.__cell_vectors[0][0],
+                                             self.__cell_vectors[0][1],
+                                             self.__cell_vectors[0][2])
+        cell_vector_b = cell_vector_b_str % (self.__cell_vectors[1][0],
+                                             self.__cell_vectors[1][1],
+                                             self.__cell_vectors[1][2])
+        cell_vector_c = cell_vector_c_str % (self.__cell_vectors[2][0],
+                                             self.__cell_vectors[2][1],
+                                             self.__cell_vectors[2][2])
         cell_string = "cell_vectors = [" + cell_vector_a + cell_vector_b + cell_vector_c
 
         # Setup the basis points scipt part.
@@ -97,11 +105,11 @@ class KMCUnitCell(object):
 
         # Loop over and add the basis points.
         basis_point_str = "[" + ff + "," + ff + "," + ff + "]"
-        for i,point in enumerate(self.__basis_points):
+        for i, point in enumerate(self.__basis_points):
             if (i == 0):
-                basis_string += basis_point_str%(point[0], point[1], point[2])
+                basis_string += basis_point_str % (point[0], point[1], point[2])
             else:
-                basis_string += indent + basis_point_str%(point[0], point[1], point[2])
+                basis_string += indent + basis_point_str % (point[0], point[1], point[2])
 
             if len(self.__basis_points) > i+1:
                 basis_string += ",\n"
@@ -121,6 +129,3 @@ class KMCUnitCell(object):
 """
         # Return the script.
         return comment_string + cell_string + "\n" + basis_string + "\n" + unit_cell_string
-
-
-

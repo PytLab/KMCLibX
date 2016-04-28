@@ -42,7 +42,16 @@
 !/c++/externals/Makefile
 !/c++/externals/README.md
 
-# Compiled files in src and unittest
+# Compiled files 
+/c++/build
 /c++/src/build
 /c++/unittest/build
 
+# Python compiled files
+*.pyc
+
+# ctag files for Vim plugin
+tags
+
+# backend extension module
+/python/src/KMCLib/Backend/Backend*

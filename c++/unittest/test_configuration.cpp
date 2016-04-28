@@ -19,6 +19,8 @@
 //
 void Test_Configuration::testConstruction()
 {
+    // {{{
+
     // Setup coordinates.
     std::vector<std::vector<double> > coords(5, std::vector<double>(3, 0.0));
     coords[0][0]  = 0.1;
@@ -83,9 +85,9 @@ void Test_Configuration::testConstruction()
     }
 
     // DONE
+    // }}}
 
 }
-
 
 // ---------------------------------------------------------------------------//
 // Description: Test moved_atom_id_ and recent_move_vector 
@@ -95,6 +97,8 @@ void Test_Configuration::testConstruction()
 // ---------------------------------------------------------------------------//
 void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
 {
+    // {{{
+
     // Make a 3x3x3 structure
     const int nI = 3;
     const int nJ = 3;
@@ -144,9 +148,9 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
     configuration.initMatchLists(lattice_map, range);
 
     // Test lengths of minimal_matchlists
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(0).size()), 8);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(1).size()), 12);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(13).size()), 27);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.matchList(0).size()), 8);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.matchList(1).size()), 12);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.matchList(13).size()), 27);
 
     // Test size of moved_atom_ids_ before process performing
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.movedAtomIDs().size()), 0);
@@ -180,7 +184,7 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
     // Perform the process
     // if there is no enough space in moved_atom_ids_ or recent_moved_vectors_,
     // segmentation fault(core dumped) will be caused
-    configuration.performProcess(p, 1, lattice_map);
+    configuration.performProcess(p, 1);
 
     // Test entries in moved_atom_ids_
     const int atom_ids[12] = {1, 0, 2, 4, 10, 3, 5, 9, 11, 13, 12, 14};
@@ -198,6 +202,7 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), 0.0, 1.0e-12);
     }
 
+    // }}}
 }
 
 
@@ -205,6 +210,8 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
 //
 void Test_Configuration::testPerformProcess()
 {
+    // {{{
+
     // Setup a realistic system.
     std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
     basis[1][0] = 0.25;
@@ -320,7 +327,7 @@ void Test_Configuration::testPerformProcess()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performProcess(p, 1434);
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
@@ -335,6 +342,7 @@ void Test_Configuration::testPerformProcess()
     CPPUNIT_ASSERT_EQUAL( affected[0], 1434 );
     CPPUNIT_ASSERT_EQUAL( affected[1], 350  );
 
+    // }}}
 }
 
 
@@ -342,6 +350,8 @@ void Test_Configuration::testPerformProcess()
 //
 void Test_Configuration::testPerformProcessVectors()
 {
+    // {{{
+
     // Setup a realistic system.
     std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
     basis[1][0] = 0.25;
@@ -476,7 +486,7 @@ void Test_Configuration::testPerformProcessVectors()
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.recentMoveVectors().size()), 0);
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performProcess(p, 1434);
 
     // This move changes place on atom IDs 1434 and 350.
     CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1434],  350 );
@@ -521,12 +531,16 @@ void Test_Configuration::testPerformProcessVectors()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), id_coord.y(), 1.0e-12);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), id_coord.z(), 1.0e-12);
     }
+
+    // }}}
 }
 
 // -------------------------------------------------------------------------- //
 //
 void Test_Configuration::testAtomID()
 {
+    // {{{
+
     // Setup coordinates.
     std::vector<std::vector<double> > coords(5, std::vector<double>(3, 0.0));
     coords[0][0]  = 0.1;
@@ -575,6 +589,8 @@ void Test_Configuration::testAtomID()
     {
         CPPUNIT_ASSERT_EQUAL( configuration.atomID()[i], i );
     }
+
+    // }}}
 }
 
 
@@ -582,6 +598,8 @@ void Test_Configuration::testAtomID()
 //
 void Test_Configuration::testMatchLists()
 {
+    // {{{
+
     // Setup a configuration.
     std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
     basis[1][0] = 0.25;
@@ -655,47 +673,45 @@ void Test_Configuration::testMatchLists()
 
     // Try to access the match lists before initialization. They should be
     // empty.
-    CPPUNIT_ASSERT( configuration.minimalMatchList(10).empty()   );
-    CPPUNIT_ASSERT( configuration.minimalMatchList(2101).empty() );
-    CPPUNIT_ASSERT( configuration.minimalMatchList(1434).empty() );
+    CPPUNIT_ASSERT( configuration.matchList(10).empty()   );
+    CPPUNIT_ASSERT( configuration.matchList(2101).empty() );
+    CPPUNIT_ASSERT( configuration.matchList(1434).empty() );
 
     // Init the match lists.
     configuration.initMatchLists(lattice_map, 1);
 
     // This did something.
-    CPPUNIT_ASSERT( !configuration.minimalMatchList(10).empty()   );
-    CPPUNIT_ASSERT( !configuration.minimalMatchList(2101).empty() );
-    CPPUNIT_ASSERT( !configuration.minimalMatchList(1434).empty() );
+    CPPUNIT_ASSERT( !configuration.matchList(10).empty()   );
+    CPPUNIT_ASSERT( !configuration.matchList(2101).empty() );
+    CPPUNIT_ASSERT( !configuration.matchList(1434).empty() );
 
     // Get the match list the hard way.
-    const std::vector<MinimalMatchListEntry> ref_1434 = \
-        configuration.minimalMatchList( 1434,
-                                        lattice_map.neighbourIndices(1434),
-                                        lattice_map);
+    const std::vector<ConfigMatchListEntry> ref_1434 = \
+        configuration.matchList( 1434,
+                                 lattice_map.neighbourIndices(1434),
+                                 lattice_map);
     // Check the size.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref_1434.size()),
-                          static_cast<int>(configuration.minimalMatchList(1434).size()) );
+                          static_cast<int>(configuration.matchList(1434).size()) );
 
     // Check the values.
     for (size_t i = 0; i < ref_1434.size(); ++i)
     {
         CPPUNIT_ASSERT_EQUAL( ref_1434[i].match_type,
-                              configuration.minimalMatchList(1434)[i].match_type );
-        CPPUNIT_ASSERT_EQUAL( ref_1434[i].update_type,
-                              configuration.minimalMatchList(1434)[i].update_type );
+                              configuration.matchList(1434)[i].match_type );
         CPPUNIT_ASSERT_EQUAL( ref_1434[i].index,
-                              configuration.minimalMatchList(1434)[i].index );
+                              configuration.matchList(1434)[i].index );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].distance,
-                                      configuration.minimalMatchList(1434)[i].distance,
+                                      configuration.matchList(1434)[i].distance,
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.x(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.x(),
+                                      configuration.matchList(1434)[i].coordinate.x(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.y(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.y(),
+                                      configuration.matchList(1434)[i].coordinate.y(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.z(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.z(),
+                                      configuration.matchList(1434)[i].coordinate.z(),
                                       1.0e-14 );
 
     }
@@ -744,7 +760,7 @@ void Test_Configuration::testMatchLists()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performProcess(p, 1434);
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
@@ -758,44 +774,45 @@ void Test_Configuration::testMatchLists()
     configuration.updateMatchList(1434);
 
     // Reference.
-    const std::vector<MinimalMatchListEntry> ref2_1434 =        \
-        configuration.minimalMatchList( 1434,
-                                        lattice_map.neighbourIndices(1434),
-                                        lattice_map);
+    const std::vector<ConfigMatchListEntry> ref2_1434 =        \
+        configuration.matchList( 1434,
+                                 lattice_map.neighbourIndices(1434),
+                                 lattice_map);
     // Check the size.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref2_1434.size()),
-                          static_cast<int>(configuration.minimalMatchList(1434).size()) );
+                          static_cast<int>(configuration.matchList(1434).size()) );
 
     // Check the values.
     for (size_t i = 0; i < ref2_1434.size(); ++i)
     {
         CPPUNIT_ASSERT_EQUAL( ref2_1434[i].match_type,
-                              configuration.minimalMatchList(1434)[i].match_type );
-        CPPUNIT_ASSERT_EQUAL( ref2_1434[i].update_type,
-                              configuration.minimalMatchList(1434)[i].update_type );
+                              configuration.matchList(1434)[i].match_type );
         CPPUNIT_ASSERT_EQUAL( ref2_1434[i].index,
-                              configuration.minimalMatchList(1434)[i].index );
+                              configuration.matchList(1434)[i].index );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].distance,
-                                      configuration.minimalMatchList(1434)[i].distance,
+                                      configuration.matchList(1434)[i].distance,
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.x(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.x(),
+                                      configuration.matchList(1434)[i].coordinate.x(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.y(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.y(),
+                                      configuration.matchList(1434)[i].coordinate.y(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.z(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.z(),
+                                      configuration.matchList(1434)[i].coordinate.z(),
                                       1.0e-14 );
 
     }
-}
 
+    // }}}
+}
 
 // -------------------------------------------------------------------------- //
 //
 void Test_Configuration::testTypeNameQuery()
 {
+    // {{{
+
     // Setup coordinates.
     const std::vector<std::vector<double> > coords(1, std::vector<double>(3, 0.0));
 
@@ -825,6 +842,7 @@ void Test_Configuration::testTypeNameQuery()
     CPPUNIT_ASSERT_EQUAL( config.typeName(6), std::string("G") );
 
     // DONE
+    // }}}
 }
 
 
@@ -832,6 +850,7 @@ void Test_Configuration::testTypeNameQuery()
 //
 void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
 {
+    // {{{
     // Setup a configuration.
     const std::vector< std::vector<double> > basis(0, std::vector<double>(3,0.0));
     const std::vector<int> basis_sites(1, 0);
@@ -993,7 +1012,7 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     p.addSite(1434, 0.0);
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performProcess(p, 1434);
 
     // Get the moved atom_id:s out.
     const std::vector<int> moved_atom_ids1 = configuration.movedAtomIDs();
@@ -1098,7 +1117,7 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
 
     // Peform the process.
     configuration.updateMatchList(1434);
-    configuration.performProcess(p2, 1434, lattice_map);
+    configuration.performProcess(p2, 1434);
 
     // Get the moved atom_id:s out.
     const std::vector<int> moved_atom_ids2 = configuration.movedAtomIDs();
@@ -1163,4 +1182,5 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].z(),
                                  configuration.atomIDCoordinates()[1453].z(),
                                  1.0e-12);
+    // }}}
 }

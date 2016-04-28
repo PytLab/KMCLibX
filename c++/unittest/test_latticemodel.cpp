@@ -18,6 +18,8 @@
 #include "interactions.h"
 #include "random.h"
 #include "simulationtimer.h"
+#include "matchlist.h"
+#include "sitesmap.h"
 
 #include <ctime>
 
@@ -25,6 +27,7 @@
 //
 void Test_LatticeModel::testConstruction()
 {
+    // {{{
     // Construct a configuration.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
     coords[0][0] = 1.4;
@@ -45,6 +48,16 @@ void Test_LatticeModel::testConstruction()
 
     Configuration config(coords,elements,possible_types);
 
+    // Construct a sitesmap.
+    const std::vector<std::string> site_types = {"M", "N"};
+
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["M"] = 1;
+    possible_site_types["N"] = 2;
+
+    SitesMap sitesmap(coords, site_types, possible_site_types);
+
     // And a corresponding lattice map.
     std::vector<int> rep(3, 1);
     rep[0] = 2;
@@ -59,8 +72,9 @@ void Test_LatticeModel::testConstruction()
     SimulationTimer timer;
 
     // construct.
-    LatticeModel model(config, timer, lattice_map, interactions);
+    LatticeModel model(config, sitesmap, timer, lattice_map, interactions);
 
+    // }}}
 }
 
 
@@ -68,6 +82,7 @@ void Test_LatticeModel::testConstruction()
 //
 void Test_LatticeModel::testSetupAndQuery()
 {
+    // {{{
     // Setup a realistic system and check.
     std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
     basis[1][0] = 0.25;
@@ -87,6 +102,8 @@ void Test_LatticeModel::testSetupAndQuery()
     basis_elements[1] = "B";
     basis_elements[2] = "B";
 
+    const std::vector<std::string> basis_site_types = {"M", "N", "N"};
+
     // Make a 37x18x19 structure.
     const int nI = 37;
     const int nJ = 18;
@@ -96,6 +113,7 @@ void Test_LatticeModel::testSetupAndQuery()
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
     std::vector<std::string> elements;
+    std::vector<std::string> site_types;
 
     for (int i = 0; i < nI; ++i)
     {
@@ -111,6 +129,7 @@ void Test_LatticeModel::testSetupAndQuery()
                     c[2] = k + basis[b][2];
                     coordinates.push_back(c);
                     elements.push_back(basis_elements[b]);
+                    site_types.push_back(basis_site_types[b]);
                 }
             }
         }
@@ -123,8 +142,18 @@ void Test_LatticeModel::testSetupAndQuery()
     possible_types["B"] = 2;
     possible_types["V"] = 3;
 
+    // Possible site types.
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["M"] = 1;
+    possible_site_types["N"] = 2;
+    possible_site_types["K"] = 3;
+
     // Setup the configuration.
     Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the sitesmap.
+    SitesMap sitesmap(coordinates, site_types, possible_site_types);
 
     // Setup the lattice map.
     std::vector<int> repetitions(3);
@@ -215,7 +244,7 @@ void Test_LatticeModel::testSetupAndQuery()
     SimulationTimer timer;
 
     // Construct the lattice model to test.
-    LatticeModel lattice_model(configuration, timer, lattice_map, interactions);
+    LatticeModel lattice_model(configuration, sitesmap, timer, lattice_map, interactions);
 
     // Get the interactions out and check that they are setup as expected.
     const Interactions ret_interactions = lattice_model.interactions();
@@ -278,7 +307,7 @@ void Test_LatticeModel::testSetupAndQuery()
     configuration = Configuration(coordinates, elements, possible_types);
 
     // Get a new lattice model to test.
-    LatticeModel lattice_model_2(configuration, timer, lattice_map, interactions);
+    LatticeModel lattice_model_2(configuration, sitesmap, timer, lattice_map, interactions);
 
     // Get the interactions out and check.
     const Interactions ret_interactions_2 = lattice_model_2.interactions();
@@ -288,7 +317,7 @@ void Test_LatticeModel::testSetupAndQuery()
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[2]->sites().size()), (nI*nJ*nK*nB/3)-4);
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[3]->sites().size()), 3 );
 
-    // DONE
+    // }}}
 }
 
 
@@ -296,6 +325,7 @@ void Test_LatticeModel::testSetupAndQuery()
 //
 void Test_LatticeModel::testSingleStepFunction()
 {
+    // {{{
     // Setup a realistic system and check.
     std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
     basis[1][0] = 0.25;
@@ -315,6 +345,8 @@ void Test_LatticeModel::testSingleStepFunction()
     basis_elements[1] = "B";
     basis_elements[2] = "B";
 
+    const std::vector<std::string> basis_site_types = {"M", "N", "N"};
+
     // Make a 37x18x19 structure.
     const int nI = 37;
     const int nJ = 18;
@@ -324,6 +356,7 @@ void Test_LatticeModel::testSingleStepFunction()
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
     std::vector<std::string> elements;
+    std::vector<std::string> site_types;
 
     for (int i = 0; i < nI; ++i)
     {
@@ -339,6 +372,7 @@ void Test_LatticeModel::testSingleStepFunction()
                     c[2] = k + basis[b][2];
                     coordinates.push_back(c);
                     elements.push_back(basis_elements[b]);
+                    site_types.push_back(basis_site_types[b]);
                 }
             }
         }
@@ -357,8 +391,18 @@ void Test_LatticeModel::testSingleStepFunction()
     possible_types["B"] = 2;
     possible_types["V"] = 3;
 
+    // Possible site types.
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["M"] = 1;
+    possible_site_types["N"] = 2;
+    possible_site_types["K"] = 3;
+
     // Setup the configuration.
     Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the sitesmap.
+    SitesMap sitesmap(coordinates, site_types, possible_site_types);
 
     // Setup the lattice map.
     std::vector<int> repetitions(3);
@@ -415,6 +459,28 @@ void Test_LatticeModel::testSingleStepFunction()
         processes.push_back(p);
     }
 
+    // A process that finds an A between two B's in the 1,1,1 direction
+    // and swap the A and the first B.
+    // Add site types to this process.
+    {
+        std::vector<std::string> process_elements1 = {"A", "B", "B"};
+        std::vector<std::string> process_elements2 = {"B", "A", "B"};
+        std::vector<int> process_site_types = {1, 2, 1};
+
+        std::vector<std::vector<double> > process_coordinates = { 
+            {0.0, 0.0, 0.0}, {-0.25, -0.25, -0.25}, {0.25, 0.25, 0.25} };
+
+        const double rate = 13.7;
+        const std::vector<int> move_origins = {};
+        const std::vector<Coordinate> move_vectors = {};
+        const int process_number = -1;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, rate, basis_sites, move_origins, move_vectors,
+                  process_number, process_site_types);
+        processes.push_back(p);
+    }
+
     // A process that finds a V between two A in the 1,1,1 direction
     // and turn the V into B.
     {
@@ -450,7 +516,7 @@ void Test_LatticeModel::testSingleStepFunction()
     SimulationTimer timer;
 
     // Construct the lattice model to test.
-    LatticeModel lattice_model(configuration, timer, lattice_map, interactions);
+    LatticeModel lattice_model(configuration, sitesmap, timer, lattice_map, interactions);
 
     // Call the single step function a couple of times to make sure it is
     // stable - the rest of the testing of this function should be done on
@@ -460,12 +526,183 @@ void Test_LatticeModel::testSingleStepFunction()
     {
         lattice_model.singleStep();
     }
+
+    // }}}
+}
+
+
+// -------------------------------------------------------------------------
+//
+void Test_LatticeModel::testSingleStepFunction2D()
+{
+    // {{{
+    // Setup a realistic system and check.
+    std::vector< std::vector<double> > basis(1, std::vector<double>(3, 0.0));
+
+    std::vector<int> basis_sites(1, 0);
+
+    // Make a 10x10x1 structure.
+    const int nI = 10;
+    const int nJ = 10;
+    const int nK = 1;
+    
+    // Coordinates.
+    std::vector< std::vector<double> > coordinates;
+
+    // Site types.
+    std::vector<std::string> site_types;
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                std::vector<double> c(3);
+                c[0] = static_cast<double>(i);
+                c[1] = static_cast<double>(j);
+                c[2] = static_cast<double>(k);
+                coordinates.push_back(c);
+                site_types.push_back("M");
+            }
+        }
+    }
+
+    std::vector<std::string> elements = {
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "A", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "A", "B", "B", "B", "B", "B", "A", "B", "B",
+        "B", "B", "B", "B", "B", "B", "A", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "A", "B", "B",
+        "A", "B", "B", "B", "B", "B", "B", "B", "B", "A"
+    };
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["M"] = 1;
+    possible_site_types["N"] = 2;
+
+    // Setup the configuration.
+    Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the configuration.
+    SitesMap sitesmap(coordinates, site_types, possible_site_types);
+
+    // Setup the lattice map.
+    std::vector<int> repetitions = {10, 10, 1};
+    std::vector<bool> periodicity = {true, true, false};
+    LatticeMap lattice_map(1, repetitions, periodicity);
+
+    // Setup the interactions object.
+    const std::vector<std::vector<double> > process_coordinates = {
+        {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {-1.0, 0.0, 0.0},
+        {0.0, -1.0, 0.0}, {0.0, 1.0, 0.0}, {2.0, 2.0, 0.0}
+    };
+    std::vector<Process> processes;
+    const double rate = 13.2;
+
+    // Get processes objects.
+    {
+        const std::vector<std::string> before = {"A", "B", "B", "B", "B", "A"};
+        const std::vector<std::string> after = {"B", "B", "A", "B", "B", "A"};
+        Configuration c1(process_coordinates, before, possible_types);
+        Configuration c2(process_coordinates, after, possible_types);
+        Process p(c1, c2, rate, basis_sites);
+        processes.push_back(p);
+    }
+    {
+        const std::vector<std::string> before = {"A", "B", "B", "B", "B", "B"};
+        const std::vector<std::string> after = {"B", "B", "A", "B", "B", "B"};
+        Configuration c1(process_coordinates, before, possible_types);
+        Configuration c2(process_coordinates, after, possible_types);
+        Process p(c1, c2, rate, basis_sites);
+        processes.push_back(p);
+    }
+    {
+        const std::vector<std::string> before = {"A", "B", "B", "B", "B", "B"};
+        const std::vector<std::string> after = {"B", "B", "B", "A", "B", "B"};
+        Configuration c1(process_coordinates, before, possible_types);
+        Configuration c2(process_coordinates, after, possible_types);
+        Process p(c1, c2, rate, basis_sites);
+        processes.push_back(p);
+    }
+    {
+        const std::vector<std::string> before = {"A", "B", "B", "B", "B", "B"};
+        const std::vector<std::string> after = {"B", "B", "B", "B", "A", "B"};
+        Configuration c1(process_coordinates, before, possible_types);
+        Configuration c2(process_coordinates, after, possible_types);
+        Process p(c1, c2, rate, basis_sites);
+        processes.push_back(p);
+    }
+
+    {
+        Interactions interactions(processes, false);
+
+        // Calculate the configuration matchlists.
+        configuration.initMatchLists(lattice_map, interactions.maxRange());
+
+        // Update the interactions matchlists.
+        interactions.updateProcessMatchLists(configuration, lattice_map);
+
+        // Check the match list when implicit wildcard is not enabled.
+        const ProcessMatchList & m = interactions.processes()[0]->matchList();
+        const int match_types[6] = {1, 2, 2, 2, 2, 1};
+        for (size_t i = 0; i < m.size(); ++i)
+        {
+            CPPUNIT_ASSERT_EQUAL(m[i].match_type, match_types[i]);
+        }
+    }
+
+    Interactions interactions(processes, true);
+
+    // Calculate the configuration matchlists.
+    configuration.initMatchLists(lattice_map, interactions.maxRange());
+
+    // Update the interactions matchlists.
+    interactions.updateProcessMatchLists(configuration, lattice_map);
+
+    // Check the match list when implicit wildcard is not enabled.
+    const ProcessMatchList & m = interactions.processes()[0]->matchList();
+    const int match_types[25] = {1, 2, 2, 2, 2,
+                                 0, 0, 0, 0, 0,
+                                 0, 0, 0, 0, 0,
+                                 0, 0, 0, 0, 0,
+                                 0, 0, 0, 0, 1};
+
+    for (size_t i = 0; i < m.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(m[i].match_type, match_types[i]);
+    }
+
+    // Get a timer.
+    SimulationTimer timer;
+
+    // Construct a lattice model to test.
+    LatticeModel lattice_model(configuration, sitesmap, timer, lattice_map, interactions);
+
+    // Call the single step function a couple of times to make sure it is
+    // stable - the rest of the testing of this function should be done on
+    // a higher level.
+    lattice_model.singleStep();
+
+    // }}}
 }
 
 // -------------------------------------------------------------------------- //
 //
 void Test_LatticeModel::testTiming()
 {
+    // {{{
     // Possible types.
     std::map<std::string, int> possible_types;
     possible_types["*"] = 0;
@@ -840,6 +1077,7 @@ void Test_LatticeModel::testTiming()
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
     std::vector<std::string> elements;
+    std::vector<std::string> site_types;
 
     // Seed the random number generator to make the test reproducible.
     seedRandom(false, 14159265);
@@ -859,10 +1097,12 @@ void Test_LatticeModel::testTiming()
                 if (randomDouble01() < 0.05)
                 {
                     elements.push_back("V");
+                    site_types.push_back("M");
                 }
                 else
                 {
                     elements.push_back("A");
+                    site_types.push_back("N");
                 }
             }
         }
@@ -870,6 +1110,14 @@ void Test_LatticeModel::testTiming()
 
     // Setup the configuration.
     Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the sitesmap.
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["M"] = 1;
+    possible_site_types["N"] = 2;
+
+    SitesMap sitesmap(coordinates, site_types, possible_site_types);
 
     // Setup the lattice map.
     std::vector<int> repetitions(3);
@@ -882,7 +1130,7 @@ void Test_LatticeModel::testTiming()
     SimulationTimer timer;
 
     // Construct the lattice model to test.
-    LatticeModel lattice_model(configuration, timer, lattice_map, interactions);
+    LatticeModel lattice_model(configuration, sitesmap, timer, lattice_map, interactions);
 
     // Call the single step function a couple of times to make sure it is
     // stable - the rest of the testing of this function should be done on
@@ -909,4 +1157,6 @@ void Test_LatticeModel::testTiming()
     printf("        with %i processes (7 centers per process) for %i sites in the lattice.\n",
            static_cast<int>(processes.size()), nI*nJ*nK*nB);
 
+    // }}}
 }
+

@@ -2,23 +2,21 @@
 
 
 # Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2016-2019  Shao Zhengjiang
 #
-# This file is part of the KMCLib project distributed under the terms of the
+# This file is part of the KMCLibX project(based on KMCLib) distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
 
-import numpy
 import inspect
 
-from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
-from KMCLib.CoreComponents.KMCProcess import KMCProcess
-from KMCLib.Utilities.CheckUtilities import checkSequence
-from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
-from KMCLib.Utilities.CheckUtilities import checkSequenceOf
-from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
-from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
+from KMCLib.Utilities.CheckUtilities import checkSequenceOf
+from KMCLib.Exceptions.Error import Error
+from KMCLib.CoreComponents.KMCProcess import KMCProcess
+from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
+from KMCLib.CoreComponents.KMCSitesMap import KMCSitesMap
 
 
 class KMCInteractions(object):
@@ -29,11 +27,14 @@ class KMCInteractions(object):
 
     def __init__(self,
                  processes=None,
+                 sitesmap=None,
                  implicit_wildcards=None):
         """
         Constructor for the KMCInteractions.
 
         :param processes: A list of possible processes in the simulation.
+
+        :param sitesmap: KMCSitesMap object on which all processes are performed.
 
         :param implicit_wildcards: A flag indicating if implicit wildcards should be used in
                                    the matching of processes with the configuration. The default
@@ -41,13 +42,31 @@ class KMCInteractions(object):
         :type implicit_wildcards:  bool
         """
         # Check the processes input.
-        self.__processes = checkSequenceOf(processes, KMCProcess, msg="The 'processes' input must be a list of KMCProcess instances.")
+        self.__processes = checkSequenceOf(processes, KMCProcess,
+                                           msg="The 'processes' input must be " +
+                                               "a list of KMCProcess instances.")
+
+        # Check that the sitesmap is of the correct type.
+        if sitesmap and not isinstance(sitesmap, KMCSitesMap):
+            msg = ("The sitesmap given to the KMCInteractions constructor " +
+                   "must be of type KMCSitesMap.")
+            raise Error(msg)
+
+        # Check if process has site types.
+        if not sitesmap:
+            for i, process in enumerate(processes):
+                if process.siteTypes():
+                    msg = "Site types in process%d are set, sitesmap must be supplied." % i
+                    raise Error(msg)
+
+        self.__sitesmap = sitesmap
 
         # Check the implicit wildcard flag.
         if implicit_wildcards is None:
             implicit_wildcards = True
         if not isinstance(implicit_wildcards, bool):
-            raise Error("The 'implicit_wildcard' flag to the KMCInteractions constructor must be given as either True or False")
+            raise Error("The 'implicit_wildcard' flag to the KMCInteractions constructor" +
+                        " must be given as either True or False")
         self.__implicit_wildcards = implicit_wildcards
 
         # Set the backend to be generated at first query.
@@ -55,6 +74,13 @@ class KMCInteractions(object):
 
         # Set the rate calculator.
         self.__rate_calculator = None
+
+    def sitesMap(self):
+        """
+        Query for SitesMap object stored.
+        :returns: The stored sitesmap object.
+        """
+        return self.__sitesmap
 
     def rateCalculator(self):
         """
@@ -79,26 +105,25 @@ class KMCInteractions(object):
 
             # Check if this is a class.
             if not inspect.isclass(rate_calculator):
-                msg = """
-The 'rate_calculator' input to the KMCInteractions constructor must
-be a class (not instantiated) inheriting from the KMCRateCalculatorPlugin. """
+                msg = ("\nThe 'rate_calculator' input to the KMCInteractions constructor " +
+                       "must be a class (not instantiated) inheriting " +
+                       "from the KMCRateCalculatorPlugin.")
                 raise Error(msg)
 
             # Save the class name for use in scripting.
-            self.__rate_calculator_str = str(rate_calculator).replace("'>","").split('.')[-1]
+            self.__rate_calculator_str = str(rate_calculator).replace("'>", "").split('.')[-1]
             # Instantiate.
             rate_calculator = rate_calculator()
             if not isinstance(rate_calculator, KMCRateCalculatorPlugin):
-                msg = """
-The 'rate_calculator' input to the KMCInteractions constructor must
-be a class inheriting from the KMCRateCalculatorPlugin. """
+                msg = ("\nThe 'rate_calculator' input to the KMCInteractions constructor " +
+                       "must be a class inheriting from the KMCRateCalculatorPlugin.")
                 raise Error(msg)
             elif rate_calculator.__class__ == KMCRateCalculatorPlugin().__class__:
-                msg = """
-The 'rate_calculator' input to the KMCInteractions constructor must
-be inheriting from the KMCRateCalculatorPlugin class. It may not be
-the KMCRateCalculatorPlugin class itself. """
+                msg = ("\nThe 'rate_calculator' input to the KMCInteractions constructor " +
+                       "must be inheriting from the KMCRateCalculatorPlugin class. " +
+                       "It may not be the KMCRateCalculatorPlugin class itself.")
                 raise Error(msg)
+
         # All tests passed. Save the instantiated rate calculator on the class.
         self.__rate_calculator = rate_calculator
 
@@ -128,7 +153,9 @@ the KMCRateCalculatorPlugin class itself. """
             for process_number, process in enumerate(self.__processes):
                 all_elements = list(set(process.elementsBefore() + process.elementsAfter()))
                 if (not all([(e in possible_types) for e in all_elements])):
-                    raise Error("Process %i contains elements not present in the list of possible types of the configuration."%(process_number))
+                    msg = (("Process %i contains elements not present in the list of " +
+                            "possible types of the configuration.") % process_number)
+                    raise Error(msg)
 
             # Setup the correct type of backend process objects
             # depending on the presence of a rate calculator.
@@ -142,8 +169,8 @@ the KMCRateCalculatorPlugin class itself. """
             for process_number, process in enumerate(self.__processes):
 
                 # Get the corresponding C++ objects.
-                cpp_config1   = process.localConfigurations()[0]._backend(possible_types)
-                cpp_config2   = process.localConfigurations()[1]._backend(possible_types)
+                cpp_config1 = process.localConfigurations()[0]._backend(possible_types)
+                cpp_config2 = process.localConfigurations()[1]._backend(possible_types)
                 rate_constant = process.rateConstant()
 
                 basis_list = range(n_basis)
@@ -164,6 +191,13 @@ the KMCRateCalculatorPlugin class itself. """
                 cpp_move_vectors = Backend.StdVectorCoordinate()
                 for v in process.moveVectors():
                     cpp_move_vectors.push_back(Backend.Coordinate(v[1][0], v[1][1], v[1][2]))
+
+                # Setup the site types.
+                if self.__sitesmap:
+                    int_site_types = self.__sitesmap.siteTypesMapping(process.siteTypes())
+                    cpp_site_types = Backend.StdVectorInt(int_site_types)
+                else:
+                    cpp_site_types = Backend.StdVectorInt()
 
                 # Construct and store the C++ process.
                 if self.__rate_calculator is not None:
@@ -187,7 +221,8 @@ the KMCRateCalculatorPlugin class itself. """
                                                             cpp_basis,
                                                             cpp_move_origins,
                                                             cpp_move_vectors,
-                                                            process_number))
+                                                            process_number,
+                                                            cpp_site_types))
 
             # Construct the C++ interactions object.
             if self.__rate_calculator is not None:
@@ -217,9 +252,9 @@ the KMCRateCalculatorPlugin class itself. """
         processes_script = ""
         processes_string = "processes = ["
 
-        for i,process in enumerate(self.__processes):
+        for i, process in enumerate(self.__processes):
 
-            var_name = "process_%i"%(i)
+            var_name = "process_%i" % (i)
             processes_script += process._script(var_name)
 
             if i == 0:
@@ -235,24 +270,34 @@ the KMCRateCalculatorPlugin class itself. """
             else:
                 processes_string += ",\n"
 
-        # Add a comment line.
-        comment_string = """
-# -----------------------------------------------------------------------------
-# Interactions
+        # Get sitesmap construction string.
+        if self.__sitesmap:
+            sitesmap_script = self.__sitesmap._script("sitesmap")
+        else:
+            sitesmap_script = ""
 
-"""
+        # Add a comment line.
+        comment_string = "\n# " + "-"*77 + "\n# Interactions\n\n"
+
+        # implicit wildcard string.
         if self.__implicit_wildcards:
             implicit = "True"
         else:
             implicit = "False"
 
-        kmc_interactions_string = variable_name + " = KMCInteractions(\n" + \
-            "    processes=processes,\n" + \
-            "    implicit_wildcards=%s)\n"%(implicit)
+        # Sitesmap.
+        if self.__sitesmap:
+            sitesmap = "sitesmap"
+        else:
+            sitesmap = "None"
+
+        kmc_interactions_string = (
+            variable_name +
+            " = KMCInteractions(\n" +
+            "    processes=processes,\n" +
+            "    sitesmap=%s,\n"
+            "    implicit_wildcards=%s)\n") % (sitesmap, implicit)
 
         # Return the script.
-        return comment_string + processes_script + processes_string + "\n" + \
-            kmc_interactions_string
-
-
-
+        return (comment_string + processes_script + processes_string +
+                sitesmap_script + "\n" + kmc_interactions_string)

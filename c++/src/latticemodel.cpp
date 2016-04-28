@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -15,16 +16,19 @@
 #include "configuration.h"
 #include "simulationtimer.h"
 #include "random.h"
+#include "sitesmap.h"
 
 #include <cstdio>
 
 // -----------------------------------------------------------------------------
 //
 LatticeModel::LatticeModel(Configuration & configuration,
+                           SitesMap & sitesmap,
                            SimulationTimer & simulation_timer,
                            const LatticeMap & lattice_map,
                            const Interactions & interactions) :
     configuration_(configuration),
+    sitesmap_(sitesmap),
     simulation_timer_(simulation_timer),
     lattice_map_(lattice_map),
     interactions_(interactions)
@@ -41,8 +45,11 @@ LatticeModel::LatticeModel(Configuration & configuration,
 //
 void LatticeModel::calculateInitialMatching()
 {
-    // Calculate the match lists.
+    // Calculate the match lists of configuration.
     configuration_.initMatchLists(lattice_map_, interactions_.maxRange());
+
+    // Calculate the match lists of sitesmap.
+    sitesmap_.initMatchLists(lattice_map_, interactions_.maxRange());
 
     // Update the interactions matchlists.
     interactions_.updateProcessMatchLists(configuration_, lattice_map_);
@@ -56,6 +63,7 @@ void LatticeModel::calculateInitialMatching()
     }
     matcher_.calculateMatching(interactions_,
                                configuration_,
+                               sitesmap_,
                                lattice_map_,
                                indices);
 }
@@ -72,7 +80,7 @@ void LatticeModel::singleStep()
     const int site_index = process.pickSite();
 
     // Perform the operation.
-    configuration_.performProcess(process, site_index, lattice_map_);
+    configuration_.performProcess(process, site_index);
 
     // Propagate the time.
     simulation_timer_.propagateTime(interactions_.totalRate());
@@ -83,6 +91,7 @@ void LatticeModel::singleStep()
 
     matcher_.calculateMatching(interactions_,
                                configuration_,
+                               sitesmap_,
                                lattice_map_,
                                indices);
 

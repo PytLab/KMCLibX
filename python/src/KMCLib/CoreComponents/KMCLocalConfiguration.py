@@ -2,13 +2,12 @@
 
 
 # Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2016-2019  Shao Zhengjiang
 #
-# This file is part of the KMCLib project distributed under the terms of the
+# This file is part of the KMCLibX project(based on KMCLib) distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
-
-import numpy
 
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
@@ -16,6 +15,7 @@ from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Backend import Backend
+
 
 class KMCLocalConfiguration(object):
     """
@@ -52,7 +52,8 @@ class KMCLocalConfiguration(object):
         # Check the bounds of the center coordinate.
         center = checkIndexWithinBounds(center,
                                         coordinates,
-                                        msg="The 'center' index paramter must be one in the coordinate list.")
+                                        msg=("The 'center' index paramter must be " +
+                                             "one in the coordinate list."))
 
         # Center the coordinates.
         self.__coordinates = centerCoordinates(coordinates, center)
@@ -90,7 +91,7 @@ class KMCLocalConfiguration(object):
         """
         if self.__backend is None:
             # Construct the c++ backend object.
-            cpp_types  = Backend.StdVectorString(self.__types)
+            cpp_types = Backend.StdVectorString(self.__types)
             cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(self.__coordinates)
             cpp_possible_types = Backend.StdMapStringInt(possible_types)
 
@@ -128,12 +129,12 @@ class KMCLocalConfiguration(object):
         # For the first coordinate, if there are more than one coordinate.
         if len(self.__coordinates) > 1:
             c = self.__coordinates[0]
-            coords_string += coord_template%(c[0],c[1],c[2])
+            coords_string += coord_template % (c[0], c[1], c[2])
 
             # And the middle coordinates.
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "],\n"
             for c in self.__coordinates[1:-1]:
-                coords_string += coord_template%(c[0],c[1],c[2])
+                coords_string += coord_template % (c[0], c[1], c[2])
 
         # Add the last coordinate (which is also the first if there is only one coordinate).
         c = self.__coordinates[-1]
@@ -141,10 +142,10 @@ class KMCLocalConfiguration(object):
             coord_template = "[" + ff + "," + ff + "," + ff + "]]\n"
         else:
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "]]\n"
-        coords_string += coord_template%(c[0],c[1],c[2])
+        coords_string += coord_template % (c[0], c[1], c[2])
 
         # Types
-        types_string  = "types = " + str(self.__types) + "\n"
+        types_string = "types = " + str(self.__types) + "\n"
 
         # Add the configuration.
         config_string = variable_name + """ = KMCLocalConfiguration(
@@ -159,5 +160,5 @@ class KMCLocalConfiguration(object):
 
 """
         # Return the script.
-        return comment_string + coords_string + "\n" + types_string + "\n" + config_string
-
+        return (comment_string + coords_string + "\n" +
+                types_string + "\n" + config_string)

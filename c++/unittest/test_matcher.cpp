@@ -11,13 +11,14 @@
 
 // Include the file to test.
 #include "matcher.h"
-
+#include "matchlist.h"
 #include "matchlistentry.h"
 #include "configuration.h"
 #include "latticemap.h"
 #include "process.h"
 #include "interactions.h"
 #include "random.h"
+#include "sitesmap.h"
 
 
 
@@ -35,12 +36,14 @@ void Test_Matcher::testConstruction()
 //
 void Test_Matcher::testIsMatchMatchList()
 {
+    // {{{
+
     // Construct.
     Matcher matcher;
 
     // Setup two match lists to check.
-    std::vector<MinimalMatchListEntry> process_match_list;
-    MinimalMatchListEntry m;
+    ProcessMatchList process_match_list;
+    ProcessMatchListEntry m;
     m.match_type  = 3;
     m.update_type = 2;
     m.distance     = 1.2;
@@ -59,58 +62,55 @@ void Test_Matcher::testIsMatchMatchList()
     m.coordinate   = Coordinate(0.1,5.2,0.34);
     process_match_list.push_back(m);
 
-    std::vector<MinimalMatchListEntry> index_match_list;
-    m.match_type  = 3;
-    m.update_type = 2;
-    m.distance     = 1.2;
-    m.coordinate   = Coordinate(0.1,2.0,0.34);
-    index_match_list.push_back(m);
+    ConfigMatchList index_match_list;
+    ConfigMatchListEntry n;
+    n.match_type  = 3;
+    n.distance     = 1.2;
+    n.coordinate   = Coordinate(0.1,2.0,0.34);
+    index_match_list.push_back(n);
 
-    m.match_type  = 1;
-    m.update_type = 4;
-    m.distance     = 1.6;
-    m.coordinate   = Coordinate(1.1,2.0,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 1;
+    n.distance     = 1.6;
+    n.coordinate   = Coordinate(1.1,2.0,0.34);
+    index_match_list.push_back(n);
 
-    m.match_type  = 8;
-    m.update_type = 2;
-    m.distance     = 1.9;
-    m.coordinate   = Coordinate(0.1,5.2,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 8;
+    n.distance     = 1.9;
+    n.coordinate   = Coordinate(0.1,5.2,0.34);
+    index_match_list.push_back(n);
 
     // These two are equal.
-    CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( whateverMatch(process_match_list, index_match_list) );
 
     // It works also if the index match list is longer.
-    m.match_type  = 8;
-    m.update_type = 2;
-    m.distance     = 1.93;
-    m.coordinate   = Coordinate(0.13,5.2,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 8;
+    n.distance     = 1.93;
+    n.coordinate   = Coordinate(0.13,5.2,0.34);
+    index_match_list.push_back(n);
 
     // These two are still equal.
-    CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( whateverMatch(process_match_list, index_match_list) );
 
     // If we add another not matching element to the process_match_list vecctor
     // we get a non-match.
     m.match_type  = 3;
-    m.update_type = 2;
     m.distance     = 1.93;
     m.coordinate   = Coordinate(0.13,5.2,0.34);
     process_match_list.push_back(m);
 
     // These two are no longer equal.
-    CPPUNIT_ASSERT( !matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( !whateverMatch(process_match_list, index_match_list) );
 
     // But if they differ in the update index they are still equal.
     m.match_type  = 8;
-    m.update_type = 3;
     m.distance     = 1.93;
     m.coordinate   = Coordinate(0.13,5.2,0.34);
     process_match_list[3] = m;
 
     // These two are again equal.
-    CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( whateverMatch(process_match_list, index_match_list) );
+
+    // }}}
 }
 
 
@@ -118,12 +118,14 @@ void Test_Matcher::testIsMatchMatchList()
 //
 void Test_Matcher::testIsMatchWildcard()
 {
+    // {{{
+
     // Construct.
     Matcher matcher;
 
     // Setup two match lists to check.
-    std::vector<MinimalMatchListEntry> process_match_list;
-    MinimalMatchListEntry m;
+    ProcessMatchList process_match_list;
+    ProcessMatchListEntry m;
     m.match_type  = 3;
     m.update_type = 2;
     m.distance     = 1.2;
@@ -143,33 +145,32 @@ void Test_Matcher::testIsMatchWildcard()
     m.coordinate   = Coordinate(0.1,5.2,0.34);
     process_match_list.push_back(m);
 
-    std::vector<MinimalMatchListEntry> index_match_list;
-    m.match_type  = 3;
-    m.update_type = 2;
-    m.distance     = 1.2;
-    m.coordinate   = Coordinate(0.1,2.0,0.34);
-    index_match_list.push_back(m);
+    ConfigMatchList index_match_list;
+    ConfigMatchListEntry n;
+    n.match_type  = 3;
+    n.distance     = 1.2;
+    n.coordinate   = Coordinate(0.1,2.0,0.34);
+    index_match_list.push_back(n);
 
     // Note that no wildcard here.
-    m.match_type  = 1;
-    m.update_type = 4;
-    m.distance     = 1.6;
-    m.coordinate   = Coordinate(1.1,2.0,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 1;
+    n.distance     = 1.6;
+    n.coordinate   = Coordinate(1.1,2.0,0.34);
+    index_match_list.push_back(n);
 
-    m.match_type  = 8;
-    m.update_type = 2;
-    m.distance     = 1.9;
-    m.coordinate   = Coordinate(0.1,5.2,0.34);
-    index_match_list.push_back(m);
+    n.match_type  = 8;
+    n.distance     = 1.9;
+    n.coordinate   = Coordinate(0.1,5.2,0.34);
+    index_match_list.push_back(n);
 
     // These two are equal.
-    CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+    CPPUNIT_ASSERT( whateverMatch(process_match_list, index_match_list) );
 
     // But the wildcard is only skipped in the process match list, so swapping
     // place creates a mismatch.
-    CPPUNIT_ASSERT( !matcher.isMatch(index_match_list, process_match_list) );
+    CPPUNIT_ASSERT( !whateverMatch(index_match_list, process_match_list) );
 
+    // }}}
 }
 
 
@@ -177,6 +178,8 @@ void Test_Matcher::testIsMatchWildcard()
 //
 void Test_Matcher::testIsMatchIndexListMinimal()
 {
+    // {{{
+
     // Construct.
     Matcher m;
 
@@ -247,10 +250,10 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         Process process(config1, config2, rate, basis_sites);
 
         // This is a match.
-        CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT( whateverMatch(process.matchList(), config.matchList(0)) );
 
         // This is not a match.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(1)) );
     }
 
     // Construct another process that should match the second index.
@@ -276,10 +279,10 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         Process process(config1, config2, rate, basis_sites);
 
         // This is a match.
-        CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
+        CPPUNIT_ASSERT( whateverMatch(process.matchList(), config.matchList(1)) );
 
         // This is not a match.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(0)) );
     }
 
     // This process does not match any. Note that the symmetry / direction is important.
@@ -305,8 +308,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         Process process(config1, config2, rate, basis_sites);
 
         // Not a match.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(1)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(0)) );
     }
 
     // This process does not match any site since it is to long.
@@ -337,9 +340,11 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         Process process(config1, config2, rate, basis_sites);
 
         // Not a match.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(1)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(0)) );
     }
+
+    // }}}
 }
 
 
@@ -347,6 +352,7 @@ void Test_Matcher::testIsMatchIndexListMinimal()
 //
 void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
 {
+    // {{{
     // Note that a minimal periodic configuration is a 3x3x3 cell.
     // The reason for this is that it simplifies boundary condition
     // treatment alot, and it is highly unlikely that a real lattice KMC
@@ -484,8 +490,8 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
         {
-            CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(i)) );
-            CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(i+1)) );
+            CPPUNIT_ASSERT(  whateverMatch(process.matchList(), config.matchList(i)) );
+            CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(i+1)) );
         }
     }
 
@@ -597,10 +603,11 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
         {
-            CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(i)) );
-            CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(i+1)) );
+            CPPUNIT_ASSERT(  whateverMatch(process.matchList(), config.matchList(i)) );
+            CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(i+1)) );
         }
     }
+    // }}}
 }
 
 
@@ -608,6 +615,7 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
 //
 void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
 {
+    // {{{
     // Construct.
     Matcher m;
 
@@ -740,13 +748,13 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
         Process process(config1, config2, rate, basis_sites);
 
         // This process should match all except the first the even numbered indices.
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
-        CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(0)) );
+        CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(1)) );
 
         for (int i = 2; i < 27; i += 2)
         {
-            CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(i)) );
-            CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(i+1)) );
+            CPPUNIT_ASSERT(  whateverMatch(process.matchList(), config.matchList(i)) );
+            CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(i+1)) );
         }
     }
 
@@ -856,13 +864,14 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
         Process process(config1, config2, rate, basis_sites);
 
         // This process should only match the first index.
-        CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
+        CPPUNIT_ASSERT(  whateverMatch(process.matchList(), config.matchList(0)) );
 
         for (int i = 1; i < 27; ++i)
         {
-            CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(i)) );
+            CPPUNIT_ASSERT( !whateverMatch(process.matchList(), config.matchList(i)) );
         }
     }
+    // }}}
 }
 
 
@@ -870,6 +879,7 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
 //
 void Test_Matcher::testCalculateMatchingProcess()
 {
+    // {{{
     // Construct.
     Matcher m;
 
@@ -1103,6 +1113,7 @@ void Test_Matcher::testCalculateMatchingProcess()
     CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(2) );
     CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(4) );
 
+    // }}}
 }
 
 
@@ -1110,6 +1121,7 @@ void Test_Matcher::testCalculateMatchingProcess()
 //
 void Test_Matcher::testUpdateProcesses()
 {
+    // {{{
     Matcher m;
 
     // Setup a list of processes and give it to an interactions object.
@@ -1195,6 +1207,7 @@ void Test_Matcher::testUpdateProcesses()
         CPPUNIT_ASSERT_DOUBLES_EQUAL( interactions.processes()[2]->totalRate(), 123.456 + 99.0, 1.0e-12 );
 
     }
+    // }}}
 }
 
 
@@ -1202,6 +1215,7 @@ void Test_Matcher::testUpdateProcesses()
 //
 void Test_Matcher::testCalculateMatchingInteractions()
 {
+    // {{{
     // Construct.
     Matcher m;
 
@@ -1219,6 +1233,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
     basis_sites.push_back(0);
 
     std::vector<std::string> elements;
+    std::vector<std::string> site_types;
     std::vector<std::vector<double> > coords;
     for (int i = 0; i < 3; ++i)
     {
@@ -1232,6 +1247,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
                 coord[2] += k;
                 coords.push_back(coord);
                 elements.push_back("C");
+                site_types.push_back("M");
 
                 coord = basis[1];
                 coord[0] += i;
@@ -1239,6 +1255,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
                 coord[2] += k;
                 coords.push_back(coord);
                 elements.push_back("B");
+                site_types.push_back("N");
             }
         }
     }
@@ -1256,8 +1273,16 @@ void Test_Matcher::testCalculateMatchingInteractions()
     possible_types["E"] = 5;
     possible_types["F"] = 6;
 
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["M"] = 1;
+    possible_site_types["N"] = 2;
+
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
+
+    // Construct the sitesmap.
+    SitesMap sitesmap(coords, site_types, possible_site_types);
 
     // ---------------------------------------------------------------------
     // Setup a periodic cooresponding lattice map.
@@ -1267,59 +1292,29 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
     LatticeMap lattice_map(basis_size, repetitions, periodicity);
 
-    // Calculate the match lists.
+    // Calculate the configuration match lists.
     config.initMatchLists(lattice_map, 1);
+
+    // Calculate the site match lists.
+    sitesmap.initMatchLists(lattice_map, 1);
 
     // ---------------------------------------------------------------------
     // Now the processes.
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("C");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        std::vector<std::string> elements2;
-        elements2.push_back("D");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
+        std::vector<std::string> elements1 = {
+            "C", "B", "B", "B", "B", "B", "B", "B", "B"
+        };
+        std::vector<std::string> elements2 = {
+            "D", "B", "B", "B", "B", "B", "B", "B", "B"
+        };
+
         // Setup coordinates.
-        std::vector<std::vector<double> > process_coords(9,std::vector<double>(3,0.0));
-        process_coords[1][0] =  0.5;
-        process_coords[1][1] =  0.5;
-        process_coords[1][2] =  0.5;
-        process_coords[2][0] = -0.5;
-        process_coords[2][1] =  0.5;
-        process_coords[2][2] =  0.5;
-        process_coords[3][0] =  0.5;
-        process_coords[3][1] = -0.5;
-        process_coords[3][2] =  0.5;
-        process_coords[4][0] =  0.5;
-        process_coords[4][1] =  0.5;
-        process_coords[4][2] = -0.5;
-        process_coords[5][0] = -0.5;
-        process_coords[5][1] = -0.5;
-        process_coords[5][2] =  0.5;
-        process_coords[6][0] = -0.5;
-        process_coords[6][1] =  0.5;
-        process_coords[6][2] = -0.5;
-        process_coords[7][0] =  0.5;
-        process_coords[7][1] = -0.5;
-        process_coords[7][2] = -0.5;
-        process_coords[8][0] = -0.5;
-        process_coords[8][1] = -0.5;
-        process_coords[8][2] = -0.5;
+        std::vector<std::vector<double> > process_coords = {
+            { 0.0,  0.0,  0.0}, { 0.5,  0.5,  0.5}, {-0.5,  0.5,  0.5},
+            { 0.5, -0.5,  0.5}, { 0.5,  0.5, -0.5}, {-0.5, -0.5,  0.5},
+            {-0.5,  0.5, -0.5}, { 0.5, -0.5, -0.5}, {-0.5, -0.5, -0.5},
+        };
 
         // The configurations.
         const Configuration config1(process_coords, elements1, possible_types);
@@ -1334,84 +1329,24 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("A");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("C");
-        elements1.push_back("C");
-        elements1.push_back("C");
-        elements1.push_back("C");
-        elements1.push_back("C");
-        elements1.push_back("C");
-
-        std::vector<std::string> elements2;
-        elements2.push_back("F");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
+        std::vector<std::string> elements1 = {
+            "A", "B", "B", "B", "B", "B", "B", "B", "B",
+            "C", "C", "C", "C", "C", "C"
+        };
+        std::vector<std::string> elements2 = {
+            "F", "B", "B", "B", "B", "B", "B", "B", "B",
+            "A", "A", "A", "A", "A", "A"
+        };
 
         // Setup coordinates.
-        std::vector<std::vector<double> > process_coords(15,std::vector<double>(3,0.0));
-        process_coords[1][0] =  0.5;
-        process_coords[1][1] =  0.5;
-        process_coords[1][2] =  0.5;
-        process_coords[2][0] = -0.5;
-        process_coords[2][1] =  0.5;
-        process_coords[2][2] =  0.5;
-        process_coords[3][0] =  0.5;
-        process_coords[3][1] = -0.5;
-        process_coords[3][2] =  0.5;
-        process_coords[4][0] =  0.5;
-        process_coords[4][1] =  0.5;
-        process_coords[4][2] = -0.5;
-        process_coords[5][0] = -0.5;
-        process_coords[5][1] = -0.5;
-        process_coords[5][2] =  0.5;
-        process_coords[6][0] = -0.5;
-        process_coords[6][1] =  0.5;
-        process_coords[6][2] = -0.5;
-        process_coords[7][0] =  0.5;
-        process_coords[7][1] = -0.5;
-        process_coords[7][2] = -0.5;
-        process_coords[8][0] = -0.5;
-        process_coords[8][1] = -0.5;
-        process_coords[8][2] = -0.5;
-        process_coords[9][0] =  1.0;
-        process_coords[9][1] =  0.0;
-        process_coords[9][2] =  0.0;
-        process_coords[10][0] =  0.0;
-        process_coords[10][1] =  1.0;
-        process_coords[10][2] =  0.0;
-        process_coords[11][0] =  0.0;
-        process_coords[11][1] =  0.0;
-        process_coords[11][2] =  1.0;
-        process_coords[12][0] = -1.0;
-        process_coords[12][1] =  0.0;
-        process_coords[12][2] =  0.0;
-        process_coords[13][0] =  0.0;
-        process_coords[13][1] = -1.0;
-        process_coords[13][2] =  0.0;
-        process_coords[14][0] =  0.0;
-        process_coords[14][1] =  0.0;
-        process_coords[14][2] = -1.0;
+        // Setup coordinates.
+        std::vector<std::vector<double> > process_coords = {
+            { 0.0,  0.0,  0.0}, { 0.5,  0.5,  0.5}, {-0.5,  0.5,  0.5},
+            { 0.5, -0.5,  0.5}, { 0.5,  0.5, -0.5}, {-0.5, -0.5,  0.5},
+            {-0.5,  0.5, -0.5}, { 0.5, -0.5, -0.5}, {-0.5, -0.5, -0.5},
+            { 1.0,  0.0,  0.0}, { 0.0,  1.0,  0.0}, { 0.0,  0.0,  1.0},
+            {-1.0,  0.0,  0.0}, { 0.0, -1.0,  0.0}, { 0.0,  0.0, -1.0},
+        };
 
         // The configurations.
         const Configuration config1(process_coords, elements1, possible_types);
@@ -1429,17 +1364,11 @@ void Test_Matcher::testCalculateMatchingInteractions()
     Interactions interactions(processes, true);
 
     // Setup a list of indices to test. Their order should not matter.
-    std::vector<int> indices;
-    indices.push_back(0);
-    indices.push_back(2);
-    indices.push_back(4);
-    indices.push_back(3);
-    indices.push_back(14);
-    indices.push_back(9);
+    std::vector<int> indices = {0, 2, 4, 3, 14, 9};
 
     // Call the matching function and check that all processes have been
     // updated correctly.
-    m.calculateMatching(interactions, config, lattice_map, indices);
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
 
     // The first process should match all even indices except the first.
     CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(0) );
@@ -1457,7 +1386,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
     CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(5) );
 
     // Call the matching function again does not change any thing.
-    m.calculateMatching(interactions, config, lattice_map, indices);
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
 
     CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(0) );
     CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
@@ -1477,7 +1406,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
     elements[0] = "C";
     config = Configuration(coords, elements, possible_types);
     config.initMatchLists(lattice_map, 1);
-    m.calculateMatching(interactions, config, lattice_map, indices);
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
 
     CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(0) );
     CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
@@ -1487,7 +1416,677 @@ void Test_Matcher::testCalculateMatchingInteractions()
     CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
     CPPUNIT_ASSERT( interactions.processes()[1]->sites().empty() );
 
+    // }}}
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testCalculateMatchingInteractionsWithSiteTypes()
+{
+    // {{{
+    // Construct.
+    Matcher m;
+
+    // Setup the processes to test with.
+    std::vector<Process> processes;
+
+    // ---------------------------------------------------------------------
+    // 27 cells cell with two atoms in the basis.
+    std::vector<std::vector<double> > basis(2, std::vector<double>(3,0.0));
+    basis[1][0] = 0.5;
+    basis[1][1] = 0.5;
+    basis[1][2] = 0.5;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
+
+    std::vector<std::string> elements;
+    std::vector<std::string> site_types;
+    std::vector<std::vector<double> > coords;
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            for (int k = 0; k < 3; ++k)
+            {
+                std::vector<double> coord = basis[0];
+                coord[0] += i;
+                coord[1] += j;
+                coord[2] += k;
+                coords.push_back(coord);
+                elements.push_back("C");
+                site_types.push_back("M");
+
+                coord = basis[1];
+                coord[0] += i;
+                coord[1] += j;
+                coord[2] += k;
+                coords.push_back(coord);
+                elements.push_back("B");
+                site_types.push_back("N");
+            }
+        }
+    }
+
+    // Modify the elements such that the central cell has an A in center.
+    elements[0] = "A";
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["M"] = 1;
+    possible_site_types["N"] = 2;
+    possible_site_types["K"] = 3;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Construct the sitesmap.
+    SitesMap sitesmap(coords, site_types, possible_site_types);
+
+    // ---------------------------------------------------------------------
+    // Setup a periodic cooresponding lattice map.
+    const std::vector<int> repetitions(3, 3);
+    const std::vector<bool> periodicity(3, true);
+    const int basis_size = 2;
+
+    LatticeMap lattice_map(basis_size, repetitions, periodicity);
+
+    // Calculate the configuration match lists.
+    config.initMatchLists(lattice_map, 1);
+
+    // Calculate the site match lists.
+    sitesmap.initMatchLists(lattice_map, 1);
+
+    // ---------------------------------------------------------------------
+    // Now the processes.
+    {
+        // Setup the two configurations.
+        std::vector<std::string> elements1 = {
+            "C", "B", "B", "B", "B", "B", "B", "B", "B"
+        };
+        std::vector<std::string> elements2 = {
+            "D", "B", "B", "B", "B", "B", "B", "B", "B"
+        };
+
+        // Setup the site types.
+        std::vector<int> site_types = {
+            1, 2, 2, 2, 2, 2, 2, 2, 2
+            //"M", "N", "N", "N", "N", "N", "N", "N", "N"
+        };
+
+        // Setup coordinates.
+        std::vector<std::vector<double> > process_coords = {
+            { 0.0,  0.0,  0.0}, { 0.5,  0.5,  0.5}, {-0.5,  0.5,  0.5},
+            { 0.5, -0.5,  0.5}, { 0.5,  0.5, -0.5}, {-0.5, -0.5,  0.5},
+            {-0.5,  0.5, -0.5}, { 0.5, -0.5, -0.5}, {-0.5, -0.5, -0.5},
+        };
+
+        // The configurations.
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        // Construct the process.
+        const double rate = 13.7;
+        const std::vector<int> move_origins(0);
+        const std::vector<Coordinate> move_vectors(0);
+        const int process_number = 0;
+        const Process process(config1, config2, rate, basis_sites, move_origins,
+                              move_vectors, process_number, site_types);
+        processes.push_back(process);
+
+    }
+
+    {
+        // Setup the two configurations.
+        std::vector<std::string> elements1 = {
+            "A", "B", "B", "B", "B", "B", "B", "B", "B",
+            "C", "C", "C", "C", "C", "C"
+        };
+        std::vector<std::string> elements2 = {
+            "F", "B", "B", "B", "B", "B", "B", "B", "B",
+            "A", "A", "A", "A", "A", "A"
+        };
+
+        // Setup the site types.
+        const std::vector<int> site_types = {
+            1, 2, 2, 2, 2, 2, 2, 2, 2,
+            1, 1, 1, 1, 1, 1
+        };
+
+        // Setup coordinates.
+        std::vector<std::vector<double> > process_coords = {
+            { 0.0,  0.0,  0.0}, { 0.5,  0.5,  0.5}, {-0.5,  0.5,  0.5},
+            { 0.5, -0.5,  0.5}, { 0.5,  0.5, -0.5}, {-0.5, -0.5,  0.5},
+            {-0.5,  0.5, -0.5}, { 0.5, -0.5, -0.5}, {-0.5, -0.5, -0.5},
+            { 1.0,  0.0,  0.0}, { 0.0,  1.0,  0.0}, { 0.0,  0.0,  1.0},
+            {-1.0,  0.0,  0.0}, { 0.0, -1.0,  0.0}, { 0.0,  0.0, -1.0},
+        };
+
+        // The configurations.
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        // Construct the process.
+        const double rate = 13.7;
+        const std::vector<int> move_origins(0);
+        const std::vector<Coordinate> move_vectors(0);
+        const int process_number = 0;
+        const Process process(config1, config2, rate, basis_sites, move_origins,
+                              move_vectors, process_number, site_types);
+        processes.push_back(process);
+    }
+
+    // ---------------------------------------------------------------------
+
+    // Setup the interactions object.
+    Interactions interactions(processes, true);
+
+    // Setup a list of indices to test. Their order should not matter.
+    std::vector<int> indices = {0, 2, 4, 3, 14, 9};
+
+    // Call the matching function and check that all processes have been
+    // updated correctly.
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
+
+    // The first process should match all even indices except the first.
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
+
+    // The second process should match the first index only.
+    CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(5) );
+
+    // Call the matching function again does not change any thing.
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
+
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
+    CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(5) );
+
+    // Change the configuration such that the first proces
+    // match with the first (0:th) index, and the second process
+    // does not match any.
+    elements[0] = "C";
+    config = Configuration(coords, elements, possible_types);
+    config.initMatchLists(lattice_map, 1);
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
+
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
+    CPPUNIT_ASSERT( interactions.processes()[1]->sites().empty() );
+
+    // }}}
+}
+
+
+// -------------------------------------------------------------------------- //
+// Use different site type from above test functin.
+//
+void Test_Matcher::testCalculateMatchingInteractionsWithSiteTypes2()
+{
+    // {{{
+    // Construct.
+    Matcher m;
+
+    // Setup the processes to test with.
+    std::vector<Process> processes;
+
+    // ---------------------------------------------------------------------
+    // 27 cells cell with two atoms in the basis.
+    std::vector<std::vector<double> > basis(2, std::vector<double>(3,0.0));
+    basis[1][0] = 0.5;
+    basis[1][1] = 0.5;
+    basis[1][2] = 0.5;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
+
+    std::vector<std::string> elements;
+    std::vector<std::string> site_types;
+    std::vector<std::vector<double> > coords;
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            for (int k = 0; k < 3; ++k)
+            {
+                std::vector<double> coord = basis[0];
+                coord[0] += i;
+                coord[1] += j;
+                coord[2] += k;
+                coords.push_back(coord);
+                elements.push_back("C");
+                site_types.push_back("M");
+
+                coord = basis[1];
+                coord[0] += i;
+                coord[1] += j;
+                coord[2] += k;
+                coords.push_back(coord);
+                elements.push_back("B");
+                site_types.push_back("N");
+            }
+        }
+    }
+
+    // Modify the elements such that the central cell has an A in center.
+    elements[0] = "A";
+
+    // Modify the first site type.
+    site_types[0] = "K";
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["M"] = 1;
+    possible_site_types["N"] = 2;
+    possible_site_types["K"] = 3;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Construct the sitesmap.
+    SitesMap sitesmap(coords, site_types, possible_site_types);
+
+    // ---------------------------------------------------------------------
+    // Setup a periodic cooresponding lattice map.
+    const std::vector<int> repetitions(3, 3);
+    const std::vector<bool> periodicity(3, true);
+    const int basis_size = 2;
+
+    LatticeMap lattice_map(basis_size, repetitions, periodicity);
+
+    // Calculate the configuration match lists.
+    config.initMatchLists(lattice_map, 1);
+
+    // Calculate the site match lists.
+    sitesmap.initMatchLists(lattice_map, 1);
+
+    // ---------------------------------------------------------------------
+    // Now the processes.
+    {
+        // Setup the two configurations.
+        std::vector<std::string> elements1 = {
+            "A", "B", "B", "B", "B", "B", "B", "B", "B"
+        };
+        std::vector<std::string> elements2 = {
+            "D", "B", "B", "B", "B", "B", "B", "B", "B"
+        };
+
+        // Setup the site types.
+        std::vector<int> site_types = {
+            3, 2, 2, 2, 2, 2, 2, 2, 2
+            //"M", "N", "N", "N", "N", "N", "N", "N", "N"
+        };
+
+        // Setup coordinates.
+        std::vector<std::vector<double> > process_coords = {
+            { 0.0,  0.0,  0.0}, { 0.5,  0.5,  0.5}, {-0.5,  0.5,  0.5},
+            { 0.5, -0.5,  0.5}, { 0.5,  0.5, -0.5}, {-0.5, -0.5,  0.5},
+            {-0.5,  0.5, -0.5}, { 0.5, -0.5, -0.5}, {-0.5, -0.5, -0.5},
+        };
+
+        // The configurations.
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        // Construct the process.
+        const double rate = 13.7;
+        const std::vector<int> move_origins(0);
+        const std::vector<Coordinate> move_vectors(0);
+        const int process_number = 0;
+        const Process process(config1, config2, rate, basis_sites, move_origins,
+                              move_vectors, process_number, site_types);
+        processes.push_back(process);
+
+    }
+
+    {
+        // Setup the two configurations.
+        std::vector<std::string> elements1 = {
+            "A", "B", "B", "B", "B", "B", "B", "B", "B",
+            "C", "C", "C", "C", "C", "C"
+        };
+        std::vector<std::string> elements2 = {
+            "F", "B", "B", "B", "B", "B", "B", "B", "B",
+            "A", "A", "A", "A", "A", "A"
+        };
+
+        // Setup the site types.
+        const std::vector<int> site_types1 = {
+            3, 2, 2, 2, 2, 2, 2, 2, 2,
+            1, 1, 1, 1, 1, 1
+        };
+
+        const std::vector<int> site_types2 = {
+            1, 2, 2, 2, 2, 2, 2, 2, 2,
+            1, 1, 1, 1, 1, 1
+        };
+
+        // Setup coordinates.
+        std::vector<std::vector<double> > process_coords = {
+            { 0.0,  0.0,  0.0}, { 0.5,  0.5,  0.5}, {-0.5,  0.5,  0.5},
+            { 0.5, -0.5,  0.5}, { 0.5,  0.5, -0.5}, {-0.5, -0.5,  0.5},
+            {-0.5,  0.5, -0.5}, { 0.5, -0.5, -0.5}, {-0.5, -0.5, -0.5},
+            { 1.0,  0.0,  0.0}, { 0.0,  1.0,  0.0}, { 0.0,  0.0,  1.0},
+            {-1.0,  0.0,  0.0}, { 0.0, -1.0,  0.0}, { 0.0,  0.0, -1.0},
+        };
+
+        // The configurations.
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        // Construct the process.
+        const double rate = 13.7;
+        const std::vector<int> move_origins(0);
+        const std::vector<Coordinate> move_vectors(0);
+        const int process_number = 0;
+        const Process process1(config1, config2, rate, basis_sites, move_origins,
+                               move_vectors, process_number, site_types1);
+        const Process process2(config1, config2, rate, basis_sites, move_origins,
+                               move_vectors, process_number, site_types2);
+        processes.push_back(process1);
+        processes.push_back(process2);
+    }
+
+    // ---------------------------------------------------------------------
+
+    // Setup the interactions object.
+    Interactions interactions(processes, true);
+
+    // Setup a list of indices to test. Their order should not matter.
+    std::vector<int> indices = {0, 2, 4, 3, 14, 9};
+
+    // Call the matching function and check that all processes have been
+    // updated correctly.
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
+
+    // The first process should match the first index only.
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(14) );
+
+    // The second process should match the first index only.
+    CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(9) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(14) );
+
+    // The third process matches no index.
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(9) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(14) );
+
+    // Call the matching function again does not change any thing.
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
+
+    // The first process should match the first index only.
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(14) );
+
+    // The second process should match the first index only.
+    CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(9) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(14) );
+
+    // The third process matches no index.
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(9) );
+    CPPUNIT_ASSERT( !interactions.processes()[2]->isListed(14) );
+
+    // }}}
+}
+
+
+// -------------------------------------------------------------------------- //
+// Test matching calculation in 2D grid.
+void Test_Matcher::testCalculateMatchingInteractionsWithSiteTypes2D()
+{
+    // {{{
+    Matcher m;
+
+    // Setup processes to test with.
+    std::vector<Process> processes;
+
+    // ------------------------------------------------------------
+    // 10x10 2D grid.
+    std::vector<std::vector<double> > basis = {{0.0, 0.0, 0.0}};
+    std::vector<int> basis_sites = {0};
+
+    // Setup elements.
+    std::vector<std::string> elements = {
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "A", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+        "B", "B", "B", "B", "B", "B", "B", "B", "B", "B"
+    };
+
+    // Setup site types.
+    std::vector<std::string> site_types = {
+        "b", "b", "b", "b", "b", "b", "b", "b", "b", "b",
+        "b", "b", "b", "b", "b", "b", "b", "b", "b", "b",
+        "b", "b", "b", "b", "b", "b", "b", "b", "b", "b",
+        "b", "b", "b", "b", "b", "b", "b", "a", "b", "b",
+        "b", "b", "b", "b", "b", "b", "b", "b", "b", "b",
+        "b", "b", "b", "b", "b", "b", "b", "b", "b", "b",
+        "b", "b", "b", "b", "b", "b", "b", "b", "b", "b",
+        "b", "b", "b", "b", "b", "b", "b", "b", "b", "b",
+        "b", "b", "b", "b", "b", "b", "b", "b", "b", "b",
+        "b", "b", "b", "b", "b", "b", "b", "b", "b", "b" 
+    };
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords;
+    for (int i = 0; i < 10; ++i)
+    {
+        for (int j = 0; j < 10; ++j)
+        {
+            std::vector<double> coord = basis[0];
+            coord[0] += i;
+            coord[1] += j;
+            coords.push_back(coord);
+        }
+    }
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["a"] = 1;
+    possible_site_types["b"] = 2;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Construct the sitesmap.
+    SitesMap sitesmap(coords, site_types, possible_site_types);
+
+    // ---------------------------------------------------------------------
+    // Setup a periodic cooresponding lattice map.
+    const std::vector<int> repetitions = {10, 10, 1};
+    const std::vector<bool> periodicity = {true, true, false};
+    const int basis_size = 1;
+
+    LatticeMap lattice_map(basis_size, repetitions, periodicity);
+
+    // ---------------------------------------------------------------------
+    // Now the processes.
+
+    // Site types for all processes.
+    std::vector<int> process_site_types = {1, 2, 2, 2, 2, 2};
+
+    // Coordinates for all processes.
+    std::vector<std::vector<double> > process_coords = {
+        {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {-1.0, 0.0, 0.0},
+        {0.0, -1.0, 0.0}, {0.0, 1.0, 0.0}, {2.0, 2.0, 0.0}
+    };
+
+    // Other parameters for all processes.
+    const double rate = 13.7;
+    const std::vector<int> move_origins(0);
+    const std::vector<Coordinate> move_vectors(0);
+    const int process_number = 0;
+
+    {
+        // Setup the two configurations.
+        std::vector<std::string> elements1 = {"A", "B", "B", "B", "B", "A"};
+        std::vector<std::string> elements2 = {"B", "B", "A", "B", "B", "A"};
+
+        // The configurations.
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        // Construct the process.
+        const Process process(config1, config2, rate, basis_sites, move_origins,
+                              move_vectors, process_number, process_site_types);
+        processes.push_back(process);
+    }
+    {
+        // Setup the two configurations.
+        std::vector<std::string> elements1 = {"A", "B", "B", "B", "B", "B"};
+        std::vector<std::string> elements2 = {"B", "B", "A", "B", "B", "B"};
+
+        // The configurations.
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        // Construct the process.
+        const Process process(config1, config2, rate, basis_sites, move_origins,
+                              move_vectors, process_number, process_site_types);
+        processes.push_back(process);
+    }
+    {
+        // Setup the two configurations.
+        std::vector<std::string> elements1 = {"A", "B", "B", "B", "B", "B"};
+        std::vector<std::string> elements2 = {"B", "B", "B", "A", "B", "B"};
+
+        // The configurations.
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        // Construct the process.
+        const Process process(config1, config2, rate, basis_sites, move_origins,
+                              move_vectors, process_number, process_site_types);
+        processes.push_back(process);
+    }
+    {
+        // Setup the two configurations.
+        std::vector<std::string> elements1 = {"A", "B", "B", "B", "B", "B"};
+        std::vector<std::string> elements2 = {"B", "B", "B", "B", "A", "B"};
+
+        // The configurations.
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        // Construct the process.
+        const Process process(config1, config2, rate, basis_sites, move_origins,
+                              move_vectors, process_number, process_site_types);
+        processes.push_back(process);
+    }
+
+    // Setup the interactions object.
+    Interactions interactions(processes, true);
+
+    // Initialize the match lists.
+    config.initMatchLists(lattice_map, interactions.maxRange());
+    sitesmap.initMatchLists(lattice_map, interactions.maxRange());
+
+    interactions.updateProcessMatchLists(config, lattice_map);
+
+    // Indices to test.
+    std::vector<int> indices;
+    for (int i = 0; i < 100; ++i)
+    {
+        indices.push_back(i);
+    }
+
+    // Call the matching function.
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
+
+    CPPUNIT_ASSERT(interactions.processes()[1]->isListed(37));
+    CPPUNIT_ASSERT(interactions.processes()[2]->isListed(37));
+    CPPUNIT_ASSERT(interactions.processes()[3]->isListed(37));
+
+    CPPUNIT_ASSERT_EQUAL(interactions.totalAvailableSites(), 3);
+
+    // Call the matching function again, nothing change.
+    m.calculateMatching(interactions, config, sitesmap, lattice_map, indices);
+
+    CPPUNIT_ASSERT(interactions.processes()[1]->isListed(37));
+    CPPUNIT_ASSERT(interactions.processes()[2]->isListed(37));
+    CPPUNIT_ASSERT(interactions.processes()[3]->isListed(37));
+
+    CPPUNIT_ASSERT_EQUAL(interactions.totalAvailableSites(), 3);
+    // }}}
+}
+
 
 // -------------------------------------------------------------------------- //
 // This proxy class is part needed for the UpdateRates test below.
@@ -1513,6 +2112,7 @@ public:
 //
 void Test_Matcher::testUpdateRates()
 {
+    // {{{
     // Generate a list of tasks to run.
     std::vector<RateTask> tasks;
 
@@ -1604,6 +2204,8 @@ void Test_Matcher::testUpdateRates()
     // Check that the rates were correctly updated.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( rates[0], std::sqrt(ref_rate1), 1.0e-12 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL( rates[1], std::sqrt(ref_rate2), 1.0e-12 );
+
+    // }}}
 }
 
 
@@ -1656,6 +2258,7 @@ public:
 //
 void Test_Matcher::testUpdateSingleRate()
 {
+    // {{{
     // Setup a valid configuration.
     std::vector<std::vector<double> > coords(2, std::vector<double>(3, 0.0));
 
@@ -1734,4 +2337,5 @@ void Test_Matcher::testUpdateSingleRate()
     // Test against the known reference.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(ret_rate, std::pow(rate, 3.14159), 1.0e-12);
 
+    // }}}
 }

@@ -1,14 +1,21 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
-
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
 
 
-/*! \file  configuration.h
- *  \brief File for the Configuration class definition.
+/* ******************************************************************
+ *  file   : configuration.cpp
+ *  brief  : File for the implementation code of the Configuration class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-04-11   1.2          Modify match list presentation.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
 
 #ifndef __CONFIGURATION__
@@ -18,12 +25,13 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "matchlistentry.h"
-#include "coordinate.h"
+
+#include "matchlist.h"
 
 // Forward declarations.
 class LatticeMap;
 class Process;
+class Coordinate;
 
 /*! \brief Class for defining the configuration used in a KMC simulation to
  *         use for communicating elements and positions to and from python.
@@ -92,9 +100,9 @@ public:
      *                        using correct boundaries.
      *  \return : The match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int origin_index,
-                                                                const std::vector<int> & indices,
-                                                                const LatticeMap & lattice_map) const;
+    const ConfigMatchList & matchList(const int origin_index,
+                                      const std::vector<int> & indices,
+                                      const LatticeMap & lattice_map) const;
 
     /*! \brief Update the cached match list for the given index.
      *  \param index : The index to update the match list for.
@@ -105,7 +113,7 @@ public:
      *  \param index : The index to get the match list for.
      *  \return : The match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index) const { return match_lists_[index]; }
+    const ConfigMatchList & matchList(const int index) const { return match_lists_[index]; }
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
@@ -114,8 +122,7 @@ public:
      *  \param lattice_map : The lattice map needed for proper move vector indexing.
      */
     void performProcess(Process & process,
-                        const int site_index,
-                        const LatticeMap & lattice_map);
+                        const int site_index);
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
@@ -168,7 +175,7 @@ private:
     std::vector<std::string> type_names_;
 
     /// The match lists for all indices.
-    std::vector< std::vector<MinimalMatchListEntry> > match_lists_;
+    std::vector<ConfigMatchList> match_lists_;
 
 };
 

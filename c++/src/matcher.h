@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -16,11 +17,10 @@
 
 #include <vector>
 
-#include "matchlistentry.h"
-
 // Forward declarations.
 class Interactions;
 class Configuration;
+class SitesMap;
 class Process;
 class LatticeMap;
 class RateCalculator;
@@ -56,12 +56,14 @@ public:
      *         all possible processes.
      *  \param interactions  : The interactions object holding info on possible processes.
      *  \param configuration : The configuration which the list of indices refers to.
+     *  \param sitesmap      : The sites map which the list of inidices refers to.
      *  \param lattice_map   : The lattice map describing the configuration.
      *  \param indices       : The configuration indices for which the neighbourhood should
      *                         be matched against all possible processes.
      */
     void calculateMatching(Interactions & interactions,
                            Configuration & configuration,
+                           const SitesMap & sitesmap,
                            const LatticeMap & lattice_map,
                            const std::vector<int> & indices) const;
 
@@ -128,16 +130,6 @@ public:
     void calculateMatching(Process & process,
                            Configuration & configuration,
                            const int index) const;
-
-    /*! \brief Check the matching between two match lists, where the process match list
-     *         must be shorter or equal in length to the index match list.
-     *  \param process_match_list : The process match list to compare against.
-     *  \param index_match_list   : The index match list to compare.
-     *  \return : True if match.
-     */
-    bool isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
-                 const std::vector<MinimalMatchListEntry> & index_match_list) const;
-
 
 protected:
 
