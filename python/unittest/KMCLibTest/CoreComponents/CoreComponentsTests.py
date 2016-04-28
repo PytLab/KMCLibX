@@ -1,6 +1,7 @@
 
 
 # Copyright (c)  2013  Mikael Leetmaa
+# Copyright (c)  2016-2019  Shao Zhengjiang
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -10,6 +11,7 @@
 import unittest
 
 from KMCConfigurationTest import KMCConfigurationTest
+from KMCSitesMapTest import KMCSitesMapTest
 from KMCControlParametersTest import KMCControlParametersTest
 from KMCInteractionsTest import KMCInteractionsTest
 from KMCLatticeModelTest import KMCLatticeModelTest
@@ -22,6 +24,7 @@ def suite():
     suite = unittest.TestSuite(
         [
          unittest.TestLoader().loadTestsFromTestCase(KMCConfigurationTest),
+         unittest.TestLoader().loadTestsFromTestCase(KMCSitesMapTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCControlParametersTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCInteractionsTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCLatticeModelTest),
