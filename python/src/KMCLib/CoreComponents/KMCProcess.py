@@ -592,14 +592,15 @@ class KMCProcess(object):
         rate_constant_string = rate_constant_string % (self.__rate_constant)
 
         # Get the script together.
-        process_string = variable_name + " = KMCProcess(\n" + \
-            "    coordinates=coordinates,\n" + \
-            "    elements_before=elements_before,\n" + \
-            "    elements_after=elements_after,\n" + \
-            "    move_vectors=move_vectors,\n" + \
-            "    basis_sites=basis_sites,\n" + \
-            "    rate_constant=rate_constant,\n" + \
-            "    site_types=site_types)\n"
+        process_string = (variable_name +
+                          " = KMCProcess(\n" +
+                          "    coordinates=coordinates,\n" +
+                          "    elements_before=elements_before,\n" +
+                          "    elements_after=elements_after,\n" +
+                          "    move_vectors=move_vectors,\n" +
+                          "    basis_sites=basis_sites,\n" +
+                          "    rate_constant=rate_constant,\n" +
+                          "    site_types=site_types)\n")
 
         return (coords_string + "\n" +
                 elements_before_string +

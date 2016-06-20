@@ -220,7 +220,10 @@ def checkTypes(types, length):
 
     # Check the length.
     if len(types) != length:
-        raise Error("The length of the 'types' parameter must match the coordinates.")
+        msg = ("The length of the 'types' parameter({}) " +
+               "dose not match the coordinates({}).")
+        msg = msg.format(len(types), length)
+        raise Error(msg)
 
     # Done.
     return types

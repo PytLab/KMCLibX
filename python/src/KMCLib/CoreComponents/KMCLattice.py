@@ -56,7 +56,6 @@ class KMCLattice(object):
         self.__lattice_map = None
 
     def __checkRepetitions(self, repetitions):
-        """ """
         """
         Private helper routine to check the repetitions input.
         """
@@ -89,7 +88,6 @@ class KMCLattice(object):
         return repetitions
 
     def __checkPeriodic(self, periodic):
-        """ """
         """
         Private helper routine to check the periodic input.
         """
@@ -117,7 +115,6 @@ class KMCLattice(object):
         return periodic
 
     def __generateLatticeSites(self):
-        """ """
         """
         Private helper function to generate the sites data
         based on the basis and repetitions stored on the class.

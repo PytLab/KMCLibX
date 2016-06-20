@@ -109,7 +109,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
 
     // NOTE: Do not check the site match list here, the coordinates in
     //       site match list are assumed to be the same as that in
-    //       configuration match list.
+    //       configuration match list. -- zjshao
 
     // Skip if we are not using implicit wildcards.
     if (!implicit_wildcards_)
