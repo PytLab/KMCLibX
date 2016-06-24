@@ -156,7 +156,7 @@ class KMCLatticeModel(object):
         if analysis is None:
             analysis = []
         else:
-            msg = "Each element in the 'analyis' list must be an instance of KMCAnalysisPlugin."
+            msg = "Each element in the 'analysis' list must be an instance of KMCAnalysisPlugin."
             analysis = checkSequenceOf(analysis, KMCAnalysisPlugin, msg)
 
         # Set and seed the backend random number generator.
