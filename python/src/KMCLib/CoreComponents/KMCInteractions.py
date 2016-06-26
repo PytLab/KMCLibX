@@ -135,6 +135,30 @@ class KMCInteractions(object):
         """
         return self.__implicit_wildcards
 
+    def pickedIndex(self):
+        """
+        Query function for the index of lattice site which was picked in last step.
+
+        :returns: The number of index.
+        """
+        if self.__backend is not None:
+            return self.__backend.pickedIndex()
+        else:
+            msg = "No cpp interactions backend in {}.".format(self.__class__.__name__)
+            raise AttributeError(msg)
+
+    def processAvailableSites(self):
+        """
+        Query function for list of available site number for all processes.
+
+        :returns: A tuple of available site number.
+        """
+        if self.__backend is not None:
+            return self.__backend.processAvailableSites()
+        else:
+            msg = "No cpp interactions backend in {}.".format(self.__class__.__name__)
+            raise AttributeError(msg)
+
     def _backend(self, possible_types, n_basis):
         """
         Query for the interactions backend object.
