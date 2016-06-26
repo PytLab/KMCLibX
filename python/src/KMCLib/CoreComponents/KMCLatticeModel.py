@@ -80,6 +80,14 @@ class KMCLatticeModel(object):
         # Set the verbosity level of output to minimal.
         self.__verbosity_level = 0
 
+    def interactions(self):
+        """
+        Query function for interactions object in model.
+
+        :returns: KMCInteractions object.
+        """
+        return self.__interactions
+
     def _backend(self):
         """
         Function for generating the C++ backend reperesentation of this object.
