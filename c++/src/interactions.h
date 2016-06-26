@@ -91,10 +91,19 @@ public:
      */
     const std::vector<std::pair<double,int> > & probabilityTable() const { return probability_table_; }
 
+    /*! \brief Const query for the available site for all processes.
+     *  \return : A vector of available sites for all processes.
+     */
+    const std::vector<int> & processAvailableSites() const { return process_available_sites_; }
+
     /*! \brief Recalculate the table of process probabilities based on the
      *         number of available sites for each process and their rates.
      */
     void updateProbabilityTable();
+
+    /*! \brief Recalculate the available site number for each process.
+     */
+    void updateProcessAvailableSites();
 
     /*! \brief Query for the total rate of the system.
      *  \return : The total rate.
@@ -129,6 +138,9 @@ private:
 
     /// The probability table.
     std::vector<std::pair<double,int> > probability_table_;
+
+    /// The available numbers for each process.
+    std::vector<int> process_available_sites_;
 
     /// The flag indicating if implicit wildcards should  be used.
     bool implicit_wildcards_;

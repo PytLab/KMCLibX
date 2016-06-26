@@ -44,6 +44,7 @@ Interactions::Interactions(const std::vector<Process> & processes,
     custom_rate_processes_(0),
     process_pointers_(processes.size(), NULL),
     probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
+    process_available_sites_(processes.size(), 0),
     implicit_wildcards_(implicit_wildcards),
     use_custom_rates_(false),
     rate_calculator_placeholder_(RateCalculator()),
@@ -68,6 +69,7 @@ Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
     custom_rate_processes_(processes),
     process_pointers_(processes.size(), NULL),
     probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
+    process_available_sites_(processes.size(), 0),
     implicit_wildcards_(implicit_wildcards),
     use_custom_rates_(true),
     rate_calculator_(rate_calculator)
@@ -229,6 +231,23 @@ void Interactions::updateProbabilityTable()
         previous_rate += total_rate;
         // Store the number of available processes to filter out zeroes later.
         (*it2).second = n_sites;
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Interactions::updateProcessAvailableSites()
+{
+    // Loop over all processes.
+    std::vector<Process*>::const_iterator it1 = process_pointers_.begin();
+    std::vector<int>::iterator it2 = process_available_sites_.begin();
+    const std::vector<Process*>::const_iterator end = process_pointers_.end();
+
+    for (; it1 != end; ++it1, ++it2)
+    {
+        // Update availability for each process.
+        *it2 = (*it1)->nSites();
     }
 }
 
