@@ -195,6 +195,9 @@ void Test_Interactions::testUpdateAndPick()
     // Update the probability table.
     interactions.updateProbabilityTable();
 
+    // Update the process available sites.
+    interactions.updateProcessAvailableSites();
+
     // Check the values of the probability table.
     const std::vector<std::pair<double, int> > & probability_table = \
         interactions.probabilityTable();
@@ -216,6 +219,18 @@ void Test_Interactions::testUpdateAndPick()
     CPPUNIT_ASSERT_EQUAL( probability_table[4].second, 0 );
     CPPUNIT_ASSERT_EQUAL( probability_table[5].second, 1 );
 
+    // Check the value of the process available sites.
+    const std::vector<int> & process_available_sites = interactions.processAvailableSites();
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process_available_sites.size()),
+                          static_cast<int>(processes.size()) );
+
+    CPPUNIT_ASSERT_EQUAL(process_available_sites[0], 3);
+    CPPUNIT_ASSERT_EQUAL(process_available_sites[1], 2);
+    CPPUNIT_ASSERT_EQUAL(process_available_sites[2], 4);
+    CPPUNIT_ASSERT_EQUAL(process_available_sites[3], 0);
+    CPPUNIT_ASSERT_EQUAL(process_available_sites[4], 0);
+    CPPUNIT_ASSERT_EQUAL(process_available_sites[5], 1);
 
     // Make sure to seed the random number generator before we test any
     // random dependent stuff.
