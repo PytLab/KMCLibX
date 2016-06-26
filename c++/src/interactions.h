@@ -91,10 +91,19 @@ public:
      */
     const std::vector<std::pair<double,int> > & probabilityTable() const { return probability_table_; }
 
+    /*! \brief Const query for the available site for all processes.
+     *  \return : A vector of available sites for all processes.
+     */
+    const std::vector<int> & processAvailableSites() const { return process_available_sites_; }
+
     /*! \brief Recalculate the table of process probabilities based on the
      *         number of available sites for each process and their rates.
      */
     void updateProbabilityTable();
+
+    /*! \brief Recalculate the available site number for each process.
+     */
+    void updateProcessAvailableSites();
 
     /*! \brief Query for the total rate of the system.
      *  \return : The total rate.
@@ -105,7 +114,7 @@ public:
      *  \return : The index of a possible available process picked according
      *            to its probability.
      */
-    int pickProcessIndex() const;
+    int pickProcessIndex();
 
     /*! \brief Pick an availabe process according to its probability and return
      *         a reference to that process.
@@ -113,6 +122,11 @@ public:
      *            to its probability.
      */
     Process* pickProcess();
+
+    /*! \brief Query for the index of process which was picked in last step.
+     *  \return : The index number.
+     */
+    const int & pickedIndex() const { return picked_index_; }
 
 protected:
 
@@ -130,6 +144,9 @@ private:
     /// The probability table.
     std::vector<std::pair<double,int> > probability_table_;
 
+    /// The available numbers for each process.
+    std::vector<int> process_available_sites_;
+
     /// The flag indicating if implicit wildcards should  be used.
     bool implicit_wildcards_;
 
@@ -141,6 +158,9 @@ private:
 
     /// A reference to the rate calculator to use.
     const RateCalculator & rate_calculator_;
+
+    /// The index of process picked in the latest step.
+    int picked_index_;
 
 };
 

@@ -38,6 +38,9 @@ LatticeModel::LatticeModel(Configuration & configuration,
 
     // Initialize the interactions table here.
     interactions_.updateProbabilityTable();
+
+    // Initialize the process available sites.
+    interactions_.updateProcessAvailableSites();
 }
 
 
@@ -97,5 +100,8 @@ void LatticeModel::singleStep()
 
     // Update the interactions' probability table.
     interactions_.updateProbabilityTable();
+
+    // Update the interactions' process available sites.
+    interactions_.updateProcessAvailableSites();
 }
 
