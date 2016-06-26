@@ -27,6 +27,8 @@
 #include "configuration.h"
 #include "latticemap.h"
 #include "ratecalculator.h"
+#include "process.h"
+#include "customrateprocess.h"
 
 
 // -----------------------------------------------------------------------------

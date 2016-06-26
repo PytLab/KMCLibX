@@ -26,7 +26,6 @@
 
 #include <vector>
 
-#include "process.h"
 #include "customrateprocess.h"
 #include "ratecalculator.h"
 
@@ -34,6 +33,7 @@
 // Forward declarations.
 class Configuration;
 class LatticeMap;
+class Process;
 
 /*! \brief Class for holding information about all interactions and possible
  *         processes in the system.
