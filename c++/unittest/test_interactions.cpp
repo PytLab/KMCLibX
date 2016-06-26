@@ -250,6 +250,9 @@ void Test_Interactions::testUpdateAndPick()
         CPPUNIT_ASSERT( p >= 0 );
         CPPUNIT_ASSERT( p < static_cast<int>(probability_table.size()) );
         ++picked[p];
+
+        // Check the picked_index.
+        CPPUNIT_ASSERT_EQUAL(interactions.pickedIndex(), p);
     }
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 8.0*picked[0]/n_loop,

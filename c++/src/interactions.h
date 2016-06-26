@@ -114,7 +114,7 @@ public:
      *  \return : The index of a possible available process picked according
      *            to its probability.
      */
-    int pickProcessIndex() const;
+    int pickProcessIndex();
 
     /*! \brief Pick an availabe process according to its probability and return
      *         a reference to that process.
@@ -122,6 +122,11 @@ public:
      *            to its probability.
      */
     Process* pickProcess();
+
+    /*! \brief Query for the index of process which was picked in last step.
+     *  \return : The index number.
+     */
+    const int & pickedIndex() const { return picked_index_; }
 
 protected:
 
@@ -153,6 +158,9 @@ private:
 
     /// A reference to the rate calculator to use.
     const RateCalculator & rate_calculator_;
+
+    /// The index of process picked in the latest step.
+    int picked_index_;
 
 };
 

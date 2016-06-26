@@ -254,7 +254,7 @@ void Interactions::updateProcessAvailableSites()
 
 // -----------------------------------------------------------------------------
 //
-int Interactions::pickProcessIndex() const
+int Interactions::pickProcessIndex()
 {
     // PERFORMME:
     // This implements the O(N) SSA algorithm.
@@ -272,13 +272,18 @@ int Interactions::pickProcessIndex() const
     // of available processes is larger than zero.
     const std::vector<std::pair<double, int> >::const_iterator begin = probability_table_.begin();
     const std::vector<std::pair<double, int> >::const_iterator end   = probability_table_.end();
-    const std::vector<std::pair<double, int> >::const_iterator it1   = std::lower_bound( begin,
-                                                                                         end,
-                                                                                         rnd_pair,
-                                                                                         pairComp );
+    const std::vector<std::pair<double, int> >::const_iterator it1   = std::lower_bound(begin,
+                                                                                        end,
+                                                                                        rnd_pair,
+                                                                                        pairComp);
 
-    // Find the index in the process list.
-    return it1 - begin;
+    // Find the index in the process.
+    int picked_index = it1 - begin;
+    
+    // Update private variable.
+    picked_index_ = picked_index;
+
+    return picked_index;
 }
 
 
