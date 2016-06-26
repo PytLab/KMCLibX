@@ -1,13 +1,23 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
 
-/*! \file  interactions.h
- *  \brief File for the Interactions class definition.
+/* ******************************************************************
+ *  file   : interactions.h
+ *  brief  : File for the Interactions class definition.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-06-26   1.3          Add picked index &
+ *                                       process available sites.
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
 
 #ifndef __INTERACTIONS__

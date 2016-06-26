@@ -1,13 +1,23 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
 
-/*! \file  interactions.cpp
- *  \brief File for the implementation code of the Interactions class.
+/* ******************************************************************
+ *  file   : interactions.cpp
+ *  brief  : File for the implementation code of the Interactions class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-06-26   1.3          Add picked index &
+ *                                       process available sites.
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
 
 #include <algorithm>
@@ -48,7 +58,8 @@ Interactions::Interactions(const std::vector<Process> & processes,
     implicit_wildcards_(implicit_wildcards),
     use_custom_rates_(false),
     rate_calculator_placeholder_(RateCalculator()),
-    rate_calculator_(rate_calculator_placeholder_)
+    rate_calculator_(rate_calculator_placeholder_),
+    picked_index_(-1)
 {
     // Point the process pointers to the right places.
     for (size_t i = 0; i < processes_.size(); ++i)
@@ -72,7 +83,8 @@ Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
     process_available_sites_(processes.size(), 0),
     implicit_wildcards_(implicit_wildcards),
     use_custom_rates_(true),
-    rate_calculator_(rate_calculator)
+    rate_calculator_(rate_calculator),
+    picked_index_(-1)
 {
     // Point the process pointers to the right places.
     for (size_t i = 0; i < custom_rate_processes_.size(); ++i)

@@ -389,6 +389,14 @@ class KMCInteractionsTest(unittest.TestCase):
         # Match type should be "C" -> 5 and update type "A" -> 13
         self.assertEqual(match_type, 5)
         self.assertEqual(update_type, 13)
+
+        # Check the initial picked index, should be -1.
+        self.assertEqual(cpp_interactions.pickedIndex(), -1)
+        self.assertEqual(kmc_interactions.pickedIndex(), -1)
+
+        # Check the initial process available sites list.
+        self.assertTupleEqual(cpp_interactions.processAvailableSites(), (0, 0))
+        self.assertTupleEqual(kmc_interactions.processAvailableSites(), (0, 0))
         # }}}
 
     def testBackendWithSiteTypes(self):

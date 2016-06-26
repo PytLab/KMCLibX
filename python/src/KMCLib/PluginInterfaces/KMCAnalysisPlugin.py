@@ -20,7 +20,7 @@ class KMCAnalysisPlugin(object):
         """
         pass
 
-    def setup(self, step, time, configuration):
+    def setup(self, step, time, configuration, interactions=None):
         """
         Function called right before the start of the KMC loop to allow for
         custom setup of the analysis object.
@@ -33,10 +33,14 @@ class KMCAnalysisPlugin(object):
 
         :param configuration: The up to date configuration of the simulation.
         :type configuration: KMCConfiguration
+
+        :param interactions: The up to date interactions of the simulation,
+                             the default is None.
+        :type interactions: KMCInteractions
         """
         pass
 
-    def registerStep(self, step, time, configuration):
+    def registerStep(self, step, time, configuration, interactions=None):
         """
         Called from the KMC loop after each step.
 
@@ -46,8 +50,9 @@ class KMCAnalysisPlugin(object):
         :param time: The simulation time.
         :type time: float
 
-        :param configuration: The up to date configuration of the simulation.
-        :type configuration: KMCConfiguration
+        :param interactions: The up to date interactions of the simulation,
+                             the default is None.
+        :type interactions: KMCInteractions
         """
         pass
 

@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -133,6 +134,9 @@ void Test_Interactions::testQuery()
     // Query for the rate calculator.
     const RateCalculator & rc = interactions.rateCalculator();
     CPPUNIT_ASSERT( &rc != NULL );
+
+    // Query for picked index.
+    CPPUNIT_ASSERT_EQUAL(interactions.pickedIndex(), -1);
 
 }
 
