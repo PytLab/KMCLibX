@@ -134,6 +134,9 @@ void Test_Interactions::testQuery()
     const RateCalculator & rc = interactions.rateCalculator();
     CPPUNIT_ASSERT( &rc != NULL );
 
+    // Query for picked index.
+    CPPUNIT_ASSERT_EQUAL(interactions.pickedIndex(), -1);
+
 }
 
 // -------------------------------------------------------------------------- //
