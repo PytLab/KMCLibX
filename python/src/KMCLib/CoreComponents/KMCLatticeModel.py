@@ -210,9 +210,10 @@ class KMCLatticeModel(object):
         # Setup the analysis objects.
         for ap in analysis:
             step = 0
-            ap.setup(step,
-                     self.__cpp_timer.simulationTime(),
-                     self.__configuration)
+            ap.setup(step=step,
+                     time=self.__cpp_timer.simulationTime(),
+                     configuration=self.__configuration,
+                     interactions=self.__interactions)
 
         # Get the needed parameters.
         n_steps = control_parameters.numberOfSteps()
