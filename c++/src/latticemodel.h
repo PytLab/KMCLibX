@@ -44,7 +44,7 @@ public:
                  SitesMap & sitesmap,
                  SimulationTimer & simulation_timer,
                  const LatticeMap & lattice_map,
-                 const Interactions & interactions);
+                 Interactions & interactions);
 
     /*! \brief Function for taking one time step in the KMC lattice model.
      */
@@ -91,8 +91,8 @@ private:
     /// A description of the lattice.
     LatticeMap lattice_map_;
 
-    /// The description of all interactions in the system.
-    Interactions interactions_;
+    /// The reference to the description of all interactions in the system.
+    Interactions & interactions_;
 
     /// The Matcher to use for calculating matches and update the process lists.
     Matcher matcher_;
