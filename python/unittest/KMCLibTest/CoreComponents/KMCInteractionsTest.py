@@ -397,6 +397,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # Check the initial process available sites list.
         self.assertTupleEqual(cpp_interactions.processAvailableSites(), (0, 0))
         self.assertTupleEqual(kmc_interactions.processAvailableSites(), (0, 0))
+
+        # Check pick index.
+        picked_idx = cpp_interactions.pickProcessIndex()
+        self.assertEqual(cpp_interactions.pickedIndex(), picked_idx)
+        self.assertNotEqual(cpp_interactions.pickedIndex(), -1)
         # }}}
 
     def testBackendWithSiteTypes(self):

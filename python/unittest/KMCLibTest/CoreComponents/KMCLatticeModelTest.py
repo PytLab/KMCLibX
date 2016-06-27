@@ -342,7 +342,18 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Setup the run paramters.
         control_parameters = KMCControlParameters(number_of_steps=10,
                                                   dump_interval=1)
+
+        # Check picked index before running.
+        self.assertEqual(interactions.pickedIndex(), -1)
+
+        # Run model.
         model.run(control_parameters)
+
+        # Check process available sites list after constructing model.
+        self.assertNotEqual(interactions.processAvailableSites(), (0, 0, 0, 0))
+
+        # Check picked index after running.
+        self.assertNotEqual(interactions.pickedIndex(), -1)
         # }}}
 
     def testRunImplicitWildcardsWithSiteTypes(self):

@@ -26,7 +26,7 @@ LatticeModel::LatticeModel(Configuration & configuration,
                            SitesMap & sitesmap,
                            SimulationTimer & simulation_timer,
                            const LatticeMap & lattice_map,
-                           const Interactions & interactions) :
+                           Interactions & interactions) :
     configuration_(configuration),
     sitesmap_(sitesmap),
     simulation_timer_(simulation_timer),

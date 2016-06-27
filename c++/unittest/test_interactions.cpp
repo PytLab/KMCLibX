@@ -289,6 +289,9 @@ void Test_Interactions::testUpdateAndPick()
     const int p = interactions.pickProcessIndex();
     const Process & proc1 = (*interactions.processes()[p]);
 
+    // Check picked index again.
+    CPPUNIT_ASSERT_EQUAL(interactions.pickedIndex(), p);
+
     seedRandom(false, 87);
     const Process & proc2 = (*interactions.pickProcess());
     CPPUNIT_ASSERT_EQUAL( &proc1, &proc2 );

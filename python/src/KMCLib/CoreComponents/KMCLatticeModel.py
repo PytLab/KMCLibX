@@ -100,7 +100,7 @@ class KMCLatticeModel(object):
             cpp_sitesmap = self.__sitesmap._backend()
             cpp_lattice_map = self.__configuration._latticeMap()
             cpp_interactions = self.__interactions._backend(self.__configuration.possibleTypes(),
-                                                            cpp_lattice_map.nBasis() )
+                                                            cpp_lattice_map.nBasis())
 
             # Construct a timer.
             self.__cpp_timer = Backend.SimulationTimer()
@@ -210,9 +210,10 @@ class KMCLatticeModel(object):
         # Setup the analysis objects.
         for ap in analysis:
             step = 0
-            ap.setup(step,
-                     self.__cpp_timer.simulationTime(),
-                     self.__configuration)
+            ap.setup(step=step,
+                     time=self.__cpp_timer.simulationTime(),
+                     configuration=self.__configuration,
+                     interactions=self.__interactions)
 
         # Get the needed parameters.
         n_steps = control_parameters.numberOfSteps()
