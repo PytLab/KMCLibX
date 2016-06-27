@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -22,6 +23,7 @@
 #include "sitesmap.h"
 
 #include <ctime>
+#include <iostream>
 
 // -------------------------------------------------------------------------- //
 //
@@ -525,6 +527,21 @@ void Test_LatticeModel::testSingleStepFunction()
     for (int i = 0; i < n_loop; ++i)
     {
         lattice_model.singleStep();
+
+        // Check the picked index, can not be -1.
+        CPPUNIT_ASSERT(interactions.pickedIndex() != -1);
+
+        // Check the process available sites vector.
+        const auto & available_sites = interactions.processAvailableSites();
+        bool available = false;
+        for (auto it = available_sites.begin(); it != available_sites.end(); ++it)
+        {
+            if(*it != 0)
+            {
+                available = true;
+            }
+        }
+        CPPUNIT_ASSERT(available);
     }
 
     // }}}
