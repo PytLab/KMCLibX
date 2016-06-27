@@ -69,7 +69,7 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         # Set the blocksize to zero.
         self.__blocksize = 0
 
-    def setup(self, step, time, configuration):
+    def setup(self, step, time, configuration, interactions=None):
         """
         Recieves the setup call from the before the MC loop.
 
@@ -100,7 +100,7 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
                                              abc_to_xyz_cpp,
                                              self.__blocksize)
 
-    def registerStep(self, step, time, configuration):
+    def registerStep(self, step, time, configuration, interactions=None):
         """
         Recieves the step call from the MC loop.
 

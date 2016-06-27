@@ -851,10 +851,10 @@ class KMCLatticeModelTest(unittest.TestCase):
                 self.finalize_called = False
                 self.register_step_counts = 0
 
-            def setup(self, step, time, configuration):
+            def setup(self, step, time, configuration, interactions=None):
                 self.setup_called = True
 
-            def registerStep(self, step, time, configuration):
+            def registerStep(self, step, time, configuration, interactions=None):
                 self.register_step_counts += 1
 
             def finalize(self):

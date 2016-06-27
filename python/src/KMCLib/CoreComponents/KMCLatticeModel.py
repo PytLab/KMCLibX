@@ -251,9 +251,10 @@ class KMCLatticeModel(object):
                 if ((step) % n_analyse == 0):
                     # Run all other python analysis.
                     for ap in analysis:
-                        ap.registerStep(step,
-                                        self.__cpp_timer.simulationTime(),
-                                        self.__configuration)
+                        ap.registerStep(step=step,
+                                        time=self.__cpp_timer.simulationTime(),
+                                        configuration=self.__configuration,
+                                        interactions=self.__interactions)
 
         finally:
 
