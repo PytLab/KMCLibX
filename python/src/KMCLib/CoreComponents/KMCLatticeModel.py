@@ -219,6 +219,17 @@ class KMCLatticeModel(object):
         n_steps = control_parameters.numberOfSteps()
         n_dump = control_parameters.dumpInterval()
         n_analyse = control_parameters.analysisInterval()
+
+        # Check validity of analysis number.
+        if type(n_analyse) in (list, tuple):
+            if len(n_analyse) != len(analysis):
+                msg = "analysis intervals number ({}) != analysis objects number ({})"
+                msg = msg.format(len(n_analyse), len(analysis))
+                raise Error(msg)
+        else:
+            # Convert to list.
+            n_analyse = [n_analyse]*len(analysis)
+
         prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n" %
                     (n_steps, self.__cpp_timer.simulationTime()))
 
@@ -249,9 +260,9 @@ class KMCLatticeModel(object):
                                           step=step,
                                           configuration=self.__configuration)
 
-                if ((step) % n_analyse == 0):
-                    # Run all other python analysis.
-                    for ap in analysis:
+                # Run all other python analysis.
+                for n, ap in zip(n_analyse, analysis):
+                    if ((step % n) == 0):
                         ap.registerStep(step=step,
                                         time=self.__cpp_timer.simulationTime(),
                                         configuration=self.__configuration,
