@@ -2,12 +2,14 @@
 
 
 # Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2016-2019  Shao Zhengjiang
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
+from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
 
@@ -35,10 +37,12 @@ class KMCControlParameters(object):
                               dumps. The default value is 1, i.e. dump every step.
         :type dump_interval: int
 
-        :param analysis_interval: The number of steps between subsequent calls to
+        :param analysis_interval: The numbers of steps between subsequent calls to
                                   the custom analysis 'registerStep' functions.
                                   The default value is 1, i.e. analysis every step.
-        :type analysis_interval: int
+                                  It could be a list of int, i.e. [1, 2, 3] means
+                                  the intervals for the corresponding analysis.
+        :type analysis_interval: list of int / int
 
         :param seed: The seed value to use for the backend random number generator.
                      If no seed value is given the random numnber generator will be
@@ -77,9 +81,15 @@ class KMCControlParameters(object):
                                                     1,
                                                     "dump_interval")
 
-        self.__analysis_interval = checkPositiveInteger(analysis_interval,
-                                                        1,
-                                                        "analysis_interval")
+        # Check the analysis intervals.
+        if analysis_interval is None:
+            self.__analysis_interval = 1
+        elif type(analysis_interval) is int:
+            self.__analysis_interval = checkPositiveInteger(analysis_interval, 1,
+                                                             "analysis_interval")
+        else:
+            msg = "analysis_interval is not a list of positive integers."
+            self.__analysis_interval = checkSequenceOfPositiveIntegers(analysis_interval, msg)
 
         self.__time_seed = (seed is None)
         self.__seed = checkPositiveInteger(seed,
