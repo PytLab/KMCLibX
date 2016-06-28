@@ -89,7 +89,7 @@ class KMCControlParameters(object):
                                                              "analysis_interval")
         else:
             msg = "analysis_interval is not a list of positive integers."
-            self.__analysis_intervals = checkSequenceOfPositiveIntegers(analysis_interval, msg)
+            self.__analysis_interval = checkSequenceOfPositiveIntegers(analysis_interval, msg)
 
         self.__time_seed = (seed is None)
         self.__seed = checkPositiveInteger(seed,
