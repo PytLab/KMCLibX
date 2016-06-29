@@ -9,8 +9,9 @@
 #
 
 
-from KMCLib.Backend import Backend
+import logging
 
+from KMCLib.Backend import Backend
 from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
 from KMCLib.CoreComponents.KMCSitesMap import KMCSitesMap
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
@@ -19,7 +20,7 @@ from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory
-from KMCLib.Utilities.PrintUtilities import prettyPrint
+#from KMCLib.Utilities.PrintUtilities import prettyPrint
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
 
 
@@ -79,6 +80,9 @@ class KMCLatticeModel(object):
 
         # Set the verbosity level of output to minimal.
         self.__verbosity_level = 0
+
+        # Set logger.
+        self.__logger = logging.getLogger("KMCLibX.KMCLatticeModel")
 
     def interactions(self):
         """
@@ -144,8 +148,9 @@ class KMCLatticeModel(object):
         use_trajectory = True
         if trajectory_filename is None:
             use_trajectory = False
-            msg = " KMCLib: WARNING: No trajectory filename given -> no trajectory will be saved."
-            prettyPrint(msg)
+            msg = "No trajectory filename given -> no trajectory will be saved."
+            #prettyPrint(msg)
+            self.__logger.warning(msg)
 
         elif not (isinstance(trajectory_filename, str) or
                   isinstance(trajectory_filename, unicode)):
@@ -177,7 +182,9 @@ class KMCLatticeModel(object):
                            control_parameters.seed())
 
         # Construct the C++ lattice model.
-        prettyPrint(" KMCLib: setting up the backend C++ object.")
+        #prettyPrint(" KMCLib: setting up the backend C++ object.")
+        self.__logger.info("")
+        self.__logger.info("setting up the backend C++ object.")
 
         cpp_model = self._backend()
 
@@ -230,8 +237,10 @@ class KMCLatticeModel(object):
             # Convert to list.
             n_analyse = [n_analyse]*len(analysis)
 
-        prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n" %
-                    (n_steps, self.__cpp_timer.simulationTime()))
+        #prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n" %
+        #            (n_steps, self.__cpp_timer.simulationTime()))
+        msg = "Runing for {:d} steps, starting from time: {:f}\n"
+        self.__logger.info(msg.format(n_steps, self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
         try:
@@ -251,8 +260,10 @@ class KMCLatticeModel(object):
                 cpp_model.singleStep()
 
                 if ((step) % n_dump == 0):
-                    prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
-                                (step, self.__cpp_timer.simulationTime()))
+                    #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
+                    #           (step, self.__cpp_timer.simulationTime()))
+                    msg = "{:d} steps executed. time: {:20.10e} "
+                    self.__logger.info(msg.format(step, self.__cpp_timer.simulationTime()))
 
                     # Perform IO using the trajectory object.
                     if use_trajectory:
@@ -317,7 +328,9 @@ class KMCLatticeModel(object):
         """
         cpp_processes = cpp_model.interactions().processes()
 
-        prettyPrint("")
-        prettyPrint(" Matching Information: ")
+        #prettyPrint("")
+        #prettyPrint(" Matching Information: ")
+        self.__logger.info("")
+        self.__logger.info("Matching Informations: ")
         for i, p in enumerate(cpp_processes):
             print i, p.sites()
