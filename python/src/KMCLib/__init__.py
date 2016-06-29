@@ -49,9 +49,32 @@ MPICommons.init()
 printHeader()
 
 
+# Instantialize logger.
+import logging
+
+logger = logging.getLogger("KMCLibX")
+logger.setLevel(logging.INFO)
+
+# Set logger handlers.
+std_hdlr = logging.FileHandler("out.log")
+std_hdlr.setLevel(logging.DEBUG)
+console_hdlr = logging.StreamHandler()
+console_hdlr.setLevel(logging.INFO)
+
+# Create formatter and add it to the handlers.
+formatter = logging.Formatter('%(name)s   %(levelname)-8s %(message)s')
+std_hdlr.setFormatter(formatter)
+console_hdlr.setFormatter(formatter)
+
+# Add the handlers to logger.
+logger.addHandler(std_hdlr)
+logger.addHandler(console_hdlr)
+
+
 # Make sure to finalize MPI on exit.
 def killme():
     MPICommons.finalize()
 
 import atexit
 atexit.register(killme)
+
