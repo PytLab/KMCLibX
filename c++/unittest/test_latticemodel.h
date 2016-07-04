@@ -28,6 +28,7 @@ public:
     CPPUNIT_TEST( testSetupAndQuery );
     CPPUNIT_TEST( testSingleStepFunction );
     CPPUNIT_TEST( testSingleStepFunction2D );
+    CPPUNIT_TEST( testAffectedIndicesRematching );
     CPPUNIT_TEST( testTiming );
     CPPUNIT_TEST_SUITE_END();
 
@@ -35,6 +36,7 @@ public:
     void testSetupAndQuery();
     void testSingleStepFunction();
     void testSingleStepFunction2D();
+    void testAffectedIndicesRematching();
     void testTiming();
 
 };
