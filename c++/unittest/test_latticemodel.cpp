@@ -1176,3 +1176,1242 @@ void Test_LatticeModel::testTiming()
     // }}}
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeModel::testAffectedIndicesRematching()
+{
+    // {{{
+    // Setup a realistic system and check.
+    std::vector<std::vector<double> > basis = {{0.000000e+00, 0.000000e+00, 0.000000e+00},
+                                               {0.000000e+00, 5.000000e-01, 0.000000e+00},
+                                               {5.000000e-01, 0.000000e+00, 0.000000e+00},
+                                               {5.000000e-01, 5.000000e-01, 0.000000e+00}}
+    std::vector<int> basis_sites = {0, 1, 2, 3};
+
+    // Make a 10x10x1 structure.
+    const int nI = 10;
+    const int nJ = 10;
+    const int nK = 1;
+    const int nB = 4;
+
+    // Coordinates and elements.
+    std::vector<std::vector<double> > coordinates;
+    std::vector<std::string> elements;
+    std::vector<std::string> site_types;
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    std::vector<double> c(3);
+                    c[0] = i + basis[b][0];
+                    c[1] = j + basis[b][1];
+                    c[2] = k + basis[b][2];
+                    coordinates.push_back(c);
+                    elements.push_back("V");
+                    site_types.push_back("P");
+                }
+            }
+        }
+    }
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["O_u"] = 1;
+    possible_types["C"] = 2;
+    possible_types["O_s"] = 3;
+    possible_types["O_r"] = 4;
+    possible_types["O_d"] = 5;
+    possible_types["V"] = 6;
+    possible_types["O_l"] = 7;
+
+    // Possible site types.
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["P"] = 1;
+
+    // Setup the configuration.
+    Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the sitesmap.
+    SitesMap sitesmap(coordinates, site_types, possible_site_types);
+
+    // Setup the lattice map.
+    std::vector<int> repetitions(3);
+    repetitions[0] = nI;
+    repetitions[1] = nJ;
+    repetitions[2] = nK;
+    std::vector<bool> periodicity = {true, true, false};
+    LatticeMap lattice_map(nB, repetitions, periodicity);
+
+    // Setup the interactions object.
+    std::vector<Process> processes;
+
+    // process 0.
+    {
+        const std::vector<std::string> process_elements1 = {"V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"C","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 1.153555e+01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 1.
+    {
+        const std::vector<std::string> process_elements1 = {"C","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 7.067697e-07;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 2.
+    {
+        const std::vector<std::string> process_elements1 = {"V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"C","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 1.153555e+01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {1};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 3.
+    {
+        const std::vector<std::string> process_elements1 = {"C","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 7.067697e-07;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {1};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 4.
+    {
+        const std::vector<std::string> process_elements1 = {"V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"C","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00}
+        };
+        const double rate = 1.153555e+01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {2};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 5.
+    {
+        const std::vector<std::string> process_elements1 = {"C","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00}
+        };
+        const double rate = 9.424024e-10;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {2};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 6.
+    {
+        const std::vector<std::string> process_elements1 = {"V","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 2.158534e+02;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 7.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 1.379590e-14;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 8.
+    {
+        const std::vector<std::string> process_elements1 = {"V","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_u","V","V","V","V","V","V","V","V","O_d","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,   1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,   1.500000e+00,   0.000000e+00}
+        };
+        const double rate = 2.158534e+02;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 9.
+    {
+        const std::vector<std::string> process_elements1 = {"O_u","V","V","V","V","V","V","V","V","O_d","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,   1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,   1.500000e+00,   0.000000e+00}
+        };
+        const double rate = 1.379590e-14;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 10.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","O_s","V","V","V","V","V","V","V","V","V","V","V","O_s","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00},
+            {   2.000000e+00,   0.000000e+00,   0.000000e+00}
+        };
+        const double rate = 3.373446e-06;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 11.
+    {
+        const std::vector<std::string> process_elements1 = {"V","O_s","V","V","V","V","V","V","V","V","V","V","V","O_s","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","V","V","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {  -1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00},
+            {   2.000000e+00,   0.000000e+00,   0.000000e+00}
+        };
+        const double rate = 2.705354e-24;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 12.
+    {
+        const std::vector<std::string> process_elements1 = {"O_u","V","V","V","V","V","V","V","V","O_d","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","O_s","V","V","V","V","V","V","V","V","V","V","O_s","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,   1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,   1.500000e+00,   0.000000e+00},
+            {   0.000000e+00,   2.000000e+00,   0.000000e+00}
+        };
+        const double rate = 3.373446e-06;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 13.
+    {
+        const std::vector<std::string> process_elements1 = {"V","O_s","V","V","V","V","V","V","V","V","V","V","V","O_s","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_u","V","V","V","V","V","V","V","V","O_d","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,   1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,   1.500000e+00,   0.000000e+00},
+            {   0.000000e+00,   2.000000e+00,   0.000000e+00}
+        };
+        const double rate = 2.705354e-24;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 14.
+    {
+        const std::vector<std::string> process_elements1 = {"V","C","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","C","V","V","V","V","V","V","V","V","O_l","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {  -1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 2.158534e+02;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 15.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","C","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","C","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 1.379590e-14;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 16.
+    {
+        const std::vector<std::string> process_elements1 = {"V","V","V","V","V","V","V","V","V","V","V","V","C","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","C","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 2.158534e+02;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 17.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","C","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","V","V","V","V","V","V","V","V","C","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 1.379590e-14;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 18.
+    {
+        const std::vector<std::string> process_elements1 = {"V","C","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_d","C","V","V","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00}
+        };
+        const double rate = 2.158534e+02;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 19.
+    {
+        const std::vector<std::string> process_elements1 = {"O_d","C","V","V","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","C","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00}
+        };
+        const double rate = 1.379590e-14;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 20.
+    {
+        const std::vector<std::string> process_elements1 = {"V","V","V","V","V","V","V","V","V","V","V","V","C","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","C","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   0.000000e+00,  -2.000000e+00,   0.000000e+00}
+        };
+        const double rate = 2.158534e+02;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 21.
+    {
+        const std::vector<std::string> process_elements1 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","C","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","V","V","V","V","V","V","V","V","C","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   0.000000e+00,  -2.000000e+00,   0.000000e+00}
+        };
+        const double rate = 1.379590e-14;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 22.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","C","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 1.153555e+01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 23.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","C","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 9.424024e-10;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 24.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","C","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 1.153555e+01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 25.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","C","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 9.424024e-10;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 26.
+    {
+        const std::vector<std::string> process_elements1 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_d","V","V","C","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00}
+        };
+        const double rate = 1.153555e+01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 27.
+    {
+        const std::vector<std::string> process_elements1 = {"O_d","C","V","V","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00}
+        };
+        const double rate = 9.424024e-10;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 28.
+    {
+        const std::vector<std::string> process_elements1 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","C","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   0.000000e+00,  -2.000000e+00,   0.000000e+00}
+        };
+        const double rate = 1.153555e+01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 29.
+    {
+        const std::vector<std::string> process_elements1 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","C","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   0.000000e+00,  -2.000000e+00,   0.000000e+00}
+        };
+        const double rate = 9.424024e-10;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 30.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","C","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","O_s","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 8.707964e-01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 31.
+    {
+        const std::vector<std::string> process_elements1 = {"V","O_s","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","V","V","V","V","V","V","V","V","O_l","V","V","C","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 7.374637e-41;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 32.
+    {
+        const std::vector<std::string> process_elements1 = {"O_r","C","V","V","V","V","V","V","V","O_l","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","O_s","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 8.707964e-01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 33.
+    {
+        const std::vector<std::string> process_elements1 = {"V","O_s","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_r","V","C","V","V","V","V","V","V","V","O_l","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {  -1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.500000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   5.000000e-01,   0.000000e+00}
+        };
+        const double rate = 7.374637e-41;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 34.
+    {
+        const std::vector<std::string> process_elements1 = {"V","O_s","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_d","V","V","C","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00}
+        };
+        const double rate = 8.707964e-01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 35.
+    {
+        const std::vector<std::string> process_elements1 = {"V","O_s","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_d","V","V","C","V","V","V","V","V","O_u","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00}
+        };
+        const double rate = 7.374637e-41;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 36.
+    {
+        const std::vector<std::string> process_elements1 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","C","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","O_s","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   0.000000e+00,  -2.000000e+00,   0.000000e+00}
+        };
+        const double rate = 8.707964e-01;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 37.
+    {
+        const std::vector<std::string> process_elements1 = {"V","O_s","V","V","V","V","V","V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_d","V","V","V","V","V","V","V","V","O_u","V","V","C","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {  -5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,  -5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,  -1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -1.500000e+00,   0.000000e+00},
+            {  -5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   5.000000e-01,  -1.500000e+00,   0.000000e+00},
+            {   0.000000e+00,  -2.000000e+00,   0.000000e+00}
+        };
+        const double rate = 7.374637e-41;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {0};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 38.
+    {
+        const std::vector<std::string> process_elements1 = {"V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_s","V","V","V","V","O_s","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00}
+        };
+        const double rate = 2.158534e+02;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {1};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 39.
+    {
+        const std::vector<std::string> process_elements1 = {"O_s","V","V","V","V","O_s","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,   0.000000e+00,   0.000000e+00},
+            {   1.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   1.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   1.500000e+00,   0.000000e+00,   0.000000e+00}
+        };
+        const double rate = 4.908398e-34;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {1};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // process 40.
+    {
+        const std::vector<std::string> process_elements1 = {"V","V","V","V","V","V","V","V","V"};
+        const std::vector<std::string> process_elements2 = {"O_s","V","V","V","V","O_s","V","V","V"};
+        const std::vector<std::vector<double> > process_coordinates = {
+            {   0.000000e+00,   0.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,  -5.000000e-01,   0.000000e+00},
+            {   0.000000e+00,   5.000000e-01,   0.000000e+00},
+            {   5.000000e-01,   0.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.000000e+00,   0.000000e+00},
+            {  -5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   5.000000e-01,   1.000000e+00,   0.000000e+00},
+            {   0.000000e+00,   1.500000e+00,   0.000000e+00}
+        };
+        const double rate = 2.158534e+02;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        std::vector<int> basis_site = {2};
+        Process p(c1, c2, rate, basis_site);
+        // Store twize.
+        processes.push_back(p);
+    }
+    // }}}
+}
+
