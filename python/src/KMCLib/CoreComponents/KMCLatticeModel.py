@@ -262,8 +262,9 @@ class KMCLatticeModel(object):
                 if ((step) % n_dump == 0):
                     #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
                     #           (step, self.__cpp_timer.simulationTime()))
-                    msg = "{:d} steps executed. time: {:20.10e} "
-                    self.__logger.info(msg.format(step, self.__cpp_timer.simulationTime()))
+                    msg = "[{:>3d}%] {:d} steps executed. time: {:20.10e} "
+                    percent = int(float(step)/n_steps*100)
+                    self.__logger.info(msg.format(percent, step, self.__cpp_timer.simulationTime()))
 
                     # Perform IO using the trajectory object.
                     if use_trajectory:
