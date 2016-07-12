@@ -23,6 +23,10 @@ void Test_SimulationTimer::testConstruct()
 {
     // Only default construction possible.
     SimulationTimer timer;
+
+    // Anther construction.
+    SimulationTimer timer2(0.012);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(timer2.simulationTime(), 0.012, 1e-10);
 }
 
 

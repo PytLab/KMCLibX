@@ -21,7 +21,7 @@ public:
 
     /*! \brief Default constructor.
      */
-    SimulationTimer();
+    SimulationTimer(double start_time = 0.0);
 
     /*! \brief Propagate the time.
      *  \param total_rate: The total rate of the system.
