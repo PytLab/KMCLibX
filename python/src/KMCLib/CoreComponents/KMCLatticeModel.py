@@ -11,6 +11,7 @@
 
 import logging
 
+from KMCLib import mpi_master
 from KMCLib.Backend import Backend
 from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
 from KMCLib.CoreComponents.KMCSitesMap import KMCSitesMap
@@ -92,9 +93,12 @@ class KMCLatticeModel(object):
         """
         return self.__interactions
 
-    def _backend(self):
+    def _backend(self, start_time=None):
         """
         Function for generating the C++ backend reperesentation of this object.
+
+        :param start_time: The start time for kMC loop, the default is 0.0
+        :type: float.
 
         :returns: The C++ LatticeModel based on the parameters given to this class on construction.
         """
@@ -107,7 +111,10 @@ class KMCLatticeModel(object):
                                                             cpp_lattice_map.nBasis())
 
             # Construct a timer.
-            self.__cpp_timer = Backend.SimulationTimer()
+            if start_time is None:
+                start_time = 0.0
+
+            self.__cpp_timer = Backend.SimulationTimer(start_time=start_time)
 
             # Construct the backend object.
             self.__backend = Backend.LatticeModel(cpp_config,
@@ -122,7 +129,8 @@ class KMCLatticeModel(object):
             control_parameters=None,
             trajectory_filename=None,
             trajectory_type=None,
-            analysis=None):
+            analysis=None,
+            start_time=None):
         """
         Run the KMC lattice model simulation with specified parameters.
 
@@ -137,6 +145,8 @@ class KMCLatticeModel(object):
                                     The 'xyz' format gives type and coordinate for each particle.
                                     The default type is 'lattice'.
         :param analysis:            A list of instantiated analysis objects that should be used for on-the-fly analysis.
+
+        :param start_time: The start time for KMC loop, default value is 0.0
         """
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):
@@ -150,7 +160,8 @@ class KMCLatticeModel(object):
             use_trajectory = False
             msg = "No trajectory filename given -> no trajectory will be saved."
             #prettyPrint(msg)
-            self.__logger.warning(msg)
+            if mpi_master:
+                self.__logger.warning(msg)
 
         elif not (isinstance(trajectory_filename, str) or
                   isinstance(trajectory_filename, unicode)):
@@ -183,10 +194,11 @@ class KMCLatticeModel(object):
 
         # Construct the C++ lattice model.
         #prettyPrint(" KMCLib: setting up the backend C++ object.")
-        self.__logger.info("")
-        self.__logger.info("setting up the backend C++ object.")
+        if mpi_master:
+            self.__logger.info("")
+            self.__logger.info("setting up the backend C++ object.")
 
-        cpp_model = self._backend()
+        cpp_model = self._backend(start_time)
 
         # Print the initial matching information if above the verbosity threshold.
         if self.__verbosity_level > 9:
@@ -239,8 +251,9 @@ class KMCLatticeModel(object):
 
         #prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n" %
         #            (n_steps, self.__cpp_timer.simulationTime()))
-        msg = "Runing for {:d} steps, starting from time: {:f}\n"
-        self.__logger.info(msg.format(n_steps, self.__cpp_timer.simulationTime()))
+        if mpi_master:
+            msg = "Runing for {:d} steps, starting from time: {:f}\n"
+            self.__logger.info(msg.format(n_steps, self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
         try:
@@ -262,9 +275,10 @@ class KMCLatticeModel(object):
                 if ((step) % n_dump == 0):
                     #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
                     #           (step, self.__cpp_timer.simulationTime()))
-                    msg = "[{:>3d}%] {:d} steps executed. time: {:20.10e} "
-                    percent = int(float(step)/n_steps*100)
-                    self.__logger.info(msg.format(percent, step, self.__cpp_timer.simulationTime()))
+                    if mpi_master:
+                        msg = "[{:>3d}%] {:d} steps executed. time: {:20.10e} "
+                        percent = int(float(step)/n_steps*100)
+                        self.__logger.info(msg.format(percent, step, self.__cpp_timer.simulationTime()))
 
                     # Perform IO using the trajectory object.
                     if use_trajectory:
@@ -331,8 +345,9 @@ class KMCLatticeModel(object):
 
         #prettyPrint("")
         #prettyPrint(" Matching Information: ")
-        self.__logger.info("")
-        self.__logger.info("Matching Informations: ")
+        if mpi_master:
+            self.__logger.info("")
+            self.__logger.info("Matching Informations: ")
         for i, p in enumerate(cpp_processes):
             print i, p.sites()
 

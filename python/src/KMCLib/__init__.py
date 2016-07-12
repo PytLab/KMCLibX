@@ -15,6 +15,14 @@ __license__ = "GPLv3.0"
 __maintainer__ = __author__
 __email__ = "shaozhengjiang@gmail.com"
 
+try:
+    import mpi4py.MPI as MPI
+    mpi_comm = MPI.COMM_WORLD
+    mpi_rank = mpi_comm.Get_rank()
+except ImportError:
+    mpi_rank = 0
+
+mpi_master = (mpi_rank == 0)
 
 from CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from CoreComponents.KMCInteractions import KMCInteractions

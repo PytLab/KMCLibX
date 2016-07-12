@@ -14,10 +14,11 @@
 #include "random.h"
 #include <cmath>
 
+
 // -----------------------------------------------------------------------------
 //
-SimulationTimer::SimulationTimer() :
-    simulation_time_(0.0)
+SimulationTimer::SimulationTimer(double start_time) :
+    simulation_time_(start_time)
 {
     // NOTHING HERE
 }
