@@ -592,6 +592,78 @@ class KMCLatticeModelTest(unittest.TestCase):
             self.assertAlmostEqual(fraction, target, 3)
         # }}}
 
+    def testRunTimeNotZero(self):
+        """ Test the run with start time not equal to 0.0 """
+        # {{{
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Sitesmap.
+        site_types = ['b']*100
+        possible_site_types = ['a', 'b']
+        sitesmap = KMCSitesMap(
+            lattice=lattice,
+            types=site_types,
+            possible_types=possible_site_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, sitesmap, interactions)
+
+        # Run the model with a trajectory file.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
+        trajectory_filename = str(os.path.join(name, "ab_flip_traj.py"))
+        self.__files_to_remove.append(trajectory_filename)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500,
+                                                  seed=2013)
+
+        # Run the model for 1000 steps.
+        ab_flip_model.run(control_parameters,
+                          trajectory_filename=trajectory_filename,
+                          start_time=1.2345e-1)
+        # }}}
+
     def testRun2WithSiteTypes(self):
         """ Test the run of an A-B flip model with site types provided. """
         # {{{
