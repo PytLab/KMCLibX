@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -23,6 +24,7 @@ void Test_SimulationTimer::testConstruct()
 {
     // Only default construction possible.
     SimulationTimer timer;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(timer.deltaTime(), 0.0, 1e-10);
 
     // Anther construction.
     SimulationTimer timer2(0.012);
