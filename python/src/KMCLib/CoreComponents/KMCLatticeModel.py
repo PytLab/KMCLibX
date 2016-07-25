@@ -276,9 +276,10 @@ class KMCLatticeModel(object):
                     #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
                     #           (step, self.__cpp_timer.simulationTime()))
                     if mpi_master:
-                        msg = "[{:>3d}%] {:,d} steps executed. time: {:<20.10e} delta: {:<20.10e}"
-                        percent = int(float(step)/n_steps*100)
-                        self.__logger.info(msg.format(percent, step,
+                        msg = "[{:>3d}%] [{:>5.2f}%] {:,d} steps executed. time: {:<20.10e} delta: {:<20.10e}"
+                        step_percent = int(float(step)/n_steps*100)
+                        time_percent = current_time/end_time*100
+                        self.__logger.info(msg.format(step_percent, time_percent, step,
                                                       self.__cpp_timer.simulationTime(),
                                                       self.__cpp_timer.deltaTime()))
 
