@@ -302,11 +302,13 @@ class KMCLatticeModel(object):
 
                 # Check loop conditions.
                 if step >= n_steps:
-                    self.__logger.info("Max kMC step reached, kMC iteration finish.")
+                    if mpi_master:
+                        self.__logger.info("Max kMC step reached, kMC iteration finish.")
                     break
 
                 if current_time > end_time:
-                    self.__logger.info("Time limit reached, kMC iteration finish.")
+                    if mpi_master:
+                        self.__logger.info("Time limit reached, kMC iteration finish.")
                     break
 
         finally:
