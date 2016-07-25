@@ -9,6 +9,7 @@
 #
 
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
+from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
@@ -20,6 +21,7 @@ class KMCControlParameters(object):
     """
 
     def __init__(self,
+                 time_limit=None,
                  number_of_steps=None,
                  dump_interval=None,
                  analysis_interval=None,
@@ -28,6 +30,10 @@ class KMCControlParameters(object):
         """
         Constructuor for the KMCControlParameters object that
         holds all parameters controlling the flow of the KMC simulation.
+
+        :param time_limit: The upper-bound time limit of kmc loop. If not provided
+                           the default valut inf will be used.
+        :type time_limit: float.
 
         :param number_of_steps: The number of KMC steps to take. If not provided
                                 the default value 0 will  be used.
@@ -72,13 +78,14 @@ class KMCControlParameters(object):
                          has not been tested with a random device by the KMCLib developers.
         :type rng_type: str
         """
+        # Check and set the time limit.
+        self.__time_limit = checkPositiveFloat(time_limit, float("inf"), "time_limit")
+
         # Check and set the number of steps.
-        self.__number_of_steps = checkPositiveInteger(number_of_steps,
-                                                      0,
+        self.__number_of_steps = checkPositiveInteger(number_of_steps, 0,
                                                       "number_of_steps")
 
-        self.__dump_interval = checkPositiveInteger(dump_interval,
-                                                    1,
+        self.__dump_interval = checkPositiveInteger(dump_interval, 1,
                                                     "dump_interval")
 
         # Check the analysis intervals.
@@ -92,9 +99,7 @@ class KMCControlParameters(object):
             self.__analysis_interval = checkSequenceOfPositiveIntegers(analysis_interval, msg)
 
         self.__time_seed = (seed is None)
-        self.__seed = checkPositiveInteger(seed,
-                                           1,
-                                           "seed")
+        self.__seed = checkPositiveInteger(seed, 1, "seed")
 
         # Check and set the random number generator type.
         self.__rng_type = self.__checkRngType(rng_type, "MT")
@@ -117,6 +122,14 @@ class KMCControlParameters(object):
             raise Error("'rng_type' input must be one of the supported types. Check the documentation for the list of supported types. Default is 'MT' (Mersenne-Twister) [std::mt19937].")
 
         return rng_dict[rng_type]
+
+    def timeLimit(self):
+        """
+        Query for the time upper bound limit.
+
+        :returns: The time limit.
+        """
+        return self.__time_limit
 
     def numberOfSteps(self):
         """

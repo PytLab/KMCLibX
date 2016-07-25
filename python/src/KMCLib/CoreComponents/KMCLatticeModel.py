@@ -235,6 +235,7 @@ class KMCLatticeModel(object):
                      interactions=self.__interactions)
 
         # Get the needed parameters.
+        end_time = control_parameters.timeLimit()
         n_steps = control_parameters.numberOfSteps()
         n_dump = control_parameters.dumpInterval()
         n_analyse = control_parameters.analysisInterval()
@@ -259,10 +260,9 @@ class KMCLatticeModel(object):
         try:
             # Loop over the steps.
             step = 0
-            while(step < n_steps):
+            current_time = 0.0
+            while(step < n_steps and current_time < end_time):
                 step += 1
-#            for s in range(n_steps):
-#                step = s+1
 
                 # Check if it is possible to take a step.
                 nP = cpp_model.interactions().totalAvailableSites()
@@ -295,6 +295,9 @@ class KMCLatticeModel(object):
                                         time=self.__cpp_timer.simulationTime(),
                                         configuration=self.__configuration,
                                         interactions=self.__interactions)
+
+                # Time increase.
+                current_time = self.__cpp_timer.simulationTime()
 
         finally:
 

@@ -289,3 +289,4 @@ def checkPositiveFloat(parameter, default_parameter, parameter_name):
 
     # Checked.
     return parameter
+
