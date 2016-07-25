@@ -261,7 +261,7 @@ class KMCLatticeModel(object):
             # Loop over the steps.
             step = 0
             current_time = 0.0
-            while(step < n_steps and current_time < end_time):
+            while(1):
                 step += 1
 
                 # Check if it is possible to take a step.
@@ -299,6 +299,15 @@ class KMCLatticeModel(object):
 
                 # Time increase.
                 current_time = self.__cpp_timer.simulationTime()
+
+                # Check loop conditions.
+                if step >= n_steps:
+                    self.__logger.info("Max kMC step reached, kMC iteration finish.")
+                    break
+
+                if current_time > end_time:
+                    self.__logger.info("Time limit reached, kMC iteration finish.")
+                    break
 
         finally:
 
