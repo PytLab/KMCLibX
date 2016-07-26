@@ -253,7 +253,7 @@ class KMCLatticeModel(object):
         #prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n" %
         #            (n_steps, self.__cpp_timer.simulationTime()))
         if mpi_master:
-            msg = "Runing for {:d} steps, starting from time: {:f}\n"
+            msg = "Runing for {:,d} steps, starting from time: {:f}\n"
             self.__logger.info(msg.format(n_steps, self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
