@@ -253,7 +253,7 @@ class KMCLatticeModel(object):
         #prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n" %
         #            (n_steps, self.__cpp_timer.simulationTime()))
         if mpi_master:
-            msg = "Runing for {:d} steps, starting from time: {:f}\n"
+            msg = "Runing for {:,d} steps, starting from time: {:f}\n"
             self.__logger.info(msg.format(n_steps, self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
@@ -261,7 +261,7 @@ class KMCLatticeModel(object):
             # Loop over the steps.
             step = 0
             current_time = 0.0
-            while(step < n_steps and current_time < end_time):
+            while(1):
                 step += 1
 
                 # Check if it is possible to take a step.
@@ -276,7 +276,7 @@ class KMCLatticeModel(object):
                     #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
                     #           (step, self.__cpp_timer.simulationTime()))
                     if mpi_master:
-                        msg = "[{:>3d}%] [{:>5.2f}%] {:,d} steps executed. time: {:<20.10e} delta: {:<20.10e}"
+                        msg = "[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. time: {:<20.10e} delta: {:<20.10e}"
                         step_percent = int(float(step)/n_steps*100)
                         time_percent = current_time/end_time*100
                         self.__logger.info(msg.format(step_percent, time_percent, step,
@@ -299,6 +299,17 @@ class KMCLatticeModel(object):
 
                 # Time increase.
                 current_time = self.__cpp_timer.simulationTime()
+
+                # Check loop conditions.
+                if step >= n_steps:
+                    if mpi_master:
+                        self.__logger.info("Max kMC step reached, kMC iteration finish.")
+                    break
+
+                if current_time > end_time:
+                    if mpi_master:
+                        self.__logger.info("Time limit reached, kMC iteration finish.")
+                    break
 
         finally:
 
