@@ -11,12 +11,12 @@
 
 import sys
 
-from ..Backend.Backend import MPICommons
-from .. import __version__
-from .. import __copyright__
-from .. import __email__
-from .. import __license__
-from .. import __author__
+from KMCLib.Backend.Backend import MPICommons
+from KMCLib import __version__
+from KMCLib import __copyright__
+from KMCLib import __email__
+from KMCLib import __license__
+from KMCLib import __author__
 
 
 def prettyPrint(msg, output=None):
