@@ -11,12 +11,12 @@
 
 import sys
 
-from ..Backend.Backend import MPICommons
-from .. import __version__
-from .. import __copyright__
-from .. import __email__
-from .. import __license__
-from .. import __author__
+from KMCLib.Backend.Backend import MPICommons
+from KMCLib import __version__
+from KMCLib import __copyright__
+from KMCLib import __email__
+from KMCLib import __license__
+from KMCLib import __author__
 
 
 def prettyPrint(msg, output=None):
@@ -70,3 +70,20 @@ def printHeader(output=None):
     prettyPrint("# (GPLv3) along with this program. If not, see <http://www.gnu.org/licenses/>.", output)
     prettyPrint("# -----------------------------------------------------------------------------", output)
     prettyPrint("", output)
+
+
+def convert_time(sec):
+    """
+    Convert format of time from seconds to *h *min *sec.
+
+    :param in: float number for time in second.
+
+    :param out: tuple contains hours, minutes, seconds.
+    """
+    hours = int(sec/(3600.0))
+    minutes = int((sec - hours*3600)/60.0)
+    seconds = sec - hours*3600 - minutes*60
+
+    # int, int, float
+    return hours, minutes, seconds
+

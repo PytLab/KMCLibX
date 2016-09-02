@@ -130,7 +130,8 @@ class KMCLatticeModel(object):
             trajectory_filename=None,
             trajectory_type=None,
             analysis=None,
-            start_time=None):
+            start_time=None,
+            extra_traj=None):
         """
         Run the KMC lattice model simulation with specified parameters.
 
@@ -147,6 +148,9 @@ class KMCLatticeModel(object):
         :param analysis:            A list of instantiated analysis objects that should be used for on-the-fly analysis.
 
         :param start_time: The start time for KMC loop, default value is 0.0
+
+        :param extra_traj: The range and interval for extra trajectories output, tuple of int.
+                           e.g. (1000, 2000, 10) means output trajectories from 1000 to 2000 every 10 steps.
         """
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):
@@ -285,6 +289,14 @@ class KMCLatticeModel(object):
 
                     # Perform IO using the trajectory object.
                     if use_trajectory:
+                        trajectory.append(simulation_time=self.__cpp_timer.simulationTime(),
+                                          step=step,
+                                          configuration=self.__configuration)
+
+                # Extra trajectorie output.
+                if extra_traj is not None:
+                    start, end, interval = extra_traj
+                    if step >= start and step <= end and (step % interval == 0):
                         trajectory.append(simulation_time=self.__cpp_timer.simulationTime(),
                                           step=step,
                                           configuration=self.__configuration)

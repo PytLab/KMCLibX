@@ -113,3 +113,4 @@ def numpy2DArrayToStdVectorCoordinate(array):
                                                 array[i][2]))
     # Done.
     return cpp_vector
+
