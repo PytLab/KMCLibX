@@ -18,10 +18,9 @@ from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
 from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
 from KMCLib.CoreComponents.KMCSitesMap import KMCSitesMap
-from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
-from KMCLib.CoreComponents.KMCLattice  import KMCLattice
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend.Backend import MPICommons
@@ -32,8 +31,6 @@ from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
 # Test helpers.
 sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), ".."))
 from TestUtilities.Plugins.CustomRateCalculator.CustomRateCalculator import CustomRateCalculator
-
-from KMCLib.Backend.Backend import MPICommons
 
 
 # Implement the test.
@@ -1933,4 +1930,3 @@ model = KMCLatticeModel(
 
 if __name__ == '__main__':
     unittest.main()
-
