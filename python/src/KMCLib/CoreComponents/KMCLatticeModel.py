@@ -19,10 +19,11 @@ from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Utilities.CheckUtilities import checkSequenceOf
+#from KMCLib.Utilities.PrintUtilities import prettyPrint
+from KMCLib.Utilities.PrintUtilities import convert_time
 from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory
-#from KMCLib.Utilities.PrintUtilities import prettyPrint
-from KMCLib.Utilities.CheckUtilities import checkSequenceOf
 
 
 class KMCLatticeModel(object):
@@ -276,20 +277,25 @@ class KMCLatticeModel(object):
                 # Take a step.
                 cpp_model.singleStep()
 
+                # Time increase.
+                current_time = self.__cpp_timer.simulationTime()
+
                 if ((step) % n_dump == 0):
                     #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
                     #           (step, self.__cpp_timer.simulationTime()))
                     if mpi_master:
-                        msg = "[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. time: {:<20.10e} delta: {:<20.10e}"
+                        msg = ("[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. " +
+                               "time: {:d}h:{:d}m:{:d}s ({:<.10e}) delta: {:<10.5e}")
                         step_percent = int(float(step)/n_steps*100)
                         time_percent = current_time/end_time*100
+                        hour, minute, second = convert_time(current_time)
                         self.__logger.info(msg.format(step_percent, time_percent, step,
-                                                      self.__cpp_timer.simulationTime(),
+                                                      hour, minute, int(second), current_time,
                                                       self.__cpp_timer.deltaTime()))
 
                     # Perform IO using the trajectory object.
                     if use_trajectory:
-                        trajectory.append(simulation_time=self.__cpp_timer.simulationTime(),
+                        trajectory.append(simulation_time=current_time,
                                           step=step,
                                           configuration=self.__configuration)
 
@@ -297,7 +303,7 @@ class KMCLatticeModel(object):
                 if extra_traj is not None:
                     start, end, interval = extra_traj
                     if step >= start and step <= end and (step % interval == 0):
-                        trajectory.append(simulation_time=self.__cpp_timer.simulationTime(),
+                        trajectory.append(simulation_time=current_time,
                                           step=step,
                                           configuration=self.__configuration)
 
@@ -305,12 +311,9 @@ class KMCLatticeModel(object):
                 for n, ap in zip(n_analyse, analysis):
                     if ((step % n) == 0):
                         ap.registerStep(step=step,
-                                        time=self.__cpp_timer.simulationTime(),
+                                        time=current_time,
                                         configuration=self.__configuration,
                                         interactions=self.__interactions)
-
-                # Time increase.
-                current_time = self.__cpp_timer.simulationTime()
 
                 # Check loop conditions.
                 if step >= n_steps:
