@@ -47,7 +47,8 @@ public:
      *  \param implicit_wildcards: A flag indicating if implicit wildcards should be added
      *                             to the process matchlists.
      */
-    Interactions(const std::vector<Process> & processes, const bool implicit_wildcards);
+    Interactions(const std::vector<Process> & processes,
+                 const bool implicit_wildcards);
 
     /*! \brief Construct the interactions object from a list of processes.
      *  \param processes: The list of proceeses.
