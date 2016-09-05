@@ -10,6 +10,7 @@
 
 
 import inspect
+from functools import wraps
 
 from KMCLib.Backend import Backend
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
@@ -135,29 +136,50 @@ class KMCInteractions(object):
         """
         return self.__implicit_wildcards
 
+    def check_backend(func):
+        """
+        Decorator for c++ backend object checking.
+        """
+        @wraps(func)
+        def wrapper(self, *args):
+            if self.__backend is None:
+                msg = "No cpp interactions backend in {}.".format(self.__class__.__name__)
+                raise AttributeError(msg)
+            return func(self, *args)
+
+        return wrapper
+
+    @check_backend
     def pickedIndex(self):
         """
-        Query function for the index of lattice site which was picked in last step.
+        Query function for the index of process which was picked in last step.
 
         :returns: The number of index.
         """
-        if self.__backend is not None:
-            return self.__backend.pickedIndex()
-        else:
-            msg = "No cpp interactions backend in {}.".format(self.__class__.__name__)
-            raise AttributeError(msg)
+        return self.__backend.pickedIndex()
 
+    @check_backend
     def processAvailableSites(self):
         """
         Query function for list of available site number for all processes.
 
         :returns: A tuple of available site number.
         """
-        if self.__backend is not None:
-            return self.__backend.processAvailableSites()
-        else:
-            msg = "No cpp interactions backend in {}.".format(self.__class__.__name__)
-            raise AttributeError(msg)
+        return self.__backend.processAvailableSites()
+
+    @check_backend
+    def processRates(self):
+        """
+        Query function for list of rates for all processes.
+
+        :returns: A list of process rates.
+        """
+        cpp_processes = self.__backend.processes()
+        rates = []
+        for process in cpp_processes:
+            rates.append(process.rateConstant())
+
+        return rates
 
     def _backend(self, possible_types, n_basis):
         """
