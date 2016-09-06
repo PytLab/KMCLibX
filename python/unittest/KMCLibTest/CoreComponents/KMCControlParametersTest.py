@@ -2,6 +2,7 @@
 
 
 # Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2016-2019  Shao Zhengjiang
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -47,6 +48,29 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertEqual(control_params.seed(), 2013)
         self.assertFalse(control_params.timeSeed())
         self.assertEqual(control_params.rngType(), Backend.DEVICE)
+
+    def testAnalysisInterval(self):
+        """ Test all valid values of the analysis_interval parameter. """
+        control_params = KMCControlParameters()
+        self.assertEqual(control_params.analysisInterval(), 1)
+
+        control_params = KMCControlParameters(analysis_interval=10)
+        self.assertEqual(control_params.analysisInterval(), 10)
+
+        control_params = KMCControlParameters(analysis_interval=(1, 2, 3))
+        self.assertTupleEqual(control_params.analysisInterval(), (1, 2, 3))
+
+        control_params = KMCControlParameters(analysis_interval=[1, 2, 3])
+        self.assertListEqual(control_params.analysisInterval(), [1, 2, 3])
+
+        control_params = KMCControlParameters(analysis_interval=[1, 2, (1, 3, 1)])
+        self.assertListEqual(control_params.analysisInterval(), [1, 2, (1, 3, 1)])
+
+        # Check wrong values.
+        self.assertRaises(Error, lambda: KMCControlParameters(analysis_interval=-1))
+        self.assertRaises(Error, lambda: KMCControlParameters(analysis_interval=(1, 2, 3, (1, 2))))
+        self.assertRaises(Error, lambda: KMCControlParameters(analysis_interval=(-11, 2, 3)))
+        self.assertRaises(Error, lambda: KMCControlParameters(analysis_interval=(1, 2, 3, (1, -4, 1))))
 
     def testRngTypeInput(self):
         """ Test all valid values of the rng_type parameter. """

@@ -182,17 +182,13 @@ class KMCInteractionsTest(unittest.TestCase):
                  'a', 'a', 'a', 'a', 'b', 'b',
                  'b', 'b', 'a', 'b', 'b', 'a']
 
-        sitesmap = KMCSitesMap(lattice=lattice,
-                               types=types,
-                               possible_types=['a', 'c', 'b'])
-
         # Interactions object constrution fails when processes have sites type
         # and no sitesmap is passed to interactions.
         regex = r"Site types in process\d+ are set, sitesmap must be supplied."
         self.assertRaisesRegexp(Error, regex, KMCInteractions, processes=processes)
 
         # If sitesmap is not instance of SitesMap class, construction fails too.
-        regex = (r"The sitesmap given to the KMCInteractions constructor" + 
+        regex = (r"The sitesmap given to the KMCInteractions constructor" +
                  r" must be of type KMCSitesMap.")
         self.assertRaisesRegexp(Error, regex, KMCInteractions,
                                 processes=processes,
@@ -509,14 +505,14 @@ class KMCInteractionsTest(unittest.TestCase):
         self.assertEqual(site_type, 3)
 
         # Get the elements out of the second process.
-        match_type  = cpp_processes[1].matchList()[0].match_type
+        match_type = cpp_processes[1].matchList()[0].match_type
         update_type = cpp_processes[1].matchList()[0].update_type
         site_type = cpp_processes[1].matchList()[0].site_type
         self.assertEqual(match_type, 13)
         self.assertEqual(update_type, 5)
         self.assertEqual(site_type, 1)
 
-        match_type  = cpp_processes[1].matchList()[1].match_type
+        match_type = cpp_processes[1].matchList()[1].match_type
         update_type = cpp_processes[1].matchList()[1].update_type
         site_type = cpp_processes[1].matchList()[1].site_type
         self.assertEqual(match_type, 5)

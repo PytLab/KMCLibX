@@ -18,10 +18,9 @@ from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
 from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
 from KMCLib.CoreComponents.KMCSitesMap import KMCSitesMap
-from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
-from KMCLib.CoreComponents.KMCLattice  import KMCLattice
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend.Backend import MPICommons
@@ -32,8 +31,6 @@ from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
 # Test helpers.
 sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), ".."))
 from TestUtilities.Plugins.CustomRateCalculator.CustomRateCalculator import CustomRateCalculator
-
-from KMCLib.Backend.Backend import MPICommons
 
 
 # Implement the test.
@@ -354,6 +351,76 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Check picked index after running.
         self.assertNotEqual(interactions.pickedIndex(), -1)
+        # }}}
+
+    def testInteractionQueryFunctions(self):
+        """ Test that ta valid model can run for a few steps. """
+        # {{{
+        # Setup a unitcell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[1.0, 0.0, 0.0],
+                                                          [0.0, 1.0, 0.0],
+                                                          [0.0, 0.0, 1.0]]),
+                                basis_points=[[0.0, 0.0, 0.0]])
+        # And a lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(10, 1, 1),
+                             periodic=(True, True, False))
+
+        # Set the stating configuration types.
+        types = ['A', 'B', 'C', 'D', 'B', 'B', 'B', 'B', 'B', 'B']
+
+        site_types = ['b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b']
+
+        # Setup the sitesmap.
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=site_types,
+                               possible_types=["a", "b"])
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=["A", "B", "C", "D"])
+
+        # Generate the interactions with a distance so large that we get a
+        # layer of implicite wildcards in the C++ matchlists.
+        sites = [0]
+        coordinates = [[0.0, 0.0, 0.0],
+                       [1.0, 0.0, 0.0]]
+
+        types0 = ['A', 'B']
+        types1 = ['B', 'B']
+        process_0 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
+
+        types0 = ['B', 'C']
+        types1 = ['B', 'B']
+        process_1 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
+
+        types0 = ['C', 'D']
+        types1 = ['B', 'B']
+        process_2 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
+
+        types0 = ['D', 'A']
+        types1 = ['A', 'D']
+        process_3 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
+
+        # Processes.
+        processes = [process_0,
+                     process_1,
+                     process_2,
+                     process_3]
+
+        # No implicit wildcards.
+        interactions = KMCInteractions(processes=processes,
+                                       implicit_wildcards=True)
+
+        # Create the model.
+        model = KMCLatticeModel(config, sitesmap, interactions)
+        cpp_model = model._backend()
+
+        # Check attributes.
+        self.assertEqual(interactions.pickedIndex(), -1)
+        self.assertTupleEqual(interactions.processAvailableSites(), (1, 1, 1, 0))
+        self.assertListEqual(interactions.processRates(), [1.0, 1.0, 1.0, 1.0])
+
         # }}}
 
     def testRunImplicitWildcardsWithSiteTypes(self):
@@ -1933,4 +2000,3 @@ model = KMCLatticeModel(
 
 if __name__ == '__main__':
     unittest.main()
-

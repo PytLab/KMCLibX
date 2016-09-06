@@ -311,3 +311,4 @@ Process* Interactions::pickProcess()
 
     return process_pointers_[index];
 }
+

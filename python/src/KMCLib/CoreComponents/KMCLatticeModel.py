@@ -243,17 +243,17 @@ class KMCLatticeModel(object):
         end_time = control_parameters.timeLimit()
         n_steps = control_parameters.numberOfSteps()
         n_dump = control_parameters.dumpInterval()
-        n_analyse = control_parameters.analysisInterval()
+        analysis_interv = control_parameters.analysisInterval()
 
         # Check validity of analysis number.
-        if type(n_analyse) in (list, tuple):
-            if len(n_analyse) != len(analysis):
+        if type(analysis_interv) in (list, tuple):
+            if len(analysis_interv) != len(analysis):
                 msg = "analysis intervals number ({}) != analysis objects number ({})"
-                msg = msg.format(len(n_analyse), len(analysis))
+                msg = msg.format(len(analysis_interv), len(analysis))
                 raise Error(msg)
         else:
             # Convert to list.
-            n_analyse = [n_analyse]*len(analysis)
+            analysis_interv = [analysis_interv]*len(analysis)
 
         #prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n" %
         #            (n_steps, self.__cpp_timer.simulationTime()))
@@ -285,7 +285,7 @@ class KMCLatticeModel(object):
                     #           (step, self.__cpp_timer.simulationTime()))
                     if mpi_master:
                         msg = ("[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. " +
-                               "time: {:d}h:{:d}m:{:d}s ({:<.10e}) delta: {:<10.5e}")
+                               "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.10e}) delta: {:<10.5e}")
                         step_percent = int(float(step)/n_steps*100)
                         time_percent = current_time/end_time*100
                         hour, minute, second = convert_time(current_time)
@@ -308,12 +308,22 @@ class KMCLatticeModel(object):
                                           configuration=self.__configuration)
 
                 # Run all other python analysis.
-                for n, ap in zip(n_analyse, analysis):
-                    if ((step % n) == 0):
+                for intv, ap in zip(analysis_interv, analysis):
+                    # NOTE: intv(interval) can be int or list/tuple of int here.
+
+                    if type(intv) is int and ((step % intv) == 0):
                         ap.registerStep(step=step,
                                         time=current_time,
                                         configuration=self.__configuration,
                                         interactions=self.__interactions)
+
+                    elif type(intv) in (list, tuple):
+                        start, end, interval = intv
+                        if step >= start and step <= end and (step % interval == 0):
+                            ap.registerStep(step=step,
+                                            time=current_time,
+                                            configuration=self.__configuration,
+                                            interactions=self.__interactions)
 
                 # Check loop conditions.
                 if step >= n_steps:
