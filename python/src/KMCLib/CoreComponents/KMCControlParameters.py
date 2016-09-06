@@ -89,20 +89,41 @@ class KMCControlParameters(object):
                                                     "dump_interval")
 
         # Check the analysis intervals.
-        if analysis_interval is None:
-            self.__analysis_interval = 1
-        elif type(analysis_interval) is int:
-            self.__analysis_interval = checkPositiveInteger(analysis_interval, 1,
-                                                             "analysis_interval")
-        else:
-            msg = "analysis_interval is not a list of positive integers."
-            self.__analysis_interval = checkSequenceOfPositiveIntegers(analysis_interval, msg)
+        self.__analysis_interval = self.__checkAnalysisInterval(analysis_interval)
 
         self.__time_seed = (seed is None)
         self.__seed = checkPositiveInteger(seed, 1, "seed")
 
         # Check and set the random number generator type.
         self.__rng_type = self.__checkRngType(rng_type, "MT")
+
+    def __checkAnalysisInterval(self, analysis_interval):
+        """
+        Private helper function to check the analysis interval input.
+        """
+        if analysis_interval is None:
+            return 1
+        elif type(analysis_interval) is int:
+            checkPositiveInteger(analysis_interval, 1, "analysis_interval")
+        elif type(analysis_interval) in (list, tuple):
+            for entry in analysis_interval:
+                # Check single integer.
+                if type(entry) is int and entry <= 0:
+                    msg = "Interval {} is not positive interger.".format(entry)
+                    raise Error(msg)
+
+                # Check custom interval.
+                if type(entry) in (list, tuple):
+                    if len(entry) != 3:
+                        msg = "Interval list {} length is not 3".format(entry)
+                        raise Error(msg)
+                    msg = "{} is not a list of positive integers.".format(entry)
+                    checkSequenceOfPositiveIntegers(entry, msg)
+        else:
+            msg = "Incorrect analysis interval: {}".format(analysis_interval)
+            raise Error(msg)
+
+        return analysis_interval
 
     def __checkRngType(self, rng_type, default):
         """
