@@ -285,7 +285,7 @@ class KMCLatticeModel(object):
                     #           (step, self.__cpp_timer.simulationTime()))
                     if mpi_master:
                         msg = ("[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. " +
-                               "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.10e}) delta: {:<10.5e}")
+                               "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e}) delta: {:<10.5e}")
                         step_percent = int(float(step)/n_steps*100)
                         time_percent = current_time/end_time*100
                         hour, minute, second = convert_time(current_time)
