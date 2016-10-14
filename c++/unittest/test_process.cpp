@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -53,6 +54,7 @@ void Test_Process::testConstruction()
     basis_sites[1] = 23;
     basis_sites[2] = 11;
     const double rate = 13.7;
+
     Process process(config1, config2, rate, basis_sites);
 
     // Check that there are no listed indices by default.
@@ -66,6 +68,9 @@ void Test_Process::testConstruction()
 
     // Check the site type setting flag.
     CPPUNIT_ASSERT( !process.hasSiteTypes() );
+
+    // Check the fast process flag.
+    CPPUNIT_ASSERT( !process.fast() );
 
     // }}}
 }
