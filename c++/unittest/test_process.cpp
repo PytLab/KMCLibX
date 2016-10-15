@@ -12,7 +12,6 @@
 
 // Include the files to test.
 #include "process.h"
-
 #include "configuration.h"
 #include "random.h"
 
@@ -71,6 +70,12 @@ void Test_Process::testConstruction()
 
     // Check the fast process flag.
     CPPUNIT_ASSERT( !process.fast() );
+
+    // Process with no default parameters.
+    Process process2(config1, config2, rate, basis_sites,
+                     {}, {}, -1, {1, 1}, true);
+    CPPUNIT_ASSERT( process2.hasSiteTypes() );
+    CPPUNIT_ASSERT( process2.fast() );
 
     // }}}
 }
