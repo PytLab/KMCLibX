@@ -58,27 +58,32 @@ public:
     /*! \brief Const query for the coordinates.
      *  \return : The coordinates of the configuration.
      */
-    const std::vector<Coordinate> & coordinates() const { return coordinates_; }
+    const std::vector<Coordinate> & coordinates() const
+    { return coordinates_; }
 
     /*! \brief Const query for the atom id coordinates.
      *  \return : The atom id coordinates of the configuration.
      */
-    const std::vector<Coordinate> & atomIDCoordinates() const { return atom_id_coordinates_; }
+    const std::vector<Coordinate> & atomIDCoordinates() const
+    { return atom_id_coordinates_; }
 
     /*! \brief Const query for the elements.
      *  \return : The elements of the configuration.
      */
-    const std::vector<std::string> & elements() const { return elements_; }
+    const std::vector<std::string> & elements() const
+    { return elements_; }
 
     /*! \brief Const query for the atom id types.
      *  \return : The atom id types of the configuration.
      */
-    const std::vector<std::string> & atomIDElements() const { return atom_id_elements_; }
+    const std::vector<std::string> & atomIDElements() const
+    { return atom_id_elements_; }
 
     /*! \brief Const query for the types.
      *  \return : The types of the configuration.
      */
-    const std::vector<int> & types() const { return types_; }
+    const std::vector<int> & types() const
+    { return types_; }
 
     /*! \brief Const query for the moved atom ids.
      *  \return : A copy of the moved atom ids, resized to correct length.
@@ -113,7 +118,8 @@ public:
      *  \param index : The index to get the match list for.
      *  \return : The match list.
      */
-    const ConfigMatchList & matchList(const int index) const { return match_lists_[index]; }
+    const ConfigMatchList & matchList(const int index) const
+    { return match_lists_[index]; }
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
@@ -121,24 +127,26 @@ public:
      *  \param site_index : The index of the site where the process should be performed.
      *  \param lattice_map : The lattice map needed for proper move vector indexing.
      */
-    void performProcess(Process & process,
-                        const int site_index);
+    void performProcess(Process & process, const int site_index);
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
      *  \return : The string representation of the type integer.
      */
-    const std::string & typeName(const int type) const { return type_names_[type]; }
+    const std::string & typeName(const int type) const
+    { return type_names_[type]; }
 
     /*! \brief Get the atom id coordinates.
      *  \return : The list of atom id coordinates.
      */
-    const std::vector<Coordinate> & atomIdCoordinates() const { return atom_id_coordinates_; }
+    const std::vector<Coordinate> & atomIdCoordinates() const
+    { return atom_id_coordinates_; }
 
     /*! \brief Get the atom id at each lattice site.
      *  \retrurn : The list of atom ids for the lattice sites.
      */
-    const std::vector<int> & atomID() const { return atom_id_; }
+    const std::vector<int> & atomID() const
+    { return atom_id_; }
 
 protected:
 
@@ -205,8 +213,6 @@ std::vector<Coordinate> Configuration::recentMoveVectors() const
     move_vectors.resize(n_moved_);
     return move_vectors;
 }
-
-
 
 
 #endif // __CONFIGURATION__
