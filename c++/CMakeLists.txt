@@ -106,6 +106,7 @@ endif()
 # Includsion from the source.
 include_directories( ${KMCLib_SOURCE_DIR}/src )
 include_directories( ${KMCLib_SOURCE_DIR}/externals/include )
+include_directories( /usr/include/python2.7 )
 
 
 # -----------------------------------------------------------------------------
