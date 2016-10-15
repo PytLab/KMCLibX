@@ -7,10 +7,23 @@
 */
 
 
-
-/*! \file  matcher.h
- *  \brief File for the Matcher class definition.
+/* ******************************************************************
+ *  file   : matcher.h
+ *  brief  : File for the definition of the Matcher class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-04-11   1.2          Change match list presentation,
+ *                                       Remove the isMatch function.
+ *
+ *  zjshao     2016-10-15   1.4          Add fast and slow species
+ *                                       classification.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
+
 
 #ifndef __MATCHER__
 #define __MATCHER__
@@ -120,16 +133,6 @@ public:
                             const Process        & process,
                             const Configuration  & configuration,
                             const RateCalculator & rate_calculator) const;
-
-    /*! \brief Calculate/update the matching of a provided index and process.
-     *  \param process       : The process to check against and update if needed.
-     *  \param configuration : The configuration which the index refers to.
-     *  \param index         : The configuration index for which the neighbourhood should
-     *                         be matched against the process.
-     */
-    void calculateMatching(Process & process,
-                           Configuration & configuration,
-                           const int index) const;
 
 protected:
 

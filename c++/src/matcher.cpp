@@ -437,3 +437,4 @@ double Matcher::updateSingleRate(const int index,
 
     // }}}
 }
+

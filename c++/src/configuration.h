@@ -6,8 +6,8 @@
 
 
 /* ******************************************************************
- *  file   : configuration.cpp
- *  brief  : File for the implementation code of the Configuration class.
+ *  file   : configuration.h
+ *  brief  : File for the definition of the Configuration class.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>
