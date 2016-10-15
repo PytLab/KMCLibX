@@ -13,6 +13,7 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-11   1.2          Modify match list presentation.
+ *  zjshao     2016-10-15   1.4          Add species fast flags.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -148,6 +149,12 @@ public:
     const std::vector<int> & atomID() const
     { return atom_id_; }
 
+    /*! \brief Query for the species fast flags.
+     *  \return : The list of fast species flags.
+     */
+    const std::vector<bool> & fastFlags() const
+    { return fast_flags_; }
+
 protected:
 
 private:
@@ -184,6 +191,9 @@ private:
 
     /// The match lists for all indices.
     std::vector<ConfigMatchList> match_lists_;
+
+    /// The species fast/slow flags, true if fast.
+    std::vector<bool> fast_flags_;
 
 };
 
