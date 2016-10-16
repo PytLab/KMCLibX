@@ -264,8 +264,7 @@ const ConfigMatchList & Configuration::matchList(const int origin_index,
 
 // -----------------------------------------------------------------------------
 //
-void Configuration::performProcess(Process & process,
-                                   const int site_index)
+void Configuration::performProcess(Process & process, const int site_index)
 {
     // {{{
 
@@ -274,28 +273,28 @@ void Configuration::performProcess(Process & process,
 
     // Get the proper match lists.
     const ProcessMatchList & process_match_list = process.matchList();
-    const ConfigMatchList & site_match_list    = matchList(site_index);
+    const ConfigMatchList & config_match_list = matchList(site_index);
 
     // Iterators to the match list entries.
-    ProcessMatchList::const_iterator it1 = process_match_list.begin();
-    ConfigMatchList::const_iterator it2 = site_match_list.begin();
+    ProcessMatchList::const_iterator proc_it = process_match_list.begin();
+    ConfigMatchList::const_iterator conf_it = config_match_list.begin();
 
     // Iterators to the info storages.
-    std::vector<int>::iterator it3 = process.affectedIndices().begin();
-    std::vector<int>::iterator it4 = moved_atom_ids_.begin();
-    std::vector<Coordinate>::iterator it5 = recent_move_vectors_.begin();
+    std::vector<int>::iterator affected_it = process.affectedIndices().begin();
+    std::vector<int>::iterator atom_it = moved_atom_ids_.begin();
+    std::vector<Coordinate>::iterator vect_it = recent_move_vectors_.begin();
 
     // Reset the moved counter.
     n_moved_ = 0;
 
     // Loop over the match lists and get the types and indices out.
-    for( ; it1 != process_match_list.end(); ++it1, ++it2)
+    for( ; proc_it != process_match_list.end(); ++proc_it, ++conf_it)
     {
         // Get the type out of the process match list.
-        const int update_type = (*it1).update_type;
+        const int update_type = (*proc_it).update_type;
 
         // Get the index out of the configuration match list.
-        const int index = (*it2).index;
+        const int index = (*conf_it).index;
 
         // NOTE: The > 0 is needed for handling the wildcard match.
         if (types_[index] != update_type && update_type > 0)
@@ -304,32 +303,32 @@ void Configuration::performProcess(Process & process,
             const int atom_id = atom_id_[index];
 
             // Apply the move vector to the atom coordinate.
-            atom_id_coordinates_[atom_id] += (*it1).move_coordinate;
+            atom_id_coordinates_[atom_id] += (*proc_it).move_coordinate;
 
             // Set the type at this index.
             types_[index]    = update_type;
             elements_[index] = type_names_[update_type];
 
             // Update the atom id element.
-            if (!(*it1).has_move_coordinate)
+            if (!(*proc_it).has_move_coordinate)
             {
                 atom_id_elements_[atom_id] = elements_[index];
             }
 
             // Mark this index as affected.
-            (*it3) = index;
-            ++it3;
+            (*affected_it) = index;
+            ++affected_it;
 
             // Mark this atom_id as moved
             // (include the replaced atom_id).
-            (*it4) = atom_id;
-            ++it4;
+            (*atom_it) = atom_id;
+            ++atom_it;
             ++n_moved_;
 
             // Save this move vector
             // (include the replace move Coordinate(0.0, 0.0, 0.0)).
-            (*it5) = (*it1).move_coordinate;
-            ++it5;
+            (*vect_it) = (*proc_it).move_coordinate;
+            ++vect_it;
         }
     }
 
@@ -345,8 +344,8 @@ void Configuration::performProcess(Process & process,
         const int match_list_index_from = process_id_moves[i].first;
         const int match_list_index_to   = process_id_moves[i].second;
 
-        const int lattice_index_from = site_match_list[match_list_index_from].index;
-        const int lattice_index_to   = site_match_list[match_list_index_to].index;
+        const int lattice_index_from = config_match_list[match_list_index_from].index;
+        const int lattice_index_to   = config_match_list[match_list_index_to].index;
 
         id_updates[i].first  = atom_id_[lattice_index_from];
         id_updates[i].second = lattice_index_to;

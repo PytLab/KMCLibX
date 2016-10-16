@@ -81,13 +81,18 @@ public:
                            const std::vector<int> & indices) const;
 
 
-    /*! \brief Calculate the matching for a list of match tasks (pairs of indices and processes).
-     *  \param index_process_to_match : The list of indices and process numbers to match.
+    /*! \brief Calculate the matching for a list of match tasks (pairs of indices
+     *         and processes).
+     *  \param index_process_to_match : The list of indices and process numbers
+     *                                  to match.
      *  \param interactions           : The interactions to get the processes from.
      *  \param configuration          : The configuration which the index refers to.
-     *  \param remove_tasks (out)     : A vector that will be filled with tasks for removal after match.
-     *  \param update_tasks (out)     : A vector that will be filled with tasks for update after match.
-     *  \param add_tasks    (out)     : A vector that will be filled with tasks for adding after match.
+     *  \param remove_tasks (out)     : A vector that will be filled with tasks
+     *                                  for removal after match.
+     *  \param update_tasks (out)     : A vector that will be filled with tasks
+     *                                  for update after match.
+     *  \param add_tasks    (out)     : A vector that will be filled with tasks
+     *                                  for adding after match.
      */
     void matchIndicesWithProcesses(const std::vector<std::pair<int,int> > & index_process_to_match,
                                    const Interactions  & interactions,

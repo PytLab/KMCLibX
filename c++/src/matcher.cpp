@@ -179,8 +179,8 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
                                         const Interactions  & interactions,
                                         const Configuration & configuration,
                                         std::vector<RemoveTask> & remove_tasks,
-                                        std::vector<RateTask>   & update_tasks,
-                                        std::vector<RateTask>   & add_tasks) const
+                                        std::vector<RateTask> & update_tasks,
+                                        std::vector<RateTask> & add_tasks) const
 {
     // {{{
 
