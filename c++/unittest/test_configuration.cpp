@@ -84,12 +84,12 @@ void Test_Configuration::testConstruction()
         CPPUNIT_ASSERT_EQUAL(ret_elements[i], elements[i]);
     }
 
-    // Check fast species flags.
-    const std::vector<bool> & fast_flags = config.fastFlags();
+    // Check slow species flags.
+    const std::vector<bool> & slow_flags = config.slowFlags();
     for (size_t i = 0; i < elements.size(); ++i)
     {
-        // Default to be all false.
-        CPPUNIT_ASSERT(!fast_flags[i]);
+        // Default to be all slow species.
+        CPPUNIT_ASSERT(slow_flags[i]);
     }
 
     // DONE

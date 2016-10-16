@@ -15,7 +15,7 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-11   1.2          Modify match list presentation.
- *  zjshao     2016-10-15   1.4          Add fast/slow flags.
+ *  zjshao     2016-10-15   1.4          Add fast/slow classification.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -42,7 +42,7 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     elements_(elements),
     atom_id_elements_(elements),
     match_lists_(elements_.size()),
-    fast_flags_(elements_.size(), false)
+    slow_flags_(elements_.size(), true)
 {
     // {{{
 

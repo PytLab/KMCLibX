@@ -16,7 +16,7 @@
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-10   1.2          Modify match list presentation.
  *  zjshao     2016-04-10   2.0          Add site type.
- *  zjshao     2016-10-14   2.1          Add fast process flag.
+ *  zjshao     2016-10-14   2.1          Add slow process flag.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -39,7 +39,7 @@ Process::Process(const Configuration & first,
                  const std::vector<Coordinate> & move_vectors,
                  const int process_number,
                  const std::vector<int> & site_types,
-                 const bool fast) :
+                 const bool slow) :
     process_number_(process_number),
     range_(1),
     rate_(rate),
@@ -48,7 +48,7 @@ Process::Process(const Configuration & first,
     affected_indices_(0),
     basis_sites_(basis_sites),
     id_moves_(0),
-    fast_(fast)
+    slow_(slow)
 {
     // {{{
 

@@ -15,7 +15,7 @@
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-10   1.2          Modify match list presentation.
  *  zjshao     2016-04-10   1.3          Add site type.
- *  zjshao     2016-10-14   1.4          Add fast process flag.
+ *  zjshao     2016-10-14   1.4          Add slow process flag.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -63,7 +63,7 @@ public:
      *                         atom id moves are considered.
      *  \param process_number: The id number of the process.
      *  \param site_types    : The site type on which the process is performed.
-     *  \param fast          : The flag for fast process or not.
+     *  \param slow          : The flag for slow process or not.
      */
     Process(const Configuration & first,
             const Configuration & second,
@@ -73,7 +73,7 @@ public:
             const std::vector<Coordinate> & move_vectors = {},
             const int process_number = -1,
             const std::vector<int> & site_types = {},
-            const bool fast = false);
+            const bool slow = true);
 
     /*! \brief Virtual destructor needed for use as base class.
      */
@@ -184,10 +184,10 @@ public:
      */
     bool hasSiteTypes() const { return has_site_types_; }
 
-    /*! \brief Query for the fast process flag.
-     *  \return : Whether the process is fast process.
+    /*! \brief Query for the slow process flag.
+     *  \return : Whether the process is slow process.
      */
-    bool fast() const { return fast_; }
+    bool slow() const { return slow_; }
 
 protected:
 
@@ -223,8 +223,8 @@ protected:
     /// The flag whether site type is set.
     bool has_site_types_;
 
-    /// The flag whether process is fast process.
-    bool fast_;
+    /// The flag whether process is slow process.
+    bool slow_;
 
 private:
 
