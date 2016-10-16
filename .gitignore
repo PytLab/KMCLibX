@@ -47,6 +47,7 @@
 /c++/src/build
 /c++/unittest/build
 /c++/build_*
+/c++/debug
 
 # Python compiled files
 *.pyc
