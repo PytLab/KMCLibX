@@ -47,7 +47,6 @@
 /c++/src/build
 /c++/unittest/build
 /c++/build_*
-/c++/debug
 
 # Python compiled files
 *.pyc
@@ -60,4 +59,7 @@ tags
 
 # Log file.
 out.log
+
+# Auto-generated files.
+mpiflag.h
 
