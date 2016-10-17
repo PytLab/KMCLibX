@@ -72,12 +72,14 @@ public:
      *  \param sitesmap      : The sites map which the list of inidices refers to.
      *  \param lattice_map   : The lattice map describing the configuration.
      *  \param indices       : The configuration indices that will be checked.
+     *  \return index_process_to_match: The list of index and process to match.
      */
-    std::vector<std::pair<int, int> > indexProcessToMatch(const Interactions & interactions,
-                                                          Configuration & configuration,
-                                                          const SitesMap & sitesmap,
-                                                          const LatticeMap & lattice_map,
-                                                          const std::vector<int> & indices) const;
+    std::vector<std::pair<int, int> >
+    indexProcessToMatch(const Interactions & interactions,
+                        Configuration & configuration,
+                        const SitesMap & sitesmap,
+                        const LatticeMap & lattice_map,
+                        const std::vector<int> & indices) const;
 
 
     /*! \brief Calculate/update the matching of provided indices with

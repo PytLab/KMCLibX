@@ -48,7 +48,7 @@ Matcher::Matcher()
 
 // -----------------------------------------------------------------------------
 //
-std::vector<std::pair<int, int> > \
+std::vector<std::pair<int, int> >
 Matcher::indexProcessToMatch(const Interactions & interactions,
                              Configuration & configuration,
                              const SitesMap & sitesmap,
@@ -136,12 +136,12 @@ void Matcher::calculateMatching(Interactions & interactions,
     // {{{
 
     // Build the list of indices and processes to match.
-    std::vector<std::pair<int,int> > && \
-    index_process_to_match = indexProcessToMatch(interactions,
-                                                 configuration,
-                                                 sitesmap,
-                                                 lattice_map,
-                                                 indices);
+    const std::vector<std::pair<int,int> > && index_process_to_match
+        = indexProcessToMatch(interactions,
+                              configuration,
+                              sitesmap,
+                              lattice_map,
+                              indices);
 
     // Generate the lists of tasks.
     std::vector<RemoveTask> remove_tasks;
@@ -160,8 +160,11 @@ void Matcher::calculateMatching(Interactions & interactions,
     {
         // Create a common task list for getting a good load balance.
         std::vector<RateTask> global_tasks(add_tasks.size()+update_tasks.size());
-        std::copy( update_tasks.begin(), update_tasks.end(),
-                   std::copy( add_tasks.begin(), add_tasks.end(), global_tasks.begin()) );
+        std::copy( update_tasks.begin(),
+                   update_tasks.end(),
+                   std::copy(add_tasks.begin(),
+                             add_tasks.end(),
+                             global_tasks.begin()) );
 
         // Split up the tasks.
         std::vector<RateTask> local_tasks = splitOverProcesses(global_tasks);
