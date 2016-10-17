@@ -48,18 +48,19 @@ Matcher::Matcher()
 
 // -----------------------------------------------------------------------------
 //
-void Matcher::calculateMatching(Interactions & interactions,
-                                Configuration & configuration,
-                                const SitesMap & sitesmap,
-                                const LatticeMap & lattice_map,
-                                const std::vector<int> & indices) const
+std::vector<std::pair<int, int> > \
+Matcher::indexProcessToMatch(const Interactions & interactions,
+                             Configuration & configuration,
+                             const SitesMap & sitesmap,
+                             const LatticeMap & lattice_map,
+                             const std::vector<int> & indices) const
 {
     // {{{
 
-    // Build the list of indices and processes to match.
+    // The pair list to be returned.
+    std::vector<std::pair<int, int> > index_process_to_match;
 
-    std::vector<std::pair<int,int> > index_process_to_match;
-    for(size_t i = 0; i < indices.size(); ++i)
+    for (size_t i = 0; i < indices.size(); ++i)
     {
         // Get the index.
         const int index = indices[i];
@@ -81,7 +82,7 @@ void Matcher::calculateMatching(Interactions & interactions,
             if ( std::find(process_basis_sites.begin(),
                            process_basis_sites.end(),
                            basis_site) \
-                    != process_basis_sites.end() )
+                  != process_basis_sites.end() )
             {
                 // Pick out the process.
                 const Process * process_ptr = interactions.processes()[j];
@@ -112,14 +113,37 @@ void Matcher::calculateMatching(Interactions & interactions,
         }
 
         // Update the configuration match list for this index if it will be used.
-        if (use_index)
+        if ( use_index )
         {
             configuration.updateMatchList(index);
         }
     }
 
-    // Generate the lists of tasks.
+    return index_process_to_match;
 
+    // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Matcher::calculateMatching(Interactions & interactions,
+                                Configuration & configuration,
+                                const SitesMap & sitesmap,
+                                const LatticeMap & lattice_map,
+                                const std::vector<int> & indices) const
+{
+    // {{{
+
+    // Build the list of indices and processes to match.
+    std::vector<std::pair<int,int> > && \
+    index_process_to_match = indexProcessToMatch(interactions,
+                                                 configuration,
+                                                 sitesmap,
+                                                 lattice_map,
+                                                 indices);
+
+    // Generate the lists of tasks.
     std::vector<RemoveTask> remove_tasks;
     std::vector<RateTask>   update_tasks;
     std::vector<RateTask>   add_tasks;
@@ -132,7 +156,6 @@ void Matcher::calculateMatching(Interactions & interactions,
                               add_tasks);
 
     // Calculate the new rates in needed.
-
     if (interactions.useCustomRates())
     {
         // Create a common task list for getting a good load balance.
@@ -164,7 +187,6 @@ void Matcher::calculateMatching(Interactions & interactions,
     }
 
     // Update the processes.
-
     updateProcesses(remove_tasks,
                     update_tasks,
                     add_tasks,
@@ -437,4 +459,22 @@ double Matcher::updateSingleRate(const int index,
 
     // }}}
 }
+
+
+// -----------------------------------------------------------------------------
+//
+/*
+void Matcher::classifyConfiguration(const Interactions & interactions,
+                                    Configuration      & configuration,
+                                    const LatticeMap   & lattice_map) const
+{
+    // {{{
+
+    // NOTE: No sites type checking here, we assume that
+    //       all sites are equivalent, sitesmap may be
+    //       added in the future, if needed.  --zjshao
+
+    // }}}
+}
+*/
 

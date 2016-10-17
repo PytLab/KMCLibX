@@ -65,6 +65,21 @@ public:
      */
     Matcher();
 
+
+    /* \brief Build the list of indices and processes to match later.
+     *  \param interactions  : The interactions object holding info on possible processes.
+     *  \param configuration : The configuration which the list of indices refers to.
+     *  \param sitesmap      : The sites map which the list of inidices refers to.
+     *  \param lattice_map   : The lattice map describing the configuration.
+     *  \param indices       : The configuration indices that will be checked.
+     */
+    std::vector<std::pair<int, int> > indexProcessToMatch(const Interactions & interactions,
+                                                          Configuration & configuration,
+                                                          const SitesMap & sitesmap,
+                                                          const LatticeMap & lattice_map,
+                                                          const std::vector<int> & indices) const;
+
+
     /*! \brief Calculate/update the matching of provided indices with
      *         all possible processes.
      *  \param interactions  : The interactions object holding info on possible processes.
@@ -138,6 +153,16 @@ public:
                             const Process        & process,
                             const Configuration  & configuration,
                             const RateCalculator & rate_calculator) const;
+
+    /*! \brief Classify slow/fast species in configuration.
+     *  \param interactions       : The interactions object holding info on possible
+     *                              processes.
+     *  \param configuration(out) : The configuration which the list of indices refers to.
+     *  \param lattice_map        : The lattice map describing the configuration.
+     */
+    void classifyConfiguration(const Interactions & interactions,
+                               Configuration      & configuration,
+                               const LatticeMap   & lattice_map) const;
 
 protected:
 
