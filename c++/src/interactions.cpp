@@ -122,7 +122,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
 {
     // {{{
 
-    // NOTE: Do not check the site match list here, the coordinates in
+    // NOTE: No the site match list checking here, the coordinates in
     //       site match list are assumed to be the same as that in
     //       configuration match list. -- zjshao
 
@@ -159,27 +159,28 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
 
         // Perform the match where we add wildcards to fill the vacancies in the
         // process match list.
-        ProcessMatchList::iterator it1 = process_matchlist.begin();
-        ConfigMatchList::const_iterator it2 = config_matchlist.begin();
+        ProcessMatchList::iterator proc_it = process_matchlist.begin();
+        ConfigMatchList::const_iterator conf_it = config_matchlist.begin();
 
         // Insert the wildcards and update the indexing.
         int old_index = 0;
         int new_index = 0;
         std::vector<int> index_mapping(config_matchlist.size());
 
-        for ( ; it1 != process_matchlist.end() && it2 != config_matchlist.end(); ++it1, ++it2 )
+        for (; proc_it != process_matchlist.end() && conf_it != config_matchlist.end();
+               ++proc_it, ++conf_it )
         {
             // Check if there is a match in lattice point.
-            if( !(*it1).samePoint(*it2) )
+            if( !(*proc_it).samePoint(*conf_it) )
             {
-                // If not matching, add a wildcard entry to it1.
-                ProcessMatchListEntry wildcard_entry(*it2);
+                // If not matching, add a wildcard entry to proc_it.
+                ProcessMatchListEntry wildcard_entry(*conf_it);
                 wildcard_entry.match_type = 0;
                 wildcard_entry.update_type = 0;
                 wildcard_entry.site_type = 0;
 
-                it1 = process_matchlist.insert(it1, wildcard_entry);
-                // it1 now points to the newly inserted position.
+                proc_it = process_matchlist.insert(proc_it, wildcard_entry);
+                // proc_it now points to the newly inserted position.
 
                 ++new_index;
             }
