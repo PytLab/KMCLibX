@@ -149,11 +149,11 @@ public:
     const std::vector<int> & atomID() const
     { return atom_id_; }
 
-    /*! \brief Query for the species slow flags.
-     *  \return : The list of slow species flags.
+    /*! \brief Query for the species fast flags.
+     *  \return : The list of fast species flags.
      */
-    const std::vector<bool> & slowFlags() const
-    { return slow_flags_; }
+    const std::vector<bool> & fastFlags() const
+    { return fast_flags_; }
 
 protected:
 
@@ -192,8 +192,8 @@ private:
     /// The match lists for all indices.
     std::vector<ConfigMatchList> match_lists_;
 
-    /// The species fast/slow flags, true if slow.
-    std::vector<bool> slow_flags_;
+    /// The species fast/slow flags, true if fast.
+    std::vector<bool> fast_flags_;
 
 };
 

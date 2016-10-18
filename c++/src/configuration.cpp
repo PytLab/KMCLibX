@@ -42,7 +42,7 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     elements_(elements),
     atom_id_elements_(elements),
     match_lists_(elements_.size()),
-    slow_flags_(elements_.size(), true)
+    fast_flags_(elements_.size(), true)
 {
     // {{{
 
