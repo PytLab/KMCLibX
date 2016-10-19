@@ -52,7 +52,7 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
   message( STATUS "Using the Intel compiler" )
   set( USING_INTEL TRUE )
   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
-  set( CMAKE_CXX_FLAGS_DEBUG "-g -pg -fkeep-inline-functions" )
+  set( CMAKE_CXX_FLAGS_DEBUG "-g -pg " )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-g -pg" )
 
@@ -83,7 +83,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
   message( STATUS "Using compiler ${CMAKE_CXX_COMPILER_ID}")
 
   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic -stdlib=libc++  -std=c++11")
-  set( CMAKE_CXX_FLAGS_DEBUG "-g -pg -fkeep-inline-functions" )
+  set( CMAKE_CXX_FLAGS_DEBUG "-g -pg " )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "" )
 
