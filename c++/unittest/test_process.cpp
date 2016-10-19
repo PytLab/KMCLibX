@@ -54,27 +54,25 @@ void Test_Process::testConstruction()
     basis_sites[2] = 11;
     const double rate = 13.7;
 
-    Process process(config1, config2, rate, basis_sites);
+    Process process1(config1, config2, rate, basis_sites);
 
     // Check that there are no listed indices by default.
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process1.nSites()), 0);
 
     // Check that the basis sites can be returned correctly.
-    const std::vector<int> ret_basis_sites = process.basisSites();
+    const std::vector<int> ret_basis_sites = process1.basisSites();
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[0], basis_sites[0] );
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[1], basis_sites[1] );
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[2], basis_sites[2] );
 
     // Check the site type setting flag.
-    CPPUNIT_ASSERT( !process.hasSiteTypes() );
+    CPPUNIT_ASSERT( !process1.hasSiteTypes() );
 
     // Check the slow process flag.
-    CPPUNIT_ASSERT( process.slow() );
+    CPPUNIT_ASSERT( process1.slow() );
 
-    // Process with no default parameters.
-    Process process2(config1, config2, rate, basis_sites,
-                     {}, {}, -1, {1, 1}, false);
-    CPPUNIT_ASSERT( process2.hasSiteTypes() );
+    // Check another constuctor with slow being false.
+    Process process2(config1, config2, rate, basis_sites, false);
     CPPUNIT_ASSERT( !process2.slow() );
 
     // }}}

@@ -239,6 +239,8 @@ std::vector<Coordinate> Configuration::recentMoveVectors() const
 
 // -----------------------------------------------------------------------------
 //
+// TODO: OpenMP.
+//
 void Configuration::resetFastFlags()
 {
     for (auto it = fast_flags_.begin(); it != fast_flags_.end(); ++it)

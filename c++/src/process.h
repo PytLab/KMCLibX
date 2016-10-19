@@ -75,6 +75,23 @@ public:
             const std::vector<int> & site_types = {},
             const bool slow = true);
 
+    /*! \brief Constructor for the process with slow flag provided explicitly.
+     *  \param first         : The first configuration, to match against the local
+     *                         coordinates around an active site.
+     *  \param second        : The second configuration, to update the local
+     *                         configuration with if the process is selected.
+     *                         It is assumed that the first and second configuration
+     *                         has identical coordinates.
+     *  \param rate          : The rate in Hz associated with the process.
+     *  \param basis_sites   : The basis sites where this process is applicable.
+     *  \param slow          : The flag for slow process or not.
+     */
+    Process(const Configuration & first,
+            const Configuration & second,
+            const double rate,
+            const std::vector<int> & basis_sites,
+            const bool slow);
+
     /*! \brief Virtual destructor needed for use as base class.
      */
     virtual ~Process() {}

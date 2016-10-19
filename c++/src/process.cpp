@@ -122,6 +122,16 @@ Process::Process(const Configuration & first,
     // }}}
 }
 
+// -----------------------------------------------------------------------------
+//
+Process::Process(const Configuration & first,
+                 const Configuration & second,
+                 const double rate,
+                 const std::vector<int> & basis_sites,
+                 const bool slow)
+{
+    Process(first, second, rate, basis_sites, {}, {}, -1, {}, slow);
+}
 
 // -----------------------------------------------------------------------------
 //
