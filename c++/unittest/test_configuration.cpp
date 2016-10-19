@@ -94,8 +94,66 @@ void Test_Configuration::testConstruction()
 
     // DONE
     // }}}
-
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testResetFastFlags()
+{
+    // {{{
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords = {
+        {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {2.0, 0.0, 0.0},
+        {0.0, 1.0, 0.0}, {1.0, 1.0, 0.0}, {2.0, 1.0, 0.0},
+        {0.0, 2.0, 0.0}, {1.0, 2.0, 0.0}, {2.0, 2.0, 0.0}
+    };
+
+    // Setup elements.
+    std::vector<std::string> elements = {"A", "B", "C",
+                                         "D", "E", "F",
+                                         "G", "I", "J"};
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+    possible_types["G"] = 7;
+    possible_types["I"] = 8;
+    possible_types["J"] = 9;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    config.updateFastFlag(0, false);
+    config.updateFastFlag(1, false);
+    const std::vector<bool> ref_flags = {false, false, true,
+                                         true, true, true,
+                                         true, true, true};
+    const std::vector<bool> & ret_flags = config.fastFlags();
+    
+    for (size_t i = 0; i < ref_flags.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ref_flags[i], ret_flags[i]);
+    }
+
+    // Check reseted flags.
+    const std::vector<bool> ref_reset_flags(9, true);
+    config.resetFastFlags();
+    const std::vector<bool> & ret_reset_flags = config.fastFlags();
+    for (size_t i = 0; i < ref_flags.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ref_reset_flags[i], ret_reset_flags[i]);
+    }
+
+    // }}}
+}
+
 
 // ---------------------------------------------------------------------------//
 // Description: Test moved_atom_id_ and recent_move_vector 

@@ -155,6 +155,18 @@ public:
     const std::vector<bool> & fastFlags() const
     { return fast_flags_; }
 
+    /*! \brief Reset all species fast flags to be true.
+     *  \return : The list of reseted species fast flags.
+     */
+    inline void resetFastFlags();
+
+    /*! \brief Update specific fast flag in configuration.
+     *  \param type: The index of flag in global struture.
+     *  \param type: The flag value.
+     */
+    void updateFastFlag(const int index, const bool value)
+    { fast_flags_[index] = value; }
+
 protected:
 
 private:
@@ -224,6 +236,16 @@ std::vector<Coordinate> Configuration::recentMoveVectors() const
     return move_vectors;
 }
 
+
+// -----------------------------------------------------------------------------
+//
+void Configuration::resetFastFlags()
+{
+    for (auto it = fast_flags_.begin(); it != fast_flags_.end(); ++it)
+    {
+        (*it) = true;
+    }
+}
 
 #endif // __CONFIGURATION__
 

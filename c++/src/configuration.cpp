@@ -37,7 +37,7 @@ static ConfigMatchList tmp_config_match_list__(0);
 //
 Configuration::Configuration(std::vector<std::vector<double> > const & coordinates,
                              std::vector<std::string> const & elements,
-                             const std::map<std::string,int> & possible_types) :
+                             const std::map<std::string, int> & possible_types) :
     n_moved_(0),
     elements_(elements),
     atom_id_elements_(elements),
