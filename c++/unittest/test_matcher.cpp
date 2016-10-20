@@ -21,7 +21,7 @@
 #include "sitesmap.h"
 
 
-
+static const double epsilon__ = 1e-10;
 
 
 // -------------------------------------------------------------------------- //
@@ -2213,6 +2213,7 @@ void Test_Matcher::testUpdateRates()
 // This proxy class is part of the UpdateSingleRate test below.
 class CustomRateCalculator : public RateCalculator {
 public:
+    // {{{
     CustomRateCalculator() {}
     virtual ~CustomRateCalculator() {}
     virtual double backendRateCallback(const std::vector<double> geometry,
@@ -2224,34 +2225,35 @@ public:
                                        const double global_x,
                                        const double global_y,
                                        const double global_z) const
-        {
-            // Test the geometry.
-            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[0], 0.0, 1.0e-12 );
-            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[1], 0.0, 1.0e-12 );
-            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[2], 0.0, 1.0e-12 );
-            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[3],-0.5, 1.0e-12 );
-            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[4],-0.3, 1.0e-12 );
-            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[5],-0.1, 1.0e-12 );
+    {
+        // Test the geometry.
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[0], 0.0, 1.0e-12 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[1], 0.0, 1.0e-12 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[2], 0.0, 1.0e-12 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[3],-0.5, 1.0e-12 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[4],-0.3, 1.0e-12 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[5],-0.1, 1.0e-12 );
 
-            // Test the length.
-            CPPUNIT_ASSERT_EQUAL(len, 2);
+        // Test the length.
+        CPPUNIT_ASSERT_EQUAL(len, 2);
 
-            // Test the types before.
-            CPPUNIT_ASSERT_EQUAL(static_cast<int>(types_before.size()), 2);
-            CPPUNIT_ASSERT_EQUAL(std::string("B"), types_before[0]);
-            CPPUNIT_ASSERT_EQUAL(std::string("A"), types_before[1]);
+        // Test the types before.
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(types_before.size()), 2);
+        CPPUNIT_ASSERT_EQUAL(std::string("B"), types_before[0]);
+        CPPUNIT_ASSERT_EQUAL(std::string("A"), types_before[1]);
 
-            // Test the types after.
-            CPPUNIT_ASSERT_EQUAL(static_cast<int>(types_after.size()), 2);
-            CPPUNIT_ASSERT_EQUAL(std::string("C"), types_after[0]);
-            CPPUNIT_ASSERT_EQUAL(std::string("A"), types_after[1]);
+        // Test the types after.
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(types_after.size()), 2);
+        CPPUNIT_ASSERT_EQUAL(std::string("C"), types_after[0]);
+        CPPUNIT_ASSERT_EQUAL(std::string("A"), types_after[1]);
 
-            // Test the process number.
-            CPPUNIT_ASSERT_EQUAL( process_number, 917 );
+        // Test the process number.
+        CPPUNIT_ASSERT_EQUAL( process_number, 917 );
 
-            // Return.
-            return std::pow(rate_constant,3.14159);
-        }
+        // Return.
+        return std::pow(rate_constant,3.14159);
+    }
+    // }}}
 };
 
 // -------------------------------------------------------------------------- //
@@ -2339,3 +2341,157 @@ void Test_Matcher::testUpdateSingleRate()
 
     // }}}
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testClassifyConfiguration()
+{
+    // {{{
+
+    Matcher matcher;
+
+    // Construct a lattice with 27 cells with 2 basis sites in one cell.
+    std::vector<std::vector<double> > basis = {{0.0, 0.0, 0.0},
+                                               {0.5, 0.5, 0.5}};
+    std::vector<int> basis_sites = {0};
+
+    std::vector<std::string> elements;
+    std::vector<std::string> site_types;
+    std::vector<std::vector<double> > coords;
+
+    // Initialize element types and site types.
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            for (int k = 0; k < 3; ++k)
+            {
+                for (int b = 0; b < 2; ++b)
+                {
+                    std::vector<double> coord = basis[b];
+                    coord[0] += i;
+                    coord[1] += j;
+                    coord[2] += k;
+                    coords.push_back(coord);
+                    elements.push_back("V");
+                    site_types.push_back("P");
+                }
+            }
+        }
+    }
+    // Change some elements.
+    elements[0]  = "A";
+    elements[1]  = "B";
+    elements[2]  = "A";
+    elements[3]  = "B";
+    elements[18] = "B";
+    elements[36] = "A";
+
+    // Setup the mapping from element to interger.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["P"] = 1;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Construct the sitesmap.
+    SitesMap sitesmap(coords, site_types, possible_site_types);
+
+    // ------------------------------------------------------------------
+    // Construct a lattice map.
+    const std::vector<int> repetitions(3, 3);
+    const std::vector<bool> periodicity(3, true);
+    const int basis_size = 2;
+    LatticeMap lattice_map(basis_size, repetitions, periodicity);
+
+    // ------------------------------------------------------------------
+    // Setup processes to test with.
+    std::vector<Process> processes;
+
+    // Rate for all processes.
+    const double rate = 1.0;
+
+    // A diffusion upwards.
+    {
+        std::vector<std::string> elements1 = {"A", "V"};
+        std::vector<std::string> elements2 = {"V", "A"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, basis_sites, false);
+        processes.push_back(process);
+    }
+    // B diffusion upwards.
+    {
+        std::vector<std::string> elements1 = {"B", "V"};
+        std::vector<std::string> elements2 = {"V", "B"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, basis_sites, false);
+        processes.push_back(process);
+    }
+    // A + B.
+    {
+        std::vector<std::string> elements1 = {"A", "B"};
+        std::vector<std::string> elements2 = {"V", "V"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.5, 0.5, 0.5}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, basis_sites, true);
+        processes.push_back(process);
+    }
+
+    // ------------------------------------------------------------------
+    // Create an interaction object.
+    Interactions interactions(processes, true);
+
+    // Initialize configuration & sitemap match lists.
+    config.initMatchLists(lattice_map, interactions.maxRange());
+    sitesmap.initMatchLists(lattice_map, interactions.maxRange());
+
+    interactions.updateProcessMatchLists(config, lattice_map);
+
+    // Match all centers.
+    std::vector<int> indices;
+    for (size_t i = 0; i < config.elements().size(); ++i)
+    {
+        indices.push_back(i);
+    }
+    matcher.calculateMatching(interactions, config, sitesmap,
+                              lattice_map, indices);
+
+    // Check configuration fast flags before classification.
+    const std::vector<bool> & fast_flags = config.fastFlags();
+    for (const bool fast_flag : fast_flags)
+    {
+        CPPUNIT_ASSERT(fast_flag);
+    }
+
+    // Classify configuration.
+    matcher.classifyConfiguration(interactions, config, sitesmap, lattice_map, indices);
+    const std::vector<bool> & classified_flags = config.fastFlags();
+
+    // Check classification result.
+    CPPUNIT_ASSERT(!classified_flags[0]);
+    CPPUNIT_ASSERT(!classified_flags[1]);
+    CPPUNIT_ASSERT(!classified_flags[2]);
+    CPPUNIT_ASSERT(!classified_flags[3]);
+
+    // }}}
+}
+
