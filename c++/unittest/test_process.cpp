@@ -73,6 +73,7 @@ void Test_Process::testConstruction()
 
     // Check another constuctor with slow being false.
     Process process2(config1, config2, rate, basis_sites, false);
+
     CPPUNIT_ASSERT( !process2.slow() );
 
     // }}}
