@@ -7,8 +7,17 @@
 */
 
 
-/*! \file  latticemap.cpp
- *  \brief File for the implementation code of the LatticeMap class.
+/* ******************************************************************
+ *  file   : latticemap.cpp
+ *  brief  : File for the implementation code of the LatticeMap class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------
+ *  zjshao     2016-10-21   1.4          Add SubLatticeMap.
+ *
+ *  ------------------------------------------------------
+ * ******************************************************************
  */
 
 
@@ -20,10 +29,6 @@
 #include <algorithm>
 
 
-// Temporary storage for the indices form cell.
-static std::vector<int> tmp_cell_indices__;
-
-
 // -----------------------------------------------------------------------------
 //
 LatticeMap::LatticeMap(const int n_basis,
@@ -33,8 +38,7 @@ LatticeMap::LatticeMap(const int n_basis,
     repetitions_(repetitions),
     periodic_(periodic)
 {
-    // Resize the global data.
-    tmp_cell_indices__.resize(n_basis_);
+    // NOTHING HERE.
 }
 
 
@@ -119,7 +123,7 @@ std::vector<int> LatticeMap::neighbourIndices(const int index,
                         if (0 <= kk && kk < repetitions_[2])
                         {
                             // Take a reference to the mapped data.
-                            const std::vector<int> & indices = indicesFromCell(ii,jj,kk);
+                            const std::vector<int> && indices = indicesFromCell(ii,jj,kk);
                             // Copy data over from the neighbour cell.
                             size_t size = n_basis_ * sizeof(int);
                             std::memcpy(neighbours_ptr, &indices[0], size);
@@ -183,10 +187,13 @@ std::vector<int> LatticeMap::supersetNeighbourIndices(const std::vector<int> & i
 
 // -----------------------------------------------------------------------------
 //
-const std::vector<int> & LatticeMap::indicesFromCell(const int i,
-                                                     const int j,
-                                                     const int k) const
+const std::vector<int> LatticeMap::indicesFromCell(const int i,
+                                                   const int j,
+                                                   const int k) const
 {
+    // Indices to be returned.
+    std::vector<int> cell_indices(n_basis_, 0);
+
     // Get the indices that are in cell i,j,k.
     const int tmp1 = i * repetitions_[1] + j;
     const int tmp2 = tmp1 * repetitions_[2] + k;
@@ -194,10 +201,10 @@ const std::vector<int> & LatticeMap::indicesFromCell(const int i,
 
     for (int l = 0; l < n_basis_; ++l)
     {
-        tmp_cell_indices__[l] = tmp3 + l;
+        cell_indices[l] = tmp3 + l;
     }
 
-    return tmp_cell_indices__;
+    return cell_indices;
 }
 
 
@@ -347,7 +354,7 @@ int SubLatticeMap::globalIndex(const int local_index,
     global_cell_index.k += local_cell_index.k;
 
     // Get global index.
-    const std::vector<int> & basis_indices = \
+    const std::vector<int> && basis_indices = \
         lattice_map.indicesFromCell(global_cell_index.i,
                                     global_cell_index.j,
                                     global_cell_index.k);

@@ -4,11 +4,18 @@
 */
 
 
-
-/*! \file  latticemap.h
- *  \brief File for the LatticeMap class definition.
+/* ******************************************************************
+ *  file   : latticemap.h
+ *  brief  : File for the LatticeMap class definition.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------
+ *  zjshao     2016-10-21   1.4          Add SubLatticeMap.
+ *
+ *  ------------------------------------------------------
+ * ******************************************************************
  */
-
 
 
 #ifndef __LATTICEMAP__
@@ -74,9 +81,9 @@ public:
      * \param k : The cell index in the c direction.
      * \return: The list of indices.
      */
-    const std::vector<int> & indicesFromCell(const int i,
-                                             const int j,
-                                             const int k) const;
+    const std::vector<int> indicesFromCell(const int i,
+                                           const int j,
+                                           const int k) const;
 
     /*! \brief Get the index to move to from the original
      *         index and the move cell and basis information.
