@@ -39,7 +39,7 @@ public:
     CPPUNIT_TEST( testCalculateMatchingInteractionsWithSiteTypes2D );
     CPPUNIT_TEST( testUpdateRates );
     CPPUNIT_TEST( testUpdateSingleRate );
-//    CPPUNIT_TEST( testClassifyConfiguration );
+    CPPUNIT_TEST( testClassifyConfiguration );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -56,7 +56,7 @@ public:
     void testCalculateMatchingInteractionsWithSiteTypes2D();
     void testUpdateRates();
     void testUpdateSingleRate();
-//    void testClassifyConfiguration();
+    void testClassifyConfiguration();
 
 };
 

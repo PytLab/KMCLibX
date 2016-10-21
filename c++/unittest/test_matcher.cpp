@@ -2346,7 +2346,6 @@ void Test_Matcher::testUpdateSingleRate()
 
 // -------------------------------------------------------------------------- //
 //
-/*
 void Test_Matcher::testClassifyConfiguration()
 {
     // {{{
@@ -2395,6 +2394,9 @@ void Test_Matcher::testClassifyConfiguration()
     possible_types["A"] = 1;
     possible_types["B"] = 2;
     possible_types["V"] = 3;
+
+    // Default fast species.
+    const std::vector<std::string> fast_elements = {"V"};
 
     std::map<std::string, int> possible_site_types;
     possible_site_types["*"] = 0;
@@ -2508,12 +2510,15 @@ void Test_Matcher::testClassifyConfiguration()
     }
 
     // Classify configuration.
-    matcher.classifyConfiguration(interactions, config, sitesmap, lattice_map, indices);
+    matcher.classifyConfiguration(interactions,
+                                  config,
+                                  sitesmap,
+                                  lattice_map,
+                                  indices,
+                                  fast_elements);
     const std::vector<bool> & classified_slow_flags = config.slowFlags();
 
     // Check classification result.
-    CPPUNIT_ASSERT(classified_slow_flags[0]);
-    CPPUNIT_ASSERT(classified_slow_flags[1]);
     for (size_t i = 0; i < classified_slow_flags.size(); ++i)
     {
         if (i == 0 or i == 1)
@@ -2528,5 +2533,4 @@ void Test_Matcher::testClassifyConfiguration()
 
     // }}}
 }
-*/
 
