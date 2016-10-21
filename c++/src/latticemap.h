@@ -145,6 +145,12 @@ public:
      */
     int repetitionsC() const { return repetitions_[2]; }
 
+    /*! \brief Query for the repetitions for all directions.
+     *  \return : The lattice repetitions.
+     */
+    const std::vector<int> & repetitions() const
+    { return repetitions_; }
+
     /*! \brief Wrap the coordinate according to periodic boundaries.
      * \param c (in/out): The coordinate to wrap.
      */

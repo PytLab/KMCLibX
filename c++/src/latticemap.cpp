@@ -316,6 +316,20 @@ SubLatticeMap::SubLatticeMap(const int n_basis,
 int SubLatticeMap::globalIndex(const int local_index,
                                const LatticeMap & lattice_map) const
 {
+    // Check lattice map validity.
+    const std::vector<int> & global_repetitions = lattice_map.repetitions();
+    const std::vector<int> & local_repetitions = LatticeMap::repetitions();
+
+    auto local_it = local_repetitions.begin();
+    auto global_it = global_repetitions.begin();
+    for (; local_it != local_repetitions.end(); ++local_it, ++global_it)
+    {
+        if ( ((*global_it) % (*local_it)) != 0)
+        {
+            throw "Invalid global lattice map object";
+        }
+    }
+
     // The order in basis sites.
     const int basis = local_index % LatticeMap::nBasis();
 
