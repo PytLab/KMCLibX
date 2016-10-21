@@ -155,6 +155,15 @@ public:
 
     /*! \brief Query for the species slow flags.
      *  \return : The list of slow species flags.
+     *
+     *  NOTE: The species flags in configuration are called **SLOW** flag
+     *        which are different from flag in Process class, but the
+     *        default flags of configuration are **TRUE** meaning slow
+     *        species by default.
+     *
+     *        In a word, the process and species in configuration are all slow
+     *        by default, once the species is found participating in fast process
+     *        it is converted to fast species.
      */
     const std::vector<bool> & slowFlags() const
     { return slow_flags_; }

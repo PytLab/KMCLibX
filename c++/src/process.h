@@ -64,6 +64,15 @@ public:
      *  \param process_number: The id number of the process.
      *  \param site_types    : The site type on which the process is performed.
      *  \param fast          : The flag for fast process or not.
+     *
+     *  NOTE: The name of flag in process is **FAST** which is different from
+     *        that in configuration, but the default value is false meaning
+     *        that the default process is slow process.
+     *
+     *        In a word, the process and species in configuration are all slow
+     *        by default, once the species is found participating in fast process
+     *        it is converted to fast species.
+     *
      */
     Process(const Configuration & first,
             const Configuration & second,
