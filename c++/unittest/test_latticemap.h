@@ -38,6 +38,7 @@ public:
     CPPUNIT_TEST( testWrapLong );
     CPPUNIT_TEST( testBasisSiteFromIndex );
     CPPUNIT_TEST( testSubLatticeConstruction );
+    CPPUNIT_TEST( testGlobalIndex );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
@@ -53,6 +54,7 @@ public:
     void testWrapLong();
     void testBasisSiteFromIndex();
     void testSubLatticeConstruction();
+    void testGlobalIndex();
 
 };
 

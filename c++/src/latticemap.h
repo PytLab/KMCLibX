@@ -219,21 +219,28 @@ public:
     SubLatticeMap(const int n_basis,
                   const std::vector<int> repetitions,
                   const std::vector<bool> periodic,
-                  const CellIndex cell_index);
+                  const CellIndex origin_index);
 
     /*! \brief Destructor for sub lattice map.
      */
     virtual ~SubLatticeMap()
     {}
 
-    /*! \brief Query function for cell index.
+    /*! \brief Query function for the index of origin point of sub lattice.
      */
-    const CellIndex & cellIndex() const
-    { return cell_index_; }
+    const CellIndex & originIndex() const
+    { return origin_index_; }
+
+    /*! \brief Get the global index of the local index.
+     *  \param local_index : The local index in sub-lattice.
+     *  \return global_index : The corresponding global index in global lattice.
+     */
+    int globalIndex(const int local_index,
+                    const LatticeMap & lattice_map) const;
 
 private:
     /// The cell indices of sublattice in globle lattice.
-    CellIndex cell_index_;
+    CellIndex origin_index_;
 
 };
 

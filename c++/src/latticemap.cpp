@@ -303,10 +303,40 @@ void LatticeMap::indexToCell(const int index,
 SubLatticeMap::SubLatticeMap(const int n_basis,
                              const std::vector<int> repetitions,
                              const std::vector<bool> periodic,
-                             const CellIndex cell_index) :
+                             const CellIndex origin_index) :
     LatticeMap(n_basis, repetitions, periodic),
-    cell_index_(cell_index)
+    origin_index_(origin_index)
 {
     // NOTHING HERE.
+}
+
+
+// ----------------------------------------------------------------------------
+//
+int SubLatticeMap::globalIndex(const int local_index,
+                               const LatticeMap & lattice_map) const
+{
+    // The order in basis sites.
+    const int basis = local_index % LatticeMap::nBasis();
+
+    // Get cell index in sub-lattice.
+    CellIndex local_cell_index = {0, 0, 0};
+    indexToCell(local_index,
+                local_cell_index.i,
+                local_cell_index.j,
+                local_cell_index.k);
+
+    // Get global cell index.
+    CellIndex global_cell_index = origin_index_;
+    global_cell_index.i += local_cell_index.i;
+    global_cell_index.j += local_cell_index.j;
+    global_cell_index.k += local_cell_index.k;
+
+    // Get global index.
+    const std::vector<int> & basis_indices = \
+        lattice_map.indicesFromCell(global_cell_index.i,
+                                    global_cell_index.j,
+                                    global_cell_index.k);
+    return basis_indices[basis];
 }
 

@@ -868,43 +868,90 @@ void Test_LatticeMap::testSubLatticeConstruction()
     const std::vector<int> repetitions = {2, 2, 2};
     std::vector<bool> periodicity(3, true);
     const int n_basis = 3;
-    const CellIndex cell_index = {1, 1, 1};
+    const CellIndex origin_index = {0, 0, 0};
 
     CPPUNIT_ASSERT_NO_THROW( SubLatticeMap sublattice(n_basis,
                                                       repetitions,
                                                       periodicity,
-                                                      cell_index) );
+                                                      origin_index) );
 
     // Test the inheritance of base class LatticeMap,
     // same as the tests in LatticeMap
-    SubLatticeMap sublattice1(n_basis, repetitions, periodicity, cell_index);
+    SubLatticeMap sublattice1(n_basis, repetitions, periodicity, origin_index);
     CPPUNIT_ASSERT( sublattice1.periodicA() );
     CPPUNIT_ASSERT( sublattice1.periodicB() );
     CPPUNIT_ASSERT( sublattice1.periodicC() );
 
     periodicity[0] = false;
-    SubLatticeMap sublattice2(n_basis, repetitions, periodicity, cell_index);
+    SubLatticeMap sublattice2(n_basis, repetitions, periodicity, origin_index);
     CPPUNIT_ASSERT( !sublattice2.periodicA() );
     CPPUNIT_ASSERT(  sublattice2.periodicB() );
     CPPUNIT_ASSERT(  sublattice2.periodicC() );
 
     periodicity[1] = false;
-    SubLatticeMap sublattice3(n_basis, repetitions, periodicity, cell_index);
+    SubLatticeMap sublattice3(n_basis, repetitions, periodicity, origin_index);
     CPPUNIT_ASSERT( !sublattice3.periodicA() );
     CPPUNIT_ASSERT( !sublattice3.periodicB() );
     CPPUNIT_ASSERT(  sublattice3.periodicC() );
 
     periodicity[2] = false;
-    SubLatticeMap sublattice4(n_basis, repetitions, periodicity, cell_index);
+    SubLatticeMap sublattice4(n_basis, repetitions, periodicity, origin_index);
     CPPUNIT_ASSERT( !sublattice4.periodicA() );
     CPPUNIT_ASSERT( !sublattice4.periodicB() );
     CPPUNIT_ASSERT( !sublattice4.periodicC() );
     CPPUNIT_ASSERT_EQUAL( sublattice4.nBasis(), 3 );
 
     // Test cell index query.
-    const CellIndex & ret_cell_index = sublattice1.cellIndex();
-    CPPUNIT_ASSERT_EQUAL( ret_cell_index.i, 1);
-    CPPUNIT_ASSERT_EQUAL( ret_cell_index.j, 1);
-    CPPUNIT_ASSERT_EQUAL( ret_cell_index.k, 1);
+    const CellIndex & ret_origin_index = sublattice1.originIndex();
+    CPPUNIT_ASSERT_EQUAL( ret_origin_index.i, 0);
+    CPPUNIT_ASSERT_EQUAL( ret_origin_index.j, 0);
+    CPPUNIT_ASSERT_EQUAL( ret_origin_index.k, 0);
+}
+
+
+// -------------------------------------------------------------------------
+//
+void Test_LatticeMap::testGlobalIndex()
+{
+    // Construct a global lattice map.
+    const std::vector<int> repetitions = {4, 4, 4};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 2;
+
+    // Construct a sub-lattice map.
+    const std::vector<int> sub_repetitions = {2, 2, 2};
+    std::vector<bool> sub_periodicity(3, true);
+    const int sub_n_basis = 2;
+
+    {
+        // Sub-lattice 1.
+        const CellIndex sub_origin_index = {0, 0, 2};
+        SubLatticeMap sublattice(sub_n_basis,
+                                 sub_repetitions,
+                                 sub_periodicity,
+                                 sub_origin_index);
+
+        LatticeMap lattice(n_basis, repetitions, periodicity);
+
+        // Test.
+        int global_index = sublattice.globalIndex(1, lattice);
+        CPPUNIT_ASSERT_EQUAL(global_index, 5);
+    }
+
+    // Test another one.
+    // Sub-lattice 2.
+    {
+        const CellIndex sub_origin_index = {0, 0, 0};
+        SubLatticeMap sublattice(sub_n_basis,
+                                 sub_repetitions,
+                                 sub_periodicity,
+                                 sub_origin_index);
+
+        LatticeMap lattice(n_basis, repetitions, periodicity);
+
+        // Test.
+        int global_index = sublattice.globalIndex(5, lattice);
+        CPPUNIT_ASSERT_EQUAL(global_index, 9);
+    }
 }
 
