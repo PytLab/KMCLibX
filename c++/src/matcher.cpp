@@ -17,6 +17,8 @@
  *  zjshao     2016-04-11   1.2          Change match list presentation,
  *                                       Remove the isMatch function.
  *
+ *  zjshao     2016-10-20   1.4          Add configuration classification.
+ *
  *  ------------------------------------------------------------------
  * ******************************************************************
  */
@@ -476,7 +478,8 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
                                     Configuration      & configuration,
                                     const SitesMap     & sitesmap,
                                     const LatticeMap   & lattice_map,
-                                    const std::vector<int> & indices) const
+                                    const std::vector<int> & indices,
+                                    const std::vector<std::string> & fast_elements) const
 {
     // {{{
 
@@ -484,8 +487,8 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
     //       all sites are equivalent, sitesmap may be
     //       used in the future, if needed.
 
-    // Reset fast flags in configuration.
-    configuration.resetFastFlags();
+    // Reset slow flags in configuration.
+    configuration.resetSlowFlags(fast_elements);
 
     // Get the list of indices and process to match.
     const std::vector<std::pair<int, int> > && index_process_to_match = \
@@ -504,16 +507,15 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
         const ConfigMatchList & config_matchlist = configuration.matchList(conf_idx);
 
         // Process type, slow or not.
-        const bool slow_process = process.slow();
+        const bool fast_process = process.fast();
 
-        if (!slow_process)
+        if (!fast_process)
         {
             continue;
         }
 
-        // Check matching
+        // Check matching.
         const bool in_list = process.isListed(conf_idx);
-
         if (!in_list)
         {
             continue;
@@ -543,7 +545,7 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
             // Get the affected index.
             if (match_type != update_type)
             {
-                configuration.updateFastFlag(index, false);
+                configuration.updateSlowFlag(index, false);
             }
         }
     }

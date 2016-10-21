@@ -42,7 +42,7 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     elements_(elements),
     atom_id_elements_(elements),
     match_lists_(elements_.size()),
-    fast_flags_(elements_.size(), true)
+    slow_flags_(elements_.size(), true)
 {
     // {{{
 
@@ -364,5 +364,39 @@ void Configuration::performProcess(Process & process, const int site_index)
     }
 
     // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+// TODO: OpenMP.
+//
+void Configuration::resetSlowFlags(const std::vector<std::string> & fast_elements)
+{
+    // If no default fast species, set all flags true.
+    if (fast_elements.empty())
+    {
+        for (size_t i = 0; i < slow_flags_.size(); ++i)
+        {
+            slow_flags_[i] = true;
+        }
+    }
+    // Or set default fast species to be false.
+    else
+    {
+        for (size_t i = 0; i < slow_flags_.size(); ++i)
+        {
+            const std::string element = elements_[i];
+            auto it = std::find(fast_elements.begin(), fast_elements.end(), element);
+            if ( it != fast_elements.end() )
+            {
+                slow_flags_[i] = false;
+            }
+            else
+            {
+                slow_flags_[i] = true;
+            }
+        }
+    }
 }
 

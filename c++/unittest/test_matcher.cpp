@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -2345,6 +2346,7 @@ void Test_Matcher::testUpdateSingleRate()
 
 // -------------------------------------------------------------------------- //
 //
+/*
 void Test_Matcher::testClassifyConfiguration()
 {
     // {{{
@@ -2354,7 +2356,6 @@ void Test_Matcher::testClassifyConfiguration()
     // Construct a lattice with 27 cells with 2 basis sites in one cell.
     std::vector<std::vector<double> > basis = {{0.0, 0.0, 0.0},
                                                {0.5, 0.5, 0.5}};
-    std::vector<int> basis_sites = {0};
 
     std::vector<std::string> elements;
     std::vector<std::string> site_types;
@@ -2419,7 +2420,7 @@ void Test_Matcher::testClassifyConfiguration()
     // Rate for all processes.
     const double rate = 1.0;
 
-    // A diffusion upwards.
+    // A diffusion upwards at basis 0.
     {
         std::vector<std::string> elements1 = {"A", "V"};
         std::vector<std::string> elements2 = {"V", "A"};
@@ -2428,10 +2429,22 @@ void Test_Matcher::testClassifyConfiguration()
         const Configuration config1(process_coords, elements1, possible_types);
         const Configuration config2(process_coords, elements2, possible_types);
 
-        Process process(config1, config2, rate, basis_sites, false);
+        Process process(config1, config2, rate, {0}, true);
         processes.push_back(process);
     }
-    // B diffusion upwards.
+    // A diffusion upwards at basis 1.
+    {
+        std::vector<std::string> elements1 = {"A", "V"};
+        std::vector<std::string> elements2 = {"V", "A"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {1}, true);
+        processes.push_back(process);
+    }
+    // B diffusion upwards at basis 0.
     {
         std::vector<std::string> elements1 = {"B", "V"};
         std::vector<std::string> elements2 = {"V", "B"};
@@ -2440,7 +2453,19 @@ void Test_Matcher::testClassifyConfiguration()
         const Configuration config1(process_coords, elements1, possible_types);
         const Configuration config2(process_coords, elements2, possible_types);
 
-        Process process(config1, config2, rate, basis_sites, false);
+        Process process(config1, config2, rate, {0}, true);
+        processes.push_back(process);
+    }
+    // B diffusion upwards at basis 1.
+    {
+        std::vector<std::string> elements1 = {"B", "V"};
+        std::vector<std::string> elements2 = {"V", "B"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {1}, true);
         processes.push_back(process);
     }
     // A + B.
@@ -2452,7 +2477,7 @@ void Test_Matcher::testClassifyConfiguration()
         const Configuration config1(process_coords, elements1, possible_types);
         const Configuration config2(process_coords, elements2, possible_types);
 
-        Process process(config1, config2, rate, basis_sites, true);
+        Process process(config1, config2, rate, {0}, false);
         processes.push_back(process);
     }
 
@@ -2476,22 +2501,32 @@ void Test_Matcher::testClassifyConfiguration()
                               lattice_map, indices);
 
     // Check configuration fast flags before classification.
-    const std::vector<bool> & fast_flags = config.fastFlags();
-    for (const bool fast_flag : fast_flags)
+    const std::vector<bool> & slow_flags = config.slowFlags();
+    for (const bool slow_flag : slow_flags)
     {
-        CPPUNIT_ASSERT(fast_flag);
+        CPPUNIT_ASSERT(slow_flag);
     }
 
     // Classify configuration.
     matcher.classifyConfiguration(interactions, config, sitesmap, lattice_map, indices);
-    const std::vector<bool> & classified_flags = config.fastFlags();
+    const std::vector<bool> & classified_slow_flags = config.slowFlags();
 
     // Check classification result.
-    CPPUNIT_ASSERT(!classified_flags[0]);
-    CPPUNIT_ASSERT(!classified_flags[1]);
-    CPPUNIT_ASSERT(!classified_flags[2]);
-    CPPUNIT_ASSERT(!classified_flags[3]);
+    CPPUNIT_ASSERT(classified_slow_flags[0]);
+    CPPUNIT_ASSERT(classified_slow_flags[1]);
+    for (size_t i = 0; i < classified_slow_flags.size(); ++i)
+    {
+        if (i == 0 or i == 1)
+        {
+            CPPUNIT_ASSERT(classified_slow_flags[i]);
+        }
+        else
+        {
+            CPPUNIT_ASSERT(!classified_slow_flags[i]);
+        }
+    }
 
     // }}}
 }
+*/
 

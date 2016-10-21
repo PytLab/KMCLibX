@@ -68,13 +68,13 @@ void Test_Process::testConstruction()
     // Check the site type setting flag.
     CPPUNIT_ASSERT( !process1.hasSiteTypes() );
 
-    // Check the slow process flag.
-    CPPUNIT_ASSERT( process1.slow() );
+    // Check the fast process flag.
+    CPPUNIT_ASSERT( !process1.fast() );
 
-    // Check another constuctor with slow being false.
-    Process process2(config1, config2, rate, basis_sites, false);
+    // Check another constuctor with fast being true.
+    Process process2(config1, config2, rate, basis_sites, true);
 
-    CPPUNIT_ASSERT( !process2.slow() );
+    CPPUNIT_ASSERT( process2.fast() );
 
     // }}}
 }

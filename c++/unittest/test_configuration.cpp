@@ -85,11 +85,11 @@ void Test_Configuration::testConstruction()
     }
 
     // Check slow species flags.
-    const std::vector<bool> & fast_flags = config.fastFlags();
+    const std::vector<bool> & slow_flags = config.slowFlags();
     for (size_t i = 0; i < elements.size(); ++i)
     {
         // Default to be all slow species.
-        CPPUNIT_ASSERT(fast_flags[i]);
+        CPPUNIT_ASSERT(slow_flags[i]);
     }
 
     // DONE
@@ -130,12 +130,12 @@ void Test_Configuration::testResetFastFlags()
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
 
-    config.updateFastFlag(0, false);
-    config.updateFastFlag(1, false);
+    config.updateSlowFlag(0, false);
+    config.updateSlowFlag(1, false);
     const std::vector<bool> ref_flags = {false, false, true,
                                          true, true, true,
                                          true, true, true};
-    const std::vector<bool> & ret_flags = config.fastFlags();
+    const std::vector<bool> & ret_flags = config.slowFlags();
     
     for (size_t i = 0; i < ref_flags.size(); ++i)
     {
@@ -144,11 +144,22 @@ void Test_Configuration::testResetFastFlags()
 
     // Check reseted flags.
     const std::vector<bool> ref_reset_flags(9, true);
-    config.resetFastFlags();
-    const std::vector<bool> & ret_reset_flags = config.fastFlags();
+    config.resetSlowFlags();
+    const std::vector<bool> & ret_reset_flags = config.slowFlags();
     for (size_t i = 0; i < ref_flags.size(); ++i)
     {
         CPPUNIT_ASSERT_EQUAL(ref_reset_flags[i], ret_reset_flags[i]);
+    }
+
+    // Check reseted flags with default fast species.
+    const std::vector<bool> ref_reset_flags2 = {false, true, true,
+                                                true, true, true,
+                                                true, true, true};
+    config.resetSlowFlags({"A"});
+    const std::vector<bool> & ret_reset_flags2 = config.slowFlags();
+    for (size_t i = 0; i < ref_flags.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ref_reset_flags2[i], ret_reset_flags2[i]);
     }
 
     // }}}
@@ -1250,3 +1261,4 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
                                  1.0e-12);
     // }}}
 }
+

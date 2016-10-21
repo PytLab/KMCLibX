@@ -29,6 +29,7 @@
 #define __MATCHER__
 
 #include <vector>
+#include <string>
 
 // Forward declarations.
 class Interactions;
@@ -168,7 +169,8 @@ public:
                                Configuration      & configuration,
                                const SitesMap     & sitesmap,
                                const LatticeMap   & lattice_map,
-                               const std::vector<int> & indices) const;
+                               const std::vector<int> & indices,
+                               const std::vector<std::string> & fast_elements = {}) const;
 
 protected:
 

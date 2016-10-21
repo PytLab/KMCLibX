@@ -29,6 +29,10 @@
 
 #include "matchlist.h"
 
+#ifdef DEBUG
+#include <cassert>
+#endif
+
 // Forward declarations.
 class LatticeMap;
 class Process;
@@ -149,23 +153,24 @@ public:
     const std::vector<int> & atomID() const
     { return atom_id_; }
 
-    /*! \brief Query for the species fast flags.
-     *  \return : The list of fast species flags.
+    /*! \brief Query for the species slow flags.
+     *  \return : The list of slow species flags.
      */
-    const std::vector<bool> & fastFlags() const
-    { return fast_flags_; }
+    const std::vector<bool> & slowFlags() const
+    { return slow_flags_; }
 
-    /*! \brief Reset all species fast flags to be true.
-     *  \return : The list of reseted species fast flags.
+    /*! \brief Reset all species slow flags to be true.
+     *  \param : The default fast element names.
+     *  \return : The list of reseted species slow flags.
      */
-    inline void resetFastFlags();
+    void resetSlowFlags(const std::vector<std::string> & fast_elements = {});
 
-    /*! \brief Update specific fast flag in configuration.
+    /*! \brief Update specific slow flag in configuration.
      *  \param type: The index of flag in global struture.
      *  \param type: The flag value.
      */
-    void updateFastFlag(const int index, const bool value)
-    { fast_flags_[index] = value; }
+    void updateSlowFlag(const int index, const bool value)
+    { slow_flags_[index] = value; }
 
 protected:
 
@@ -204,8 +209,8 @@ private:
     /// The match lists for all indices.
     std::vector<ConfigMatchList> match_lists_;
 
-    /// The species fast/slow flags, true if fast.
-    std::vector<bool> fast_flags_;
+    /// The species fast/slow flags, true if slow.
+    std::vector<bool> slow_flags_;
 
 };
 
@@ -236,18 +241,6 @@ std::vector<Coordinate> Configuration::recentMoveVectors() const
     return move_vectors;
 }
 
-
-// -----------------------------------------------------------------------------
-//
-// TODO: OpenMP.
-//
-void Configuration::resetFastFlags()
-{
-    for (auto it = fast_flags_.begin(); it != fast_flags_.end(); ++it)
-    {
-        (*it) = true;
-    }
-}
 
 #endif // __CONFIGURATION__
 

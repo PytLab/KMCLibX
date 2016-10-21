@@ -39,7 +39,7 @@ Process::Process(const Configuration & first,
                  const std::vector<Coordinate> & move_vectors,
                  const int process_number,
                  const std::vector<int> & site_types,
-                 const bool slow) :
+                 const bool fast) :
     process_number_(process_number),
     range_(1),
     rate_(rate),
@@ -48,7 +48,7 @@ Process::Process(const Configuration & first,
     affected_indices_(0),
     basis_sites_(basis_sites),
     id_moves_(0),
-    slow_(slow)
+    fast_(fast)
 {
     // {{{
 
@@ -128,8 +128,8 @@ Process::Process(const Configuration & first,
                  const Configuration & second,
                  const double rate,
                  const std::vector<int> & basis_sites,
-                 const bool slow) :
-    Process(first, second, rate, basis_sites, {}, {}, -1, {}, slow)
+                 const bool fast) :
+    Process(first, second, rate, basis_sites, {}, {}, -1, {}, fast)
 {
     // NOTHING HERE.
 }
