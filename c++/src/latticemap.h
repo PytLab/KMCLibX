@@ -61,25 +61,24 @@ public:
 
     /*! \brief Get the neighbouring indices of a given index,
      *         including all indices in nearby cells.
-     * \param index : The index to query for.
-     * \param shells: The number of shells to include (in terms of primitive cells.)
-     * \return: The list of indices.
+     *  \param index : The index to query for.
+     *  \param shells: The number of shells to include (in terms of primitive cells.)
+     *  \return: The list of indices.
      */
     std::vector<int> neighbourIndices(const int index, const int shells=1) const;
 
-    /*! \brief Get the unique neighbouring indices of a set of given
-     *         indices.
-     * \param indices : The vector of indices to get the neighbours for.
-     * \return: The list of indices.
+    /*! \brief Get the unique neighbouring indices of a set of given indices.
+     *  \param indices : The vector of indices to get the neighbours for.
+     *  \return : The list of indices.
      */
     std::vector<int> supersetNeighbourIndices(const std::vector<int> & indices,
                                               const int shells) const;
 
     /*! \brief Get the indices from a given cell.
-     * \param i : The cell index in the a direction.
-     * \param j : The cell index in the b direction.
-     * \param k : The cell index in the c direction.
-     * \return: The list of indices.
+     *  \param i : The cell index in the a direction.
+     *  \param j : The cell index in the b direction.
+     *  \param k : The cell index in the c direction.
+     *  \return: The list of indices.
      */
     const std::vector<int> indicesFromCell(const int i,
                                            const int j,
@@ -87,11 +86,11 @@ public:
 
     /*! \brief Get the index to move to from the original
      *         index and the move cell and basis information.
-     * \param     i : The relative move cell index in the a direction.
-     * \param     j : The relative move cell index in the b direction.
-     * \param     k : The relative cell index in the c direction.
-     * \param basis : The basis position in the cell.
-     * \return: The corresponding new index.
+     *  \param     i : The relative move cell index in the a direction.
+     *  \param     j : The relative move cell index in the b direction.
+     *  \param     k : The relative cell index in the c direction.
+     *  \param basis : The basis position in the cell.
+     *  \return: The corresponding new index.
      */
     int indexFromMoveInfo(const int index,
                           const int i,
@@ -99,12 +98,11 @@ public:
                           const int k,
                           const int basis) const;
 
-
     /*! \brief Get the cell indices given a global index.
-     * \param index (int) : The index to the the cell for.
-     * \param i (out): The cell index in the a direction.
-     * \param j (out): The cell index in the b direction.
-     * \param k (out): The cell index in the c direction.
+     *  \param index (int) : The index to the the cell for.
+     *  \param i (out): The cell index in the a direction.
+     *  \param j (out): The cell index in the b direction.
+     *  \param k (out): The cell index in the c direction.
      */
     void indexToCell(const int index,
                      int & cell_i,
@@ -118,37 +116,37 @@ public:
     int basisSiteFromIndex(const int index) const { return index % n_basis_; }
 
     /*! \brief Query for the basis size.
-     * \return: The basis size.
+     *  \return: The basis size.
      */
     int nBasis() const { return n_basis_; }
 
     /*! \brief Query for the periodicity.
-     * \return: The periodicity in the direction.
+     *  \return: The periodicity in the direction.
      */
     bool periodicA() const { return periodic_[0]; }
 
     /*! \brief Query for the periodicity.
-     * \return: The periodicity in the direction.
+     *  \return: The periodicity in the direction.
      */
     bool periodicB() const { return periodic_[1]; }
 
     /*! \brief Query for the periodicity.
-     * \return: The periodicity in the direction.
+     *  \return: The periodicity in the direction.
      */
     bool periodicC() const { return periodic_[2]; }
 
     /*! \brief Query for the repetition.
-     * \return: The repetitions in the direction.
+     *  \return: The repetitions in the direction.
      */
     int repetitionsA() const { return repetitions_[0]; }
 
     /*! \brief Query for the repetition.
-     * \return: The repetitions in the direction.
+     *  \return: The repetitions in the direction.
      */
     int repetitionsB() const { return repetitions_[1]; }
 
     /*! \brief Query for the repetition.
-     * \return: The repetitions in the direction.
+     *  \return: The repetitions in the direction.
      */
     int repetitionsC() const { return repetitions_[2]; }
 
@@ -159,15 +157,15 @@ public:
     { return repetitions_; }
 
     /*! \brief Wrap the coordinate according to periodic boundaries.
-     * \param c (in/out): The coordinate to wrap.
+     *  \param c (in/out): The coordinate to wrap.
      */
     inline
     void wrap(Coordinate & c) const;
 
     /*! \brief Wrap the coordinate according to periodic boundaries in the
      *         given direction.
-     * \param c (in/out): The coordinate to wrap.
-     * \param direction : The direction to wrap.
+     *  \param c (in/out): The coordinate to wrap.
+     *  \param direction : The direction to wrap.
      */
     inline
     void wrap(Coordinate & c, const int direction) const;
