@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -12,23 +13,11 @@
 
 
 #include "latticemap.h"
-#include "coordinate.h"
 
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
 #include <algorithm>
-
-// A minimal struct for representing three integers as a cell index.
-struct CellIndex {
-
-    // The index in the a direction.
-    int i;
-    // The index in the b direction.
-    int j;
-    // The index in the c direction.
-    int k;
-};
 
 
 // Temporary storage for the indices form cell.
@@ -54,6 +43,8 @@ LatticeMap::LatticeMap(const int n_basis,
 std::vector<int> LatticeMap::neighbourIndices(const int index,
                                               const int shells) const
 {
+    // {{{
+
     // PERFORMME
 
     // Get the cell index.
@@ -148,6 +139,8 @@ std::vector<int> LatticeMap::neighbourIndices(const int index,
     // Resize and return.
     neighbours.resize(counter);
     return neighbours;
+
+    // }}}
 }
 
 
@@ -216,6 +209,7 @@ int LatticeMap::indexFromMoveInfo(const int index,
                                   const int k,
                                   const int basis) const
 {
+    // {{{
     // PERFORMME
 
     // Find out which cell the index is in.
@@ -268,6 +262,8 @@ int LatticeMap::indexFromMoveInfo(const int index,
     // index at the given relative basis position.
     const int basis_index = basis + basisSiteFromIndex(index);
     return indicesFromCell(cell_i, cell_j, cell_k)[basis_index];
+
+    // }}}
 }
 
 
@@ -299,5 +295,18 @@ void LatticeMap::indexToCell(const int index,
     cell_k = kk;
 
     // DONE
+}
+
+// -----------------------------------------------------------------------------
+// Functions for SubLatticeMap class.
+
+SubLatticeMap::SubLatticeMap(const int n_basis,
+                             const std::vector<int> repetitions,
+                             const std::vector<bool> periodic,
+                             const CellIndex cell_index) :
+    LatticeMap(n_basis, repetitions, periodic),
+    cell_index_(cell_index)
+{
+    // NOTHING HERE.
 }
 

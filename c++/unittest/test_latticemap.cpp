@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -858,3 +859,52 @@ void Test_LatticeMap::testBasisSiteFromIndex()
     CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(201), 1 );
 
 }
+
+
+// --------------------------------------------------------------------------
+//
+void Test_LatticeMap::testSubLatticeConstruction()
+{
+    const std::vector<int> repetitions = {2, 2, 2};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 3;
+    const CellIndex cell_index = {1, 1, 1};
+
+    CPPUNIT_ASSERT_NO_THROW( SubLatticeMap sublattice(n_basis,
+                                                      repetitions,
+                                                      periodicity,
+                                                      cell_index) );
+
+    // Test the inheritance of base class LatticeMap,
+    // same as the tests in LatticeMap
+    SubLatticeMap sublattice1(n_basis, repetitions, periodicity, cell_index);
+    CPPUNIT_ASSERT( sublattice1.periodicA() );
+    CPPUNIT_ASSERT( sublattice1.periodicB() );
+    CPPUNIT_ASSERT( sublattice1.periodicC() );
+
+    periodicity[0] = false;
+    SubLatticeMap sublattice2(n_basis, repetitions, periodicity, cell_index);
+    CPPUNIT_ASSERT( !sublattice2.periodicA() );
+    CPPUNIT_ASSERT(  sublattice2.periodicB() );
+    CPPUNIT_ASSERT(  sublattice2.periodicC() );
+
+    periodicity[1] = false;
+    SubLatticeMap sublattice3(n_basis, repetitions, periodicity, cell_index);
+    CPPUNIT_ASSERT( !sublattice3.periodicA() );
+    CPPUNIT_ASSERT( !sublattice3.periodicB() );
+    CPPUNIT_ASSERT(  sublattice3.periodicC() );
+
+    periodicity[2] = false;
+    SubLatticeMap sublattice4(n_basis, repetitions, periodicity, cell_index);
+    CPPUNIT_ASSERT( !sublattice4.periodicA() );
+    CPPUNIT_ASSERT( !sublattice4.periodicB() );
+    CPPUNIT_ASSERT( !sublattice4.periodicC() );
+    CPPUNIT_ASSERT_EQUAL( sublattice4.nBasis(), 3 );
+
+    // Test cell index query.
+    const CellIndex & ret_cell_index = sublattice1.cellIndex();
+    CPPUNIT_ASSERT_EQUAL( ret_cell_index.i, 1);
+    CPPUNIT_ASSERT_EQUAL( ret_cell_index.j, 1);
+    CPPUNIT_ASSERT_EQUAL( ret_cell_index.k, 1);
+}
+

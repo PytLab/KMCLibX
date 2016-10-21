@@ -19,9 +19,20 @@
 
 #include "coordinate.h"
 
+// A minimal struct for representing three integers as a cell index.
+struct CellIndex {
+
+    // The index in the a direction.
+    int i;
+    // The index in the b direction.
+    int j;
+    // The index in the c direction.
+    int k;
+};
+
+
 // Forward declarations.
 class Configuration;
-//class Coordinate;
 
 /// Class for handling lattice indeces and neighbours.
 class LatticeMap {
@@ -36,6 +47,10 @@ public:
     LatticeMap(const int n_basis,
                const std::vector<int> repetitions,
                const std::vector<bool> periodic);
+
+    /*! \brief Destructor for map.
+     */
+    virtual ~LatticeMap() {}
 
     /*! \brief Get the neighbouring indices of a given index,
      *         including all indices in nearby cells.
@@ -192,6 +207,35 @@ void LatticeMap::wrap(Coordinate & c, const int direction) const
         c[direction] += repetitions_[direction];
     }
 }
+
+
+class SubLatticeMap : public LatticeMap {
+
+public:
+
+    /*! \brief Constructor for the sub lattice map.
+     *  \param cell_index : The cell index of the sublattice in globle lattice.
+     */
+    SubLatticeMap(const int n_basis,
+                  const std::vector<int> repetitions,
+                  const std::vector<bool> periodic,
+                  const CellIndex cell_index);
+
+    /*! \brief Destructor for sub lattice map.
+     */
+    virtual ~SubLatticeMap()
+    {}
+
+    /*! \brief Query function for cell index.
+     */
+    const CellIndex & cellIndex() const
+    { return cell_index_; }
+
+private:
+    /// The cell indices of sublattice in globle lattice.
+    CellIndex cell_index_;
+
+};
 
 
 #endif // __LATTICEMAP__
