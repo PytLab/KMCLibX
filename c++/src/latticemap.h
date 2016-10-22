@@ -40,6 +40,7 @@ struct CellIndex {
 
 // Forward declarations.
 class Configuration;
+class SubLatticeMap;
 
 /// Class for handling lattice indeces and neighbours.
 class LatticeMap {
@@ -47,9 +48,9 @@ class LatticeMap {
 public:
 
     /*! \brief Constructor for the map.
-     *  \param n_basis      : The number of basis points.
-     *  \param repetitions  : The number of repetitions along the a, b and c axes.
-     *  \param periodic     : Indicating periodicity along the a, b and c axes.
+     *  \param n_basis     : The number of basis points.
+     *  \param repetitions : The number of repetitions along the a, b and c axes.
+     *  \param periodic    : Indicating periodicity along the a, b and c axes.
      */
     LatticeMap(const int n_basis,
                const std::vector<int> repetitions,
@@ -170,6 +171,19 @@ public:
     inline
     void wrap(Coordinate & c, const int direction) const;
 
+    /*! \brief Extract a specific sub-lattice from global lattice.
+     *  \return : The SubLatticeMap object.
+     */
+    SubLatticeMap subLatticeMap(int i, int j, int k) const;
+
+    /*! \brief Split lattice to sub-lattice.
+     *  \param nx : Split number on x axis.
+     *  \param ny : Split number on y axis.
+     *  \param nz : Split number on z axis.
+     *  \return  : A list of SubLatticeMap objects.
+     */
+    std::vector<SubLatticeMap> split(int nx, int ny, int nz) const;
+
 protected:
 
 private:
@@ -181,6 +195,43 @@ private:
     /// The periodicity in the a, b and c directions.
     std::vector<bool> periodic_;
 };
+
+
+class SubLatticeMap : public LatticeMap {
+
+public:
+
+    /*! \brief Constructor for the sub lattice map.
+     *  \param cell_index : The cell index of the sublattice in globle lattice.
+     */
+    SubLatticeMap(const int n_basis,
+                  const std::vector<int> repetitions,
+                  const std::vector<bool> periodic,
+                  const CellIndex origin_index);
+
+    /*! \brief Destructor for sub lattice map.
+     */
+    virtual ~SubLatticeMap()
+    {}
+
+    /*! \brief Query function for the index of origin point of sub lattice.
+     */
+    const CellIndex & originIndex() const
+    { return origin_index_; }
+
+    /*! \brief Get the global index of the local index.
+     *  \param local_index : The local index in sub-lattice.
+     *  \return global_index : The corresponding global index in global lattice.
+     */
+    int globalIndex(const int local_index,
+                    const LatticeMap & lattice_map) const;
+
+private:
+    /// The cell indices of sublattice in globle lattice.
+    CellIndex origin_index_;
+
+};
+
 
 // -----------------------------------------------------------------------------
 // INLINE FUNCTION DEFINITIONS FOLLOW
@@ -218,42 +269,6 @@ void LatticeMap::wrap(Coordinate & c, const int direction) const
         c[direction] += repetitions_[direction];
     }
 }
-
-
-class SubLatticeMap : public LatticeMap {
-
-public:
-
-    /*! \brief Constructor for the sub lattice map.
-     *  \param cell_index : The cell index of the sublattice in globle lattice.
-     */
-    SubLatticeMap(const int n_basis,
-                  const std::vector<int> repetitions,
-                  const std::vector<bool> periodic,
-                  const CellIndex origin_index);
-
-    /*! \brief Destructor for sub lattice map.
-     */
-    virtual ~SubLatticeMap()
-    {}
-
-    /*! \brief Query function for the index of origin point of sub lattice.
-     */
-    const CellIndex & originIndex() const
-    { return origin_index_; }
-
-    /*! \brief Get the global index of the local index.
-     *  \param local_index : The local index in sub-lattice.
-     *  \return global_index : The corresponding global index in global lattice.
-     */
-    int globalIndex(const int local_index,
-                    const LatticeMap & lattice_map) const;
-
-private:
-    /// The cell indices of sublattice in globle lattice.
-    CellIndex origin_index_;
-
-};
 
 
 #endif // __LATTICEMAP__

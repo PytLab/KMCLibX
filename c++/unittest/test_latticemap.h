@@ -39,6 +39,8 @@ public:
     CPPUNIT_TEST( testBasisSiteFromIndex );
     CPPUNIT_TEST( testSubLatticeConstruction );
     CPPUNIT_TEST( testGlobalIndex );
+    CPPUNIT_TEST( testLatticeSplit );
+    CPPUNIT_TEST( testLatticeSplitFail );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
@@ -55,6 +57,8 @@ public:
     void testBasisSiteFromIndex();
     void testSubLatticeConstruction();
     void testGlobalIndex();
+    void testLatticeSplit();
+    void testLatticeSplitFail();
 
 };
 

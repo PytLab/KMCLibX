@@ -27,6 +27,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <algorithm>
+#include <sstream>
+#include <stdexcept>
 
 
 // -----------------------------------------------------------------------------
@@ -304,6 +306,64 @@ void LatticeMap::indexToCell(const int index,
     // DONE
 }
 
+
+// -----------------------------------------------------------------------------
+//
+std::vector<SubLatticeMap> LatticeMap::split(int nx, int ny, int nz) const
+{
+    // {{{
+    // Variables for sub-lattice construction.
+    std::vector<int> nsplits = {nx, ny, nz};
+    std::vector<bool> local_periodic = {false, false, false};
+    std::vector<int> local_repetitions;
+
+    // Get sub-lattice repetitions.
+    for (size_t i = 0; i < repetitions_.size(); ++i)
+    {
+        // Check split number validity.
+        if ( (repetitions_[i] % nsplits[i]) != 0 )
+        {
+            std::stringstream stream;
+            stream << "Invalid split number(" << nsplits[i] << ")" \
+                   << repetitions_[i] << " can not be divided by " \
+                   << nsplits[i];
+            std::string msg = stream.str();
+            throw std::invalid_argument(msg);
+        }
+
+        local_repetitions.push_back(repetitions_[i]/nsplits[i]);
+    }
+
+    // Split the global lattice into sub-lattices.
+    std::vector<SubLatticeMap> sublattices;
+    CellIndex origin_index = {0, 0, 0};
+
+    for (int i = 0; i < nx; ++i)
+    {
+        for (int j = 0; j < ny; ++j)
+        {
+            for (int k = 0; k < nz; ++k)
+            {
+                // Get origin index of sub-lattice.
+                origin_index.i = i*local_repetitions[0];
+                origin_index.j = j*local_repetitions[1];
+                origin_index.k = k*local_repetitions[2];
+
+                // Create SubLatticeMap object.
+                SubLatticeMap sublattice = SubLatticeMap(n_basis_,
+                                                         local_repetitions,
+                                                         local_periodic,
+                                                         origin_index);
+                sublattices.push_back(sublattice);
+            }
+        }
+    }
+
+    return sublattices;
+    // }}}
+}
+
+
 // -----------------------------------------------------------------------------
 // Functions for SubLatticeMap class.
 
@@ -323,6 +383,8 @@ SubLatticeMap::SubLatticeMap(const int n_basis,
 int SubLatticeMap::globalIndex(const int local_index,
                                const LatticeMap & lattice_map) const
 {
+    // {{{
+
     // Check lattice map validity.
     const std::vector<int> & global_repetitions = lattice_map.repetitions();
     const std::vector<int> & local_repetitions = LatticeMap::repetitions();
@@ -333,7 +395,8 @@ int SubLatticeMap::globalIndex(const int local_index,
     {
         if ( ((*global_it) % (*local_it)) != 0)
         {
-            throw "Invalid global lattice map object";
+            std::string msg = "Invalid global lattice map object";
+            throw std::invalid_argument(msg);
         }
     }
 
@@ -359,5 +422,7 @@ int SubLatticeMap::globalIndex(const int local_index,
                                     global_cell_index.j,
                                     global_cell_index.k);
     return basis_indices[basis];
+
+    // }}}
 }
 

@@ -17,11 +17,13 @@
 #include "configuration.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 // -------------------------------------------------------------------------- //
 //
 void Test_LatticeMap::testConstructionAndQuery()
 {
+    // {{{
     // Construct a map.
 
     std::vector<int> repetitions(3);
@@ -58,8 +60,7 @@ void Test_LatticeMap::testConstructionAndQuery()
     CPPUNIT_ASSERT( !map4.periodicB() );
     CPPUNIT_ASSERT( !map4.periodicC() );
     CPPUNIT_ASSERT_EQUAL( map4.nBasis(), 3 );
-
-
+    // }}}
 }
 
 // -------------------------------------------------------------------------- //
@@ -67,7 +68,7 @@ void Test_LatticeMap::testConstructionAndQuery()
 void Test_LatticeMap::testIndicesFromCell()
 {
     // This also tests the reverse mapping LatticeMap::indexToCell(...)
-
+    //{{{
     {
         // A map with 1 in the basis.
         const int basis = 1;
@@ -197,7 +198,7 @@ void Test_LatticeMap::testIndicesFromCell()
         }
     }
 
-    // DONE
+    // }}}
 }
 
 
@@ -205,6 +206,7 @@ void Test_LatticeMap::testIndicesFromCell()
 //
 void Test_LatticeMap::testIndexFromMoveInfo()
 {
+    // {{{
     // Get us a lattice map to test. Non-periodic.
     const int map_basis = 3;
     std::vector<int> repetitions(3);
@@ -235,6 +237,7 @@ void Test_LatticeMap::testIndexFromMoveInfo()
 
     // Check that this is true.
     CPPUNIT_ASSERT_EQUAL( ref_index, test_index );
+    // }}}
 }
 
 
@@ -242,6 +245,7 @@ void Test_LatticeMap::testIndexFromMoveInfo()
 //
 void Test_LatticeMap::testIndexFromMoveInfoPeriodic()
 {
+    // {{{
     // Get us a lattice map to test. Periodic.
     const int map_basis = 3;
     std::vector<int> repetitions(3);
@@ -272,6 +276,7 @@ void Test_LatticeMap::testIndexFromMoveInfoPeriodic()
 
     // Check that this is true.
     CPPUNIT_ASSERT_EQUAL( ref_index, test_index );
+    // }}}
 }
 
 
@@ -279,6 +284,7 @@ void Test_LatticeMap::testIndexFromMoveInfoPeriodic()
 //
 void Test_LatticeMap::testNeighbourIndices()
 {
+    // {{{
     // Test that the neighbour indices are calculated and returned correctly.
 
     // Simplest case, base one, no periodicity and the queried cell in the
@@ -406,7 +412,7 @@ void Test_LatticeMap::testNeighbourIndices()
     CPPUNIT_ASSERT_EQUAL(neighbours6[10], 8);
     CPPUNIT_ASSERT_EQUAL(neighbours6[11], 9);
 
-    // DONE.
+    // }}}
 }
 
 
@@ -414,6 +420,7 @@ void Test_LatticeMap::testNeighbourIndices()
 //
 void Test_LatticeMap::testNeighbourIndicesMinimal()
 {
+    // {{{
     // Minimal case, base two, no periodicity. One cell repetition.
     // This should return all indices in the cell.
 
@@ -440,7 +447,7 @@ void Test_LatticeMap::testNeighbourIndicesMinimal()
     CPPUNIT_ASSERT_EQUAL(neighbours[0], 0);
     CPPUNIT_ASSERT_EQUAL(neighbours[1], 1);
 
-    // DONE.
+    // }}}
 }
 
 
@@ -448,6 +455,7 @@ void Test_LatticeMap::testNeighbourIndicesMinimal()
 //
 void Test_LatticeMap::testNeighbourIndicesMinimal2()
 {
+    // {{{
     // Minimal case, base two, no periodicity. Two repetitions in in z.
     // This should return all indices in the cell.
 
@@ -476,7 +484,7 @@ void Test_LatticeMap::testNeighbourIndicesMinimal2()
     CPPUNIT_ASSERT_EQUAL(neighbours[2], 2);
     CPPUNIT_ASSERT_EQUAL(neighbours[3], 3);
 
-    // DONE.
+    // }}}
 }
 
 
@@ -484,6 +492,7 @@ void Test_LatticeMap::testNeighbourIndicesMinimal2()
 //
 void Test_LatticeMap::testNeighbourIndicesLong()
 {
+    // {{{
     // Realistic case, base two, periodicity in y and z. 16, 14 and 15 x, y and z repetitions.
     const int basis = 2;
     std::vector<int> repetitions(3);
@@ -587,7 +596,7 @@ void Test_LatticeMap::testNeighbourIndicesLong()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.coordinate.y(), -3.0000000000e+00, 1.0e-10 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.coordinate.z(), -1.0000000000e+00, 1.0e-10 );
 
-    // DONE.
+    // }}}
 }
 
 
@@ -595,6 +604,7 @@ void Test_LatticeMap::testNeighbourIndicesLong()
 //
 void Test_LatticeMap::testSupersetNeighbourIndices()
 {
+    // {{{
     // Construct a 1D map with two basis sites.
     std::vector<int> repetitions(3);
     repetitions[0] = 10;
@@ -663,7 +673,7 @@ void Test_LatticeMap::testSupersetNeighbourIndices()
     CPPUNIT_ASSERT_EQUAL( neighbours_idx014[12], neighbours_idx01[8]);
     CPPUNIT_ASSERT_EQUAL( neighbours_idx014[13], neighbours_idx01[9]);
 
-    // DONE
+    // }}}
 }
 
 
@@ -671,6 +681,7 @@ void Test_LatticeMap::testSupersetNeighbourIndices()
 //
 void Test_LatticeMap::testWrap()
 {
+    // {{{
     // Construct a periodic map.
     std::vector<int> repetitions(3);
     repetitions[0] = 3;
@@ -784,6 +795,7 @@ void Test_LatticeMap::testWrap()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(refABC.y(), c.y(), 1.0e-14);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(refABC.z(), c.z(), 1.0e-14);
     }
+    // }}}
 }
 
 
@@ -791,6 +803,7 @@ void Test_LatticeMap::testWrap()
 //
 void Test_LatticeMap::testWrapLong()
 {
+    // {{{
     // Wrapping longer than one cell is not needed and will not be
     // supported now. This test checks the expected behaviour.
 
@@ -819,6 +832,7 @@ void Test_LatticeMap::testWrapLong()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ref2.y(), c.y(), 1.0e-14);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ref2.z(), c.z(), 1.0e-14);
     }
+    // }}}
 }
 
 
@@ -826,6 +840,7 @@ void Test_LatticeMap::testWrapLong()
 //
 void Test_LatticeMap::testBasisSiteFromIndex()
 {
+    // {{{
     // Construct a periodic map with 3 in the basis.
     std::vector<int> repetitions(3);
     repetitions[0] = 3;
@@ -857,7 +872,7 @@ void Test_LatticeMap::testBasisSiteFromIndex()
     CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(3), 1 );
     CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(200), 0 );
     CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(201), 1 );
-
+    // }}}
 }
 
 
@@ -865,6 +880,7 @@ void Test_LatticeMap::testBasisSiteFromIndex()
 //
 void Test_LatticeMap::testSubLatticeConstruction()
 {
+    // {{{
     const std::vector<int> repetitions = {2, 2, 2};
     std::vector<bool> periodicity(3, true);
     const int n_basis = 3;
@@ -906,6 +922,7 @@ void Test_LatticeMap::testSubLatticeConstruction()
     CPPUNIT_ASSERT_EQUAL( ret_origin_index.i, 0);
     CPPUNIT_ASSERT_EQUAL( ret_origin_index.j, 0);
     CPPUNIT_ASSERT_EQUAL( ret_origin_index.k, 0);
+    // }}}
 }
 
 
@@ -913,6 +930,7 @@ void Test_LatticeMap::testSubLatticeConstruction()
 //
 void Test_LatticeMap::testGlobalIndex()
 {
+    // {{{
     // Construct a global lattice map.
     const std::vector<int> repetitions = {4, 4, 4};
     std::vector<bool> periodicity(3, true);
@@ -953,5 +971,66 @@ void Test_LatticeMap::testGlobalIndex()
         int global_index = sublattice.globalIndex(5, lattice);
         CPPUNIT_ASSERT_EQUAL(global_index, 9);
     }
+    // }}}
+}
+
+
+// ----------------------------------------------------------------------
+//
+void Test_LatticeMap::testLatticeSplit()
+{
+    // {{{
+    // Construct a global lattice map.
+    const std::vector<int> repetitions = {4, 4, 4};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 2;
+
+    LatticeMap global_lattice(n_basis, repetitions, periodicity);
+    const auto && sub_lattices = global_lattice.split(2, 2, 2);
+
+    // Check number of sub-lattices.
+    int n_sub_lattice = sub_lattices.size();
+    CPPUNIT_ASSERT_EQUAL(n_sub_lattice, 8);
+
+    // Check sub-lattice.
+    // The first one.
+    {
+        const auto & sub_lattice = sub_lattices[0];
+        const CellIndex & origin_index = sub_lattice.originIndex();
+        // Check origin index.
+        CPPUNIT_ASSERT_EQUAL(origin_index.i, 0);
+        CPPUNIT_ASSERT_EQUAL(origin_index.j, 0);
+        CPPUNIT_ASSERT_EQUAL(origin_index.k, 0);
+        // Check global index.
+        int global_index = sub_lattice.globalIndex(5, global_lattice);
+        CPPUNIT_ASSERT_EQUAL(global_index, 9);
+    }
+
+    // The another one.
+    {
+        const auto & sub_lattice = sub_lattices[1];
+        const CellIndex & origin_index = sub_lattice.originIndex();
+        // Check origin index.
+        CPPUNIT_ASSERT_EQUAL(origin_index.i, 0);
+        CPPUNIT_ASSERT_EQUAL(origin_index.j, 0);
+        CPPUNIT_ASSERT_EQUAL(origin_index.k, 2);
+        // Check global index.
+        int global_index = sub_lattice.globalIndex(1, global_lattice);
+        CPPUNIT_ASSERT_EQUAL(global_index, 5);
+    }
+    // }}}
+}
+
+// ----------------------------------------------------------------------
+//
+void Test_LatticeMap::testLatticeSplitFail()
+{
+    // Construct a global lattice map.
+    const std::vector<int> repetitions = {3, 3, 3};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 2;
+
+    LatticeMap global_lattice(n_basis, repetitions, periodicity);
+    CPPUNIT_ASSERT_THROW(global_lattice.split(2, 2, 2), std::invalid_argument);
 }
 
