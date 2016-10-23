@@ -412,6 +412,10 @@ SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
 {
     // {{{
 
+    // Check lattice map and sub-lattice map.
+    checkLatticeMaps(lattice_map, sub_lattice_map);
+
+    // Site number in configuraiton/latticemap.
     const int nsites = sub_lattice_map.repetitionsA() * \
                        sub_lattice_map.repetitionsB() * \
                        sub_lattice_map.repetitionsC() * \
