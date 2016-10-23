@@ -7,13 +7,15 @@
 
 /* ******************************************************************
  *  file   : configuration.h
- *  brief  : File for the definition of the Configuration class.
+ *  brief  : File for the definition of the Configuration class and
+ *           SubConfiguration class.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-11   1.2          Modify match list presentation.
  *  zjshao     2016-10-15   1.4          Add fast slow classification.
+ *  zjshao     2016-10-22   1.4          Add SubConfiguration class.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -29,9 +31,6 @@
 
 #include "matchlist.h"
 
-#ifdef DEBUG
-#include <cassert>
-#endif
 
 // Forward declarations.
 class LatticeMap;
