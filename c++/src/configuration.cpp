@@ -419,6 +419,7 @@ SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
     int global_index;
     std::vector<std::string> elements;
     std::vector<std::vector<double> > coordinates;
+    std::vector<int> atom_id;
 
     for (int i = 0; i < nsites; ++i)
     {
@@ -431,22 +432,29 @@ SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
         // Collect coordinates.
         const Coordinate & coord = coordinates_[global_index];
         coordinates.push_back({coord.x(), coord.y(), coord.z()});
+
+        // Collect global atom ids.
+        atom_id.push_back(atom_id_[global_index]);
     }
 
     // Construct local configuration.
     return SubConfiguration(coordinates,
                             elements,
-                            Configuration::possibleTypes());
+                            Configuration::possibleTypes(),
+                            atom_id);
 
     // }}}
 }
 
 
 // Function definitions for SubConfiguration class.
-SubConfiguration::SubConfiguration(const std::vector<std::vector<double> > & coordinates,
-                                   const std::vector<std::string> & elements,
-                                   const std::map<std::string, int> & possible_types) :
-    Configuration(coordinates, elements, possible_types)
+SubConfiguration:: \
+SubConfiguration(const std::vector<std::vector<double> > & coordinates,
+                 const std::vector<std::string> & elements,
+                 const std::map<std::string, int> & possible_types,
+                 const std::vector<int> & atom_id) :
+    Configuration(coordinates, elements, possible_types),
+    atom_id_(atom_id)
 {
     // NOTHING HERE.
 }

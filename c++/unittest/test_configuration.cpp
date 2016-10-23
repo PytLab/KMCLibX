@@ -1324,16 +1324,45 @@ void Test_Configuration::testSubConfiguration()
                                                                   sub_lattice);
 
     // Check sub-configuration.
-    std::vector<int> ret_types = sub_config.types();
-    std::vector<std::string> ret_elements = sub_config.elements();
-    std::vector<Coordinate> ret_coords = sub_config.coordinates();
+    const std::vector<int> & ret_types = sub_config.types();
+    const std::vector<std::string> & ret_elements = sub_config.elements();
+    const std::vector<Coordinate> & ret_coords = sub_config.coordinates();
+    const std::vector<int> & ret_atom_id = sub_config.atomID();
 
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_types.size()), 16);
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_elements.size()), 16);
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_coords.size()), 16);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_atom_id.size()), 16);
 
     // Check specific element.
     CPPUNIT_ASSERT_EQUAL(ret_elements[1], static_cast<std::string>("C"));
+    const std::vector<std::string> ref_elements = {
+        "A", "C", "A", "B", "A", "B", "A", "B", 
+        "A", "B", "A", "B", "A", "B", "A", "B", 
+    };
+
+    // Check coordinate values.
+    const std::vector<Coordinate> ref_coords = {
+        Coordinate(0.0, 0.0, 2.0), Coordinate(0.5, 0.5, 2.5),
+        Coordinate(0.0, 0.0, 3.0), Coordinate(0.5, 0.5, 3.5),
+        Coordinate(0.0, 1.0, 2.0), Coordinate(0.5, 1.5, 2.5),
+        Coordinate(0.0, 1.0, 3.0), Coordinate(0.5, 1.5, 3.5),
+        Coordinate(1.0, 0.0, 2.0), Coordinate(1.5, 0.5, 2.5),
+        Coordinate(1.0, 0.0, 3.0), Coordinate(1.5, 0.5, 3.5),
+        Coordinate(1.0, 1.0, 2.0), Coordinate(1.5, 1.5, 2.5),
+        Coordinate(1.0, 1.0, 3.0), Coordinate(1.5, 1.5, 3.5),
+    };
+
+    // Check atom ids.
+    const std::vector<int> ref_atom_id = { 4,  5,  6,  7, 12, 13, 14, 15,
+                                          36, 37, 38, 39, 44, 45, 46, 47};
+    
+    for (size_t i = 0; i < ref_coords.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ref_coords[i], ret_coords[i]);
+        CPPUNIT_ASSERT_EQUAL(ref_elements[i], ret_elements[i]);
+        CPPUNIT_ASSERT_EQUAL(ref_atom_id[i], ret_atom_id[i]);
+    }
 
     // }}}
 }

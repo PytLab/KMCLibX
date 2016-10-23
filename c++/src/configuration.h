@@ -259,16 +259,27 @@ public:
      *  \param coordinates   : The coordinates of the sub-configuration.
      *  \param elements      : The elements of the sub-configuration.
      *  \param possible_types: A global mapping from type string to number.
+     *  \param atom_ids      : The global atom ids for the sites in
+     *                         sub-configurations
      */
     SubConfiguration(const std::vector<std::vector<double> > & coordinates,
                      const std::vector<std::string> & elements,
-                     const std::map<std::string, int> & possible_types);
+                     const std::map<std::string, int> & possible_types,
+                     const std::vector<int> & atom_id);
 
     /*! brief Destructor for sub-configuration.
      */
     ~SubConfiguration() {}
 
+    /*! \brief Query for the global atom ids.
+     *  \return: The list of global atom ids.
+     */
+    const std::vector<int> & atomID() const { return atom_id_; }
+
 private:
+
+    /// The gloabl atom ids for the sites in sub-configuration.
+    std::vector<int> atom_id_;
 
 };
 
