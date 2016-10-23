@@ -38,6 +38,7 @@ class LatticeMap;
 class Process;
 class Coordinate;
 class SubLatticeMap;
+class SubConfiguration;
 
 /*! \brief Class for defining the configuration used in a KMC simulation to
  *         use for communicating elements and positions to and from python.
@@ -51,9 +52,13 @@ public:
      *  \param elements      : The elements of the configuration.
      *  \param possible_types: A global mapping from type string to number.
      */
-    Configuration(std::vector< std::vector<double> > const & coordinates,
-                  std::vector<std::string> const & elements,
+    Configuration(const std::vector< std::vector<double> > & coordinates,
+                  const std::vector<std::string> & elements,
                   const std::map<std::string,int> & possible_types);
+
+    /*! \brief Descructor for configruation.
+     */
+    virtual ~Configuration() {}
 
     /*! \brief Initiate the calculation of the match lists.
      *  \param lattice_map : The lattice map needed to get coordinates wrapped.
@@ -150,8 +155,8 @@ public:
      *                           extracted sub-configuration.
      *  \return : Sub-configuration object.
      */
-    Configuration subConfiguration(const LatticeMap & lattice_map,
-                                   const SubLatticeMap & sub_lattice_map) const;
+    SubConfiguration subConfiguration(const LatticeMap & lattice_map,
+                                      const SubLatticeMap & sub_lattice_map) const;
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
@@ -242,6 +247,28 @@ private:
 
     /// The species fast/slow flags, true if slow.
     std::vector<bool> slow_flags_;
+
+};
+
+
+class SubConfiguration : public Configuration {
+
+public:
+
+    /*! \brief Constructor for setting up the sub-confguration.
+     *  \param coordinates   : The coordinates of the sub-configuration.
+     *  \param elements      : The elements of the sub-configuration.
+     *  \param possible_types: A global mapping from type string to number.
+     */
+    SubConfiguration(const std::vector<std::vector<double> > & coordinates,
+                     const std::vector<std::string> & elements,
+                     const std::map<std::string, int> & possible_types);
+
+    /*! brief Destructor for sub-configuration.
+     */
+    ~SubConfiguration() {}
+
+private:
 
 };
 

@@ -405,8 +405,8 @@ void Configuration::resetSlowFlags(const std::vector<std::string> & fast_element
 
 // -----------------------------------------------------------------------------
 //
-Configuration Configuration::subConfiguration(const LatticeMap & lattice_map,
-                                              const SubLatticeMap & sub_lattice_map) const
+SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
+                                                 const SubLatticeMap & sub_lattice_map) const
 {
     // {{{
 
@@ -434,8 +434,20 @@ Configuration Configuration::subConfiguration(const LatticeMap & lattice_map,
     }
 
     // Construct local configuration.
-    return Configuration(coordinates, elements, possible_types_);
+    return SubConfiguration(coordinates,
+                            elements,
+                            Configuration::possibleTypes());
 
     // }}}
+}
+
+
+// Function definitions for SubConfiguration class.
+SubConfiguration::SubConfiguration(const std::vector<std::vector<double> > & coordinates,
+                                   const std::vector<std::string> & elements,
+                                   const std::map<std::string, int> & possible_types) :
+    Configuration(coordinates, elements, possible_types)
+{
+    // NOTHING HERE.
 }
 

@@ -1320,8 +1320,8 @@ void Test_Configuration::testSubConfiguration()
     const SubLatticeMap & sub_lattice = sub_lattices[1];
 
     // Extract sub-configuration.
-    const Configuration & sub_config = config.subConfiguration(global_lattice,
-                                                               sub_lattice);
+    const SubConfiguration & sub_config = config.subConfiguration(global_lattice,
+                                                                  sub_lattice);
 
     // Check sub-configuration.
     std::vector<int> ret_types = sub_config.types();
