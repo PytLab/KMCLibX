@@ -250,6 +250,9 @@ private:
 };
 
 
+/*! \brief Class for sub-configuration generation used to do operation on
+ *         global configuration seperately.
+ */
 class SubConfiguration : public Configuration {
 
 public:

@@ -22,9 +22,6 @@
  *  ------------------------------------------------------------------
  * ******************************************************************
  */
-/*! \file  matcher.cpp
- *  \brief File for the implementation code of the Matcher class.
- */
 
 #include <cstdio>
 #include <algorithm>

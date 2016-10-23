@@ -197,6 +197,9 @@ private:
 };
 
 
+/*! \brief Class for sub-lattice map which is extracted from the global
+ *         lattice map used to split the global configuration.
+ */
 class SubLatticeMap : public LatticeMap {
 
 public:
@@ -211,13 +214,11 @@ public:
 
     /*! \brief Destructor for sub lattice map.
      */
-    virtual ~SubLatticeMap()
-    {}
+    virtual ~SubLatticeMap() {}
 
     /*! \brief Query function for the index of origin point of sub lattice.
      */
-    const CellIndex & originIndex() const
-    { return origin_index_; }
+    const CellIndex & originIndex() const { return origin_index_; }
 
     /*! \brief Get the global index of the local index.
      *  \param local_index : The local index in sub-lattice.
@@ -227,6 +228,7 @@ public:
                     const LatticeMap & lattice_map) const;
 
 private:
+
     /// The cell indices of sublattice in globle lattice.
     CellIndex origin_index_;
 
