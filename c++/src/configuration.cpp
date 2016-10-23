@@ -373,6 +373,7 @@ void Configuration::performProcess(Process & process, const int site_index)
 //
 void Configuration::resetSlowFlags(const std::vector<std::string> & fast_elements)
 {
+    // {{{
     // If no default fast species, set all flags true.
     if (fast_elements.empty())
     {
@@ -398,5 +399,43 @@ void Configuration::resetSlowFlags(const std::vector<std::string> & fast_element
             }
         }
     }
+    // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+Configuration Configuration::subConfiguration(const LatticeMap & lattice_map,
+                                              const SubLatticeMap & sub_lattice_map) const
+{
+    // {{{
+
+    const int nsites = sub_lattice_map.repetitionsA() * \
+                       sub_lattice_map.repetitionsB() * \
+                       sub_lattice_map.repetitionsC() * \
+                       sub_lattice_map.nBasis();
+
+    // Loop over local indices to collect coordinates and elements.
+    int global_index;
+    std::vector<std::string> elements;
+    std::vector<std::vector<double> > coordinates;
+
+    for (int i = 0; i < nsites; ++i)
+    {
+        global_index = sub_lattice_map.globalIndex(i, lattice_map);
+
+        // Collect elements.
+        const std::string & element = elements_[global_index];
+        elements.push_back(element);
+
+        // Collect coordinates.
+        const Coordinate & coord = coordinates_[global_index];
+        coordinates.push_back({coord.x(), coord.y(), coord.z()});
+    }
+
+    // Construct local configuration.
+    return Configuration(coordinates, elements, possible_types_);
+
+    // }}}
 }
 

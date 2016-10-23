@@ -37,6 +37,7 @@
 class LatticeMap;
 class Process;
 class Coordinate;
+class SubLatticeMap;
 
 /*! \brief Class for defining the configuration used in a KMC simulation to
  *         use for communicating elements and positions to and from python.
@@ -90,6 +91,13 @@ public:
     const std::vector<int> & types() const
     { return types_; }
 
+
+    /*! \brief Const query for the possible types.
+     *  \return : The possible types of the configuration.
+     */
+    const std::map<std::string, int> & possibleTypes() const
+    { return possible_types_; }
+
     /*! \brief Const query for the moved atom ids.
      *  \return : A copy of the moved atom ids, resized to correct length.
      */
@@ -127,12 +135,23 @@ public:
     { return match_lists_[index]; }
 
     /*! \brief Perform the given process.
-     *  \param process : The process to perform, which will be updated with the affected
-     *                   indices.
-     *  \param site_index : The index of the site where the process should be performed.
-     *  \param lattice_map : The lattice map needed for proper move vector indexing.
+     *  \param process : The process to perform, which will be updated with
+     *                   the affected indices.
+     *  \param site_index : The index of the site where the process should be
+     *                      performed.
+     *  \param lattice_map : The lattice map needed for proper move vector
+     *                       indexing.
      */
     void performProcess(Process & process, const int site_index);
+
+    /*! \brief Extract a sub-configuration from a global configuration.
+     *  \param lattice_map : The global lattie map.
+     *  \param sub_lattice_map : The corresponding sub-lattice map of the
+     *                           extracted sub-configuration.
+     *  \return : Sub-configuration object.
+     */
+    Configuration subConfiguration(const LatticeMap & lattice_map,
+                                   const SubLatticeMap & sub_lattice_map) const;
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
@@ -196,6 +215,9 @@ private:
 
     /// The lattice elements.
     std::vector<std::string> elements_;
+
+    /// The possible types.
+    std::map<std::string, int> possible_types_;
 
     /// The elements per atom id.
     std::vector<std::string> atom_id_elements_;

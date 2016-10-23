@@ -283,6 +283,7 @@ void LatticeMap::indexToCell(const int index,
                              int & cell_j,
                              int & cell_k) const
 {
+    // {{{
     // Given an index, calculate the cell i,j,k.
     const double eps   = 1.0e-9;
     const int idx      = index / n_basis_ + 1;
@@ -303,7 +304,7 @@ void LatticeMap::indexToCell(const int index,
     cell_j = jj;
     cell_k = kk;
 
-    // DONE
+    // }}}
 }
 
 
@@ -388,9 +389,9 @@ int SubLatticeMap::globalIndex(const int local_index,
     // Check lattice map validity.
     const std::vector<int> & global_repetitions = lattice_map.repetitions();
     const std::vector<int> & local_repetitions = LatticeMap::repetitions();
-
     auto local_it = local_repetitions.begin();
     auto global_it = global_repetitions.begin();
+
     for (; local_it != local_repetitions.end(); ++local_it, ++global_it)
     {
         if ( ((*global_it) % (*local_it)) != 0)

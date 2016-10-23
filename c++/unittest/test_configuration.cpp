@@ -1,6 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
-
+  Copyright (c)  2016-2019 Shao Zhengjiang
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
@@ -1259,6 +1259,82 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].z(),
                                  configuration.atomIDCoordinates()[1453].z(),
                                  1.0e-12);
+    // }}}
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testSubConfiguration()
+{
+    // {{{
+
+    // Construct configuration.
+    int nI = 4, nJ = 4, nK = 4, nB = 2;
+    std::vector<double> basis_coords = {0.0, 0.5};
+    std::vector<std::string> basis_elem = {"A", "B"};
+    std::vector<std::string> elements;
+    std::vector<std::vector<double> > coords;
+    std::vector<double> coord(3, 0.0);
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    coord[0] = i + basis_coords[b];
+                    coord[1] = j + basis_coords[b];
+                    coord[2] = k + basis_coords[b];
+                    coords.push_back(coord);
+                    elements.push_back(basis_elem[b]);
+                }
+            }
+        }
+    }
+
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+
+    // Change one specific element.
+    elements[5] = "C";
+
+    Configuration config(coords, elements, possible_types);
+
+    // Construct a global lattice map.
+    const std::vector<int> repetitions = {4, 4, 4};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 2;
+
+    LatticeMap global_lattice(n_basis, repetitions, periodicity);
+    const auto && sub_lattices = global_lattice.split(2, 2, 2);
+
+    // Choose the 2nd sub-lattice to check.
+    const SubLatticeMap & sub_lattice = sub_lattices[1];
+
+    // Extract sub-configuration.
+    const Configuration & sub_config = config.subConfiguration(global_lattice,
+                                                               sub_lattice);
+
+    // Check sub-configuration.
+    std::vector<int> ret_types = sub_config.types();
+    std::vector<std::string> ret_elements = sub_config.elements();
+    std::vector<Coordinate> ret_coords = sub_config.coordinates();
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_types.size()), 16);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_elements.size()), 16);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_coords.size()), 16);
+
+    // Check specific element.
+    CPPUNIT_ASSERT_EQUAL(ret_elements[1], static_cast<std::string>("C"));
+
     // }}}
 }
 
