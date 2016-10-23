@@ -6,7 +6,7 @@
 
 /* ******************************************************************
  *  file   : latticemap.h
- *  brief  : File for the LatticeMap class definition.
+ *  brief  : File for the LatticeMap class and SubLatticeMap definition.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>
@@ -232,6 +232,17 @@ private:
 
 };
 
+
+// -----------------------------------------------------------------------------
+// HELPER FUNCTIONS FOLLOW
+
+// -----------------------------------------------------------------------------
+//
+void checkLatticeMaps(const SubLatticeMap & sub_lattice_map,
+                      const LatticeMap & lattice_map);
+
+void checkLatticeMaps(const LatticeMap & lattice_map,
+                      const SubLatticeMap & sub_lattice_map);
 
 // -----------------------------------------------------------------------------
 // INLINE FUNCTION DEFINITIONS FOLLOW

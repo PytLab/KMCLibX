@@ -9,7 +9,8 @@
 
 /* ******************************************************************
  *  file   : latticemap.cpp
- *  brief  : File for the implementation code of the LatticeMap class.
+ *  brief  : File for the implementation code of the LatticeMap class
+ *           SubLatticeMap class.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>
@@ -385,21 +386,8 @@ int SubLatticeMap::globalIndex(const int local_index,
                                const LatticeMap & lattice_map) const
 {
     // {{{
-
-    // Check lattice map validity.
-    const std::vector<int> & global_repetitions = lattice_map.repetitions();
-    const std::vector<int> & local_repetitions = LatticeMap::repetitions();
-    auto local_it = local_repetitions.begin();
-    auto global_it = global_repetitions.begin();
-
-    for (; local_it != local_repetitions.end(); ++local_it, ++global_it)
-    {
-        if ( ((*global_it) % (*local_it)) != 0)
-        {
-            std::string msg = "Invalid global lattice map object";
-            throw std::invalid_argument(msg);
-        }
-    }
+    // Check lattice map validty.
+    checkLatticeMaps(*this, lattice_map);
 
     // The order in basis sites.
     const int basis = local_index % LatticeMap::nBasis();
@@ -425,5 +413,44 @@ int SubLatticeMap::globalIndex(const int local_index,
     return basis_indices[basis];
 
     // }}}
+}
+
+
+// ----------------------------------------------------------------------------
+//
+void checkLatticeMaps(const SubLatticeMap & sub_lattice_map,
+                      const LatticeMap & lattice_map)
+{
+    // Error message.
+    const std::string msg = "Conflict between lattice map and sub-lattice map";
+
+    if ( sub_lattice_map.nBasis() != lattice_map.nBasis() )
+    {
+        throw std::invalid_argument(msg);
+    }
+
+    // Check lattice map validity.
+    const std::vector<int> & global_repetitions = lattice_map.repetitions();
+    const std::vector<int> & local_repetitions = sub_lattice_map.repetitions();
+    auto local_it = local_repetitions.begin();
+    auto global_it = global_repetitions.begin();
+
+    for (; local_it != local_repetitions.end(); ++local_it, ++global_it)
+    {
+        if ( ((*global_it) % (*local_it)) != 0)
+        {
+            throw std::invalid_argument(msg);
+        }
+    }
+
+}
+
+
+// ----------------------------------------------------------------------------
+//
+void checkLatticeMaps(const LatticeMap & lattice_map,
+                      const SubLatticeMap & sub_lattice_map)
+{
+    checkLatticeMaps(sub_lattice_map, lattice_map);
 }
 
