@@ -9,7 +9,7 @@
 
 /* ******************************************************************
  *  file   : matcher.cpp
- *  brief  : File for the Process class definition.
+ *  brief  : File for the Matcher class implimentation.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>

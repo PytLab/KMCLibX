@@ -30,6 +30,7 @@
 #include <map>
 
 #include "matchlist.h"
+#include "distributor.h"
 
 
 // Forward declarations.
@@ -157,6 +158,26 @@ public:
     SubConfiguration subConfiguration(const LatticeMap & lattice_map,
                                       const SubLatticeMap & sub_lattice_map) const;
 
+    /*! \brief Reset all species slow flags to be true.
+     *  \param : The default fast element names.
+     *  \return : The list of reseted species slow flags.
+     */
+    void resetSlowFlags(const std::vector<std::string> & fast_elements = {});
+
+    /*! \brief Declare the reDistribute member function of Distributor as
+     *         a friend function.
+     *  \param configuration : The reference of the configuration to be
+     *                         redistributed.
+     */
+    friend void Distributor::reDistribute(Configuration & configuration) const;
+
+    /*! \brief Update specific slow flag in configuration.
+     *  \param type: The index of flag in global struture.
+     *  \param type: The flag value.
+     */
+    void updateSlowFlag(const int index, const bool value)
+    { slow_flags_[index] = value; }
+
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
      *  \return : The string representation of the type integer.
@@ -190,19 +211,6 @@ public:
      */
     const std::vector<bool> & slowFlags() const
     { return slow_flags_; }
-
-    /*! \brief Reset all species slow flags to be true.
-     *  \param : The default fast element names.
-     *  \return : The list of reseted species slow flags.
-     */
-    void resetSlowFlags(const std::vector<std::string> & fast_elements = {});
-
-    /*! \brief Update specific slow flag in configuration.
-     *  \param type: The index of flag in global struture.
-     *  \param type: The flag value.
-     */
-    void updateSlowFlag(const int index, const bool value)
-    { slow_flags_[index] = value; }
 
 protected:
 

@@ -11,10 +11,11 @@
  * brief test runner for all unit tests.
  * history
  *   <author>   <time>       <version>   <desc>
- *   zjshao     2016-04-08   2.0         Add sitesmap test.
- *   zjshao     2016-04-09   2.0         Modify matchlistentry test.
- *   zjshao     2016-04-10   2.0         Add matchlis test,
+ *   zjshao     2016-04-08   1.0         Add sitesmap test.
+ *   zjshao     2016-04-09   1.0         Modify matchlistentry test.
+ *   zjshao     2016-04-10   1.0         Add matchlis test,
                                          Modify process test.
+ *   zjshao     2016-10-24   1.4         Add Distributor test.
  * *********************************************************/
 
 
@@ -38,6 +39,7 @@
 #include "test_ontheflymsd.h"
 #include "test_blocker.h"
 #include "test_sitesmap.h"
+#include "test_distributor.h"
 
 // -------------------------------------------------------------------------- //
 // Add tests.
@@ -59,4 +61,5 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test_MPIRoutines );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_OnTheFlyMSD );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Blocker );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_SitesMap );
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_Distributor );
 
