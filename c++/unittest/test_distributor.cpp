@@ -193,12 +193,49 @@ void Test_Distributor::testReDistribution()
 
     // Redistribution.
     Distributor distributor;
+
+    // Copy the original variables.
+    const auto ori_elements = config.elements();
+    const auto ori_types = config.types();
+    const auto ori_atom_id = config.atomID();
+
     distributor.reDistribute(config);
 
     // Check configuration after redistribution.
     // There should be no changes on the 0th and 1st elements.
     CPPUNIT_ASSERT_EQUAL(config.elements()[0], static_cast<std::string>("A"));
     CPPUNIT_ASSERT_EQUAL(config.elements()[1], static_cast<std::string>("B"));
+    CPPUNIT_ASSERT_EQUAL(config.types()[0], 1);
+    CPPUNIT_ASSERT_EQUAL(config.types()[1], 2);
+    CPPUNIT_ASSERT_EQUAL(config.atomID()[0], 0);
+    CPPUNIT_ASSERT_EQUAL(config.atomID()[1], 1);
+
+    // Check other elements
+    bool element_changed = false;
+    bool type_changed = false;
+    bool atom_id_changed = false;
+
+    for (size_t i = 2; i < ori_elements.size(); ++i)
+    {
+        if (config.elements()[i] != ori_elements[i])
+        {
+            element_changed = true;
+        }
+
+        if (config.types()[i] != ori_types[i])
+        {
+            type_changed = true;
+        }
+
+        if (config.atomID()[i] != ori_atom_id[i])
+        {
+            atom_id_changed = true;
+        }
+    }
+
+    CPPUNIT_ASSERT(element_changed);
+    CPPUNIT_ASSERT(type_changed);
+    CPPUNIT_ASSERT(atom_id_changed);
 
     // }}}
 }
