@@ -29,6 +29,7 @@
 
 
 // ----------------------------------------------------------------------------
+// TODO: OpenMp
 //
 void Distributor::reDistribute(Configuration & configuration) const
 {
