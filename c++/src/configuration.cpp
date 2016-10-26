@@ -426,6 +426,7 @@ SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
     std::vector<std::string> elements;
     std::vector<std::vector<double> > coordinates;
     std::vector<int> atom_id;
+    std::vector<bool> slow_flags;
 
     for (int i = 0; i < nsites; ++i)
     {
@@ -441,13 +442,17 @@ SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
 
         // Collect global atom ids.
         atom_id.push_back(atom_id_[global_index]);
+
+        // Collect global slow flags.
+        slow_flags.push_back(slow_flags_[global_index]);
     }
 
     // Construct local configuration.
     return SubConfiguration(coordinates,
                             elements,
                             Configuration::possibleTypes(),
-                            atom_id);
+                            atom_id,
+                            slow_flags);
 
     // }}}
 }
@@ -458,9 +463,11 @@ SubConfiguration:: \
 SubConfiguration(const std::vector<std::vector<double> > & coordinates,
                  const std::vector<std::string> & elements,
                  const std::map<std::string, int> & possible_types,
-                 const std::vector<int> & atom_id) :
+                 const std::vector<int> & atom_id,
+                 const std::vector<bool> & slow_flags) :
     Configuration(coordinates, elements, possible_types),
-    atom_id_(atom_id)
+    atom_id_(atom_id),
+    slow_flags_(slow_flags)
 {
     // NOTHING HERE.
 }

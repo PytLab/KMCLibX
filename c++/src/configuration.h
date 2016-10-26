@@ -271,11 +271,13 @@ public:
      *  \param possible_types: A global mapping from type string to number.
      *  \param atom_ids      : The global atom ids for the sites in
      *                         sub-configurations
+     *  \param slow_flags    : The slow flags for the sub-configuration.
      */
     SubConfiguration(const std::vector<std::vector<double> > & coordinates,
                      const std::vector<std::string> & elements,
                      const std::map<std::string, int> & possible_types,
-                     const std::vector<int> & atom_id);
+                     const std::vector<int> & atom_id,
+                     const std::vector<bool> & slow_flags);
 
     /*! brief Destructor for sub-configuration.
      */
@@ -288,8 +290,11 @@ public:
 
 private:
 
-    /// The gloabl atom ids for the sites in sub-configuration.
+    /// The global atom ids for the sites in sub-configuration.
     std::vector<int> atom_id_;
+
+    /// The global slow flags for the sites in sub-configuration.
+    std::vector<bool> slow_flags_;
 
 };
 

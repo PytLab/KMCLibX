@@ -1328,6 +1328,7 @@ void Test_Configuration::testSubConfiguration()
     const std::vector<std::string> & ret_elements = sub_config.elements();
     const std::vector<Coordinate> & ret_coords = sub_config.coordinates();
     const std::vector<int> & ret_atom_id = sub_config.atomID();
+    const std::vector<bool> & ret_slow_flags = sub_config.slowFlags();
 
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_types.size()), 16);
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_elements.size()), 16);
@@ -1356,12 +1357,13 @@ void Test_Configuration::testSubConfiguration()
     // Check atom ids.
     const std::vector<int> ref_atom_id = { 4,  5,  6,  7, 12, 13, 14, 15,
                                           36, 37, 38, 39, 44, 45, 46, 47};
-    
+
     for (size_t i = 0; i < ref_coords.size(); ++i)
     {
         CPPUNIT_ASSERT_EQUAL(ref_coords[i], ret_coords[i]);
         CPPUNIT_ASSERT_EQUAL(ref_elements[i], ret_elements[i]);
         CPPUNIT_ASSERT_EQUAL(ref_atom_id[i], ret_atom_id[i]);
+        CPPUNIT_ASSERT_EQUAL(ret_slow_flags[i], true);
     }
 
     // }}}
