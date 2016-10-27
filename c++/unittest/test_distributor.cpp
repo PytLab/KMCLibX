@@ -5,6 +5,7 @@
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
+#include <algorithm>
 
 #include "test_distributor.h"
 
@@ -195,9 +196,9 @@ void Test_Distributor::testReDistribution()
     Distributor distributor;
 
     // Copy the original variables.
-    const auto ori_elements = config.elements();
-    const auto ori_types = config.types();
-    const auto ori_atom_id = config.atomID();
+    auto ori_elements = config.elements();
+    auto ori_types = config.types();
+    auto ori_atom_id = config.atomID();
 
     distributor.reDistribute(config);
 
@@ -236,6 +237,26 @@ void Test_Distributor::testReDistribution()
     CPPUNIT_ASSERT(element_changed);
     CPPUNIT_ASSERT(type_changed);
     CPPUNIT_ASSERT(atom_id_changed);
+
+    // Sort the redistributed vectors and compare them to the original ones.
+    auto new_elements = config.elements();
+    auto new_types = config.types();
+    auto new_atom_id = config.atomID();
+
+    std::sort(ori_elements.begin(), ori_elements.end());
+    std::sort(ori_types.begin(), ori_types.end());
+    std::sort(ori_atom_id.begin(), ori_atom_id.end());
+
+    std::sort(new_elements.begin(), new_elements.end());
+    std::sort(new_types.begin(), new_types.end());
+    std::sort(new_atom_id.begin(), new_atom_id.end());
+
+    for (size_t i = 0; i < ori_elements.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ori_elements[i], new_elements[i]);
+        CPPUNIT_ASSERT_EQUAL(ori_types[i], new_types[i]);
+        CPPUNIT_ASSERT_EQUAL(ori_atom_id[i], new_atom_id[i]);
+    }
 
     // }}}
 }
