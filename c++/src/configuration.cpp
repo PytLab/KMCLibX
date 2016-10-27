@@ -41,8 +41,8 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
                              std::vector<std::string> const & elements,
                              const std::map<std::string, int> & possible_types,
                              const std::vector<bool> & slow_flags) :
-    n_moved_(0),
     elements_(elements),
+    n_moved_(0),
     atom_id_elements_(elements),
     match_lists_(elements_.size())
 {

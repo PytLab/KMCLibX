@@ -22,6 +22,7 @@
 
 #include <ctime>
 #include <random>
+#include <algorithm>
 
 #include "distributor.h"
 #include "configuration.h"
@@ -35,18 +36,16 @@ void Distributor::reDistribute(Configuration & configuration) const
 {
     // {{{
 
-    // Get the PRIVATE member variables of Configuration.
+    // Get the PROTECTED member variables of Configuration.
     std::vector<int> & types = configuration.types_;
     std::vector<int> & atom_id = configuration.atom_id_;
     std::vector<std::string> & elements = configuration.elements_;
-
     const std::vector<bool> & slow_flags = configuration.slowFlags();
 
     // Extract all fast species to a list.
     std::vector<int> fast_types;
     std::vector<int> fast_atom_id;
     std::vector<std::string> fast_elements;
-
     std::vector<int> fast_indices;
 
     for (size_t i = 0; i < slow_flags.size(); ++i)
@@ -60,24 +59,34 @@ void Distributor::reDistribute(Configuration & configuration) const
         }
     }
 
+    // Initialize random number generator and distribution.
+    static std::default_random_engine generator(time(NULL));
+
     // Number of fast species.
     const int n_fast = fast_indices.size();
 
-    // Initialize random number generator and distribution.
-    static std::default_random_engine generator(time(NULL));
-    static std::uniform_int_distribution<int> distribution(0, n_fast-1);
-
-    // Re-distribution.
+    // Initialize a indices vector to shuffle other vectors.
+    std::vector<int> shuffle_indices;
     for (int i = 0; i < n_fast; ++i)
     {
-        // Generate a random integer in 0 ~ n_fast.
-        int randn = distribution(generator);
+        shuffle_indices.push_back(i);
+    }
 
-        // Put the random selected species into configuration.
-        int index = fast_indices[i];
-        configuration.types_[index] = fast_types[randn];
-        configuration.atom_id_[index] = fast_atom_id[randn];
-        configuration.elements_[index] = fast_elements[randn];
+    // Shuffle the indices vector.
+    std::shuffle(shuffle_indices.begin(), shuffle_indices.end(), generator);
+
+    for (int i = 0; i < n_fast; ++i)
+    {
+        // Index in the original vector.
+        const int index = shuffle_indices[i];
+
+        // Index in the configuration.
+        const int config_index = fast_indices[i];
+
+        // Put the shuffled entries into configuration.
+        types[config_index] = fast_types[index];
+        atom_id[config_index] = fast_atom_id[index];
+        elements[config_index] = fast_elements[index];
     }
 
     // }}}

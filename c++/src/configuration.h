@@ -215,6 +215,15 @@ public:
 
 protected:
 
+    /// The lattice elements.
+    std::vector<std::string> elements_;
+
+    /// The the lattice elements in integer representation.
+    std::vector<int> types_;
+
+    /// The species fast/slow flags, true if slow.
+    std::vector<bool> slow_flags_;
+
 private:
 
     /// Counter for the number of moved atom ids the last move.
@@ -226,17 +235,11 @@ private:
     /// The coordinates for each atom id.
     std::vector<Coordinate> atom_id_coordinates_;
 
-    /// The lattice elements.
-    std::vector<std::string> elements_;
-
     /// The possible types.
     std::map<std::string, int> possible_types_;
 
     /// The elements per atom id.
     std::vector<std::string> atom_id_elements_;
-
-    /// The the lattice elements in integer representation.
-    std::vector<int> types_;
 
     /// The atom id for each lattice point.
     std::vector<int> atom_id_;
@@ -252,9 +255,6 @@ private:
 
     /// The match lists for all indices.
     std::vector<ConfigMatchList> match_lists_;
-
-    /// The species fast/slow flags, true if slow.
-    std::vector<bool> slow_flags_;
 
 };
 
@@ -288,6 +288,13 @@ public:
      *  \return: The list of global atom ids.
      */
     const std::vector<int> & globalAtomID() const { return global_atom_id_; }
+
+    /*! \brief Declare the reDistribute member function of Distributor as
+     *         a friend function.
+     *  \param configuration : The reference of the configuration to be
+     *                         redistributed.
+     */
+    friend void Distributor::reDistribute(Configuration & configuration) const;
 
 private:
 
