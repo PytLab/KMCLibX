@@ -390,7 +390,7 @@ int SubLatticeMap::globalIndex(const int local_index,
     checkLatticeMaps(*this, lattice_map);
 
     // The order in basis sites.
-    const int basis = local_index % LatticeMap::nBasis();
+    const int basis = local_index % this->nBasis();
 
     // Get cell index in sub-lattice.
     CellIndex local_cell_index = {0, 0, 0};

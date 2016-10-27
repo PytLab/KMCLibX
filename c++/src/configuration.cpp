@@ -39,12 +39,12 @@ static ConfigMatchList tmp_config_match_list__(0);
 //
 Configuration::Configuration(std::vector<std::vector<double> > const & coordinates,
                              std::vector<std::string> const & elements,
-                             const std::map<std::string, int> & possible_types) :
+                             const std::map<std::string, int> & possible_types,
+                             const std::vector<bool> & slow_flags) :
     n_moved_(0),
     elements_(elements),
     atom_id_elements_(elements),
-    match_lists_(elements_.size()),
-    slow_flags_(elements_.size(), true)
+    match_lists_(elements_.size())
 {
     // {{{
 
@@ -86,6 +86,20 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     {
         std::map<std::string, int>::const_iterator it = possible_types.find(element);
         types_.push_back(it->second);
+    }
+
+    // Fill the slow flags.
+    if (slow_flags.empty())
+    {
+        for (size_t i = 0; i < elements_.size(); ++i)
+        {
+            // Slow is the default flag.
+            slow_flags_.push_back(true);
+        }
+    }
+    else
+    {
+        slow_flags_ = slow_flags;
     }
 
     // }}}
@@ -463,11 +477,10 @@ SubConfiguration:: \
 SubConfiguration(const std::vector<std::vector<double> > & coordinates,
                  const std::vector<std::string> & elements,
                  const std::map<std::string, int> & possible_types,
-                 const std::vector<int> & atom_id,
+                 const std::vector<int> & global_atom_id,
                  const std::vector<bool> & slow_flags) :
-    Configuration(coordinates, elements, possible_types),
-    atom_id_(atom_id),
-    slow_flags_(slow_flags)
+    Configuration(coordinates, elements, possible_types, slow_flags),
+    global_atom_id_(global_atom_id)
 {
     // NOTHING HERE.
 }
