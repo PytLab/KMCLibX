@@ -54,8 +54,24 @@ public:
      */
     Configuration(const std::vector< std::vector<double> > & coordinates,
                   const std::vector<std::string> & elements,
-                  const std::map<std::string,int> & possible_types,
-                  const std::vector<bool> & slow_flags = {});
+                  const std::map<std::string,int> & possible_types);
+
+
+    /*! \brief Constructor for setting up the sub-confguration.
+     *  \param coordinates    : The coordinates of the sub-configuration.
+     *  \param elements       : The elements of the sub-configuration.
+     *  \param possible_types : A global mapping from type string to number.
+     *  \param global_atom_ids: The global atom ids for the sites in
+     *                          sub-configurations
+     *  \param slow_flags     : The slow flags for the sub-configuration.
+     *
+     *  NOTE: This constructor should be ONLY used to construct sub-configuration.
+     */
+    Configuration(const std::vector<std::vector<double> > & coordinates,
+                  const std::vector<std::string> & elements,
+                  const std::map<std::string, int> & possible_types,
+                  const std::vector<int> & atom_id,
+                  const std::vector<bool> & slow_flags);
 
     /*! \brief Descructor for configruation.
      */
@@ -156,8 +172,8 @@ public:
      *                           extracted sub-configuration.
      *  \return : Sub-configuration object.
      */
-    SubConfiguration subConfiguration(const LatticeMap & lattice_map,
-                                      const SubLatticeMap & sub_lattice_map) const;
+    Configuration subConfiguration(const LatticeMap & lattice_map,
+                                   const SubLatticeMap & sub_lattice_map) const;
 
     /*! \brief Reset all species slow flags to be true.
      *  \param : The default fast element names.
@@ -195,7 +211,7 @@ public:
     /*! \brief Get the atom id at each lattice site.
      *  \retrurn : The list of atom ids for the lattice sites.
      */
-    virtual const std::vector<int> & atomID() const
+    const std::vector<int> & atomID() const
     { return atom_id_; }
 
     /*! \brief Query for the species slow flags.
@@ -215,15 +231,6 @@ public:
 
 protected:
 
-    /// The lattice elements.
-    std::vector<std::string> elements_;
-
-    /// The the lattice elements in integer representation.
-    std::vector<int> types_;
-
-    /// The species fast/slow flags, true if slow.
-    std::vector<bool> slow_flags_;
-
 private:
 
     /// Counter for the number of moved atom ids the last move.
@@ -235,11 +242,17 @@ private:
     /// The coordinates for each atom id.
     std::vector<Coordinate> atom_id_coordinates_;
 
+    /// The lattice elements.
+    std::vector<std::string> elements_;
+
     /// The possible types.
     std::map<std::string, int> possible_types_;
 
     /// The elements per atom id.
     std::vector<std::string> atom_id_elements_;
+
+    /// The the lattice elements in integer representation.
+    std::vector<int> types_;
 
     /// The atom id for each lattice point.
     std::vector<int> atom_id_;
@@ -256,57 +269,8 @@ private:
     /// The match lists for all indices.
     std::vector<ConfigMatchList> match_lists_;
 
-};
-
-
-/*! \brief Class for sub-configuration generation used to do operation on
- *         global configuration seperately.
- *
- *  NOTE: SubConfiguration defined below is just designed to be used in
- *        re-distribution of Configuration object **ONLY**.
- *        If you want to use it to do OTHER things, I think you have to
- *        improve the definition of SubConfiguration class below.
- */
-class SubConfiguration : public Configuration {
-
-public:
-
-    /*! \brief Constructor for setting up the sub-confguration.
-     *  \param coordinates    : The coordinates of the sub-configuration.
-     *  \param elements       : The elements of the sub-configuration.
-     *  \param possible_types : A global mapping from type string to number.
-     *  \param global_atom_ids: The global atom ids for the sites in
-     *                          sub-configurations
-     *  \param slow_flags     : The slow flags for the sub-configuration.
-     */
-    SubConfiguration(const std::vector<std::vector<double> > & coordinates,
-                     const std::vector<std::string> & elements,
-                     const std::map<std::string, int> & possible_types,
-                     const std::vector<int> & atom_id,
-                     const std::vector<bool> & slow_flags);
-
-    /*! brief Destructor for sub-configuration.
-     */
-    ~SubConfiguration() {}
-
-    /*! \brief Override query function for the global atom ids.
-     *  \return: The list of global atom ids.
-     *
-     *  NOTE: This is a overrode function.
-     */
-    const std::vector<int> & atomID() const { return atom_id_; }
-
-    /*! \brief Declare the reDistribute member function of Distributor as
-     *         a friend function.
-     *  \param configuration : The reference of the configuration to be
-     *                         redistributed.
-     */
-    friend void Distributor::reDistribute(Configuration & configuration) const;
-
-private:
-
-    /// The global atom ids for the sites in sub-configuration.
-    std::vector<int> atom_id_;
+    /// The species fast/slow flags, true if slow.
+    std::vector<bool> slow_flags_;
 
 };
 

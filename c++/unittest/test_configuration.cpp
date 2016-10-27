@@ -1320,8 +1320,8 @@ void Test_Configuration::testSubConfiguration()
     const SubLatticeMap & sub_lattice = sub_lattices[1];
 
     // Extract sub-configuration.
-    const SubConfiguration & sub_config = config.subConfiguration(global_lattice,
-                                                                  sub_lattice);
+    const Configuration & sub_config = config.subConfiguration(global_lattice,
+                                                               sub_lattice);
 
     // Check sub-configuration.
     const std::vector<int> & ret_types = sub_config.types();
@@ -1356,7 +1356,7 @@ void Test_Configuration::testSubConfiguration()
 
     // Check atom ids.
     const std::vector<int> ref_atom_id = { 4,  5,  6,  7, 12, 13, 14, 15,
-                                                 36, 37, 38, 39, 44, 45, 46, 47};
+                                          36, 37, 38, 39, 44, 45, 46, 47};
 
     for (size_t i = 0; i < ref_coords.size(); ++i)
     {

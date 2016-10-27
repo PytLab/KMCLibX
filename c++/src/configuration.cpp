@@ -39,12 +39,12 @@ static ConfigMatchList tmp_config_match_list__(0);
 //
 Configuration::Configuration(std::vector<std::vector<double> > const & coordinates,
                              std::vector<std::string> const & elements,
-                             const std::map<std::string, int> & possible_types,
-                             const std::vector<bool> & slow_flags) :
-    elements_(elements),
+                             const std::map<std::string, int> & possible_types) :
     n_moved_(0),
+    elements_(elements),
     atom_id_elements_(elements),
-    match_lists_(elements_.size())
+    match_lists_(elements_.size()),
+    slow_flags_(elements_.size(), true)
 {
     // {{{
 
@@ -88,21 +88,25 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
         types_.push_back(it->second);
     }
 
-    // Fill the slow flags.
-    if (slow_flags.empty())
-    {
-        for (size_t i = 0; i < elements_.size(); ++i)
-        {
-            // Slow is the default flag.
-            slow_flags_.push_back(true);
-        }
-    }
-    else
-    {
-        slow_flags_ = slow_flags;
-    }
-
     // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+
+Configuration::Configuration(const std::vector<std::vector<double> > & coordinates,
+                             const std::vector<std::string> & elements,
+                             const std::map<std::string, int> & possible_types,
+                             const std::vector<int> & atom_id,
+                             const std::vector<bool> & slow_flags) :
+    Configuration(coordinates, elements, possible_types)
+{
+    // Change the default atom ids.
+    atom_id_ = atom_id;
+
+    // Change the default slow flags.
+    slow_flags_ = slow_flags;
 }
 
 
@@ -421,8 +425,8 @@ void Configuration::resetSlowFlags(const std::vector<std::string> & fast_element
 
 // -----------------------------------------------------------------------------
 //
-SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
-                                                 const SubLatticeMap & sub_lattice_map) const
+Configuration Configuration::subConfiguration(const LatticeMap & lattice_map,
+                                              const SubLatticeMap & sub_lattice_map) const
 {
     // {{{
 
@@ -462,26 +466,10 @@ SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
     }
 
     // Construct local configuration.
-    return SubConfiguration(coordinates,
-                            elements,
-                            Configuration::possibleTypes(),
-                            atom_id,
-                            slow_flags);
+    return Configuration(coordinates, elements,
+                         Configuration::possibleTypes(),
+                         atom_id, slow_flags);
 
     // }}}
-}
-
-
-// Function definitions for SubConfiguration class.
-SubConfiguration:: \
-SubConfiguration(const std::vector<std::vector<double> > & coordinates,
-                 const std::vector<std::string> & elements,
-                 const std::map<std::string, int> & possible_types,
-                 const std::vector<int> & atom_id,
-                 const std::vector<bool> & slow_flags) :
-    Configuration(coordinates, elements, possible_types, slow_flags),
-    atom_id_(atom_id)
-{
-    // NOTHING HERE.
 }
 
