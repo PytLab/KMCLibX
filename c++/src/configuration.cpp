@@ -477,10 +477,10 @@ SubConfiguration:: \
 SubConfiguration(const std::vector<std::vector<double> > & coordinates,
                  const std::vector<std::string> & elements,
                  const std::map<std::string, int> & possible_types,
-                 const std::vector<int> & global_atom_id,
+                 const std::vector<int> & atom_id,
                  const std::vector<bool> & slow_flags) :
     Configuration(coordinates, elements, possible_types, slow_flags),
-    global_atom_id_(global_atom_id)
+    atom_id_(atom_id)
 {
     // NOTHING HERE.
 }

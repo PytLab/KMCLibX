@@ -195,7 +195,7 @@ public:
     /*! \brief Get the atom id at each lattice site.
      *  \retrurn : The list of atom ids for the lattice sites.
      */
-    const std::vector<int> & atomID() const
+    virtual const std::vector<int> & atomID() const
     { return atom_id_; }
 
     /*! \brief Query for the species slow flags.
@@ -261,6 +261,11 @@ private:
 
 /*! \brief Class for sub-configuration generation used to do operation on
  *         global configuration seperately.
+ *
+ *  NOTE: SubConfiguration defined below is just designed to be used in
+ *        re-distribution of Configuration object **ONLY**.
+ *        If you want to use it to do OTHER things, I think you have to
+ *        improve the definition of SubConfiguration class below.
  */
 class SubConfiguration : public Configuration {
 
@@ -277,17 +282,19 @@ public:
     SubConfiguration(const std::vector<std::vector<double> > & coordinates,
                      const std::vector<std::string> & elements,
                      const std::map<std::string, int> & possible_types,
-                     const std::vector<int> & global_atom_id,
+                     const std::vector<int> & atom_id,
                      const std::vector<bool> & slow_flags);
 
     /*! brief Destructor for sub-configuration.
      */
     ~SubConfiguration() {}
 
-    /*! \brief Query for the global atom ids.
+    /*! \brief Override query function for the global atom ids.
      *  \return: The list of global atom ids.
+     *
+     *  NOTE: This is a overrode function.
      */
-    const std::vector<int> & globalAtomID() const { return global_atom_id_; }
+    const std::vector<int> & atomID() const { return atom_id_; }
 
     /*! \brief Declare the reDistribute member function of Distributor as
      *         a friend function.
@@ -299,7 +306,7 @@ public:
 private:
 
     /// The global atom ids for the sites in sub-configuration.
-    std::vector<int> global_atom_id_;
+    std::vector<int> atom_id_;
 
 };
 
