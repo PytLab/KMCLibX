@@ -438,6 +438,9 @@ void Test_Distributor::testSubConfigReDistribution()
     Configuration && sub_config = config.subConfiguration(global_lattice,
                                                           sub_lattice);
 
+    // Copy the sub-configuration.
+    Configuration sub_config_copy = sub_config;
+
     // Check sub_lattice slow flags.
     const auto slow_flags = sub_config.slowFlags();
     CPPUNIT_ASSERT(slow_flags[0]);
@@ -461,6 +464,33 @@ void Test_Distributor::testSubConfigReDistribution()
 
     // Redistribute the sub-configuraiton.
     distributor.reDistribute(sub_config);
+    distributor.reDistribute(sub_config_copy);
+
+    // The new distributions of two sub-configuration should be different.
+    bool elements_different = false;
+    bool types_different = false;
+    bool atom_id_different = false;
+
+    for (size_t i = 2; i < ori_elements.size(); ++i)
+    {
+        if (sub_config.elements()[i] != sub_config_copy.elements()[i])
+        {
+            elements_different = true;
+        }
+
+        if (sub_config.types()[i] != sub_config_copy.types()[i])
+        {
+            types_different = true;
+        }
+
+        if (sub_config.atomID()[i] != sub_config_copy.atomID()[i])
+        {
+            atom_id_different = true;
+        }
+    }
+    CPPUNIT_ASSERT(elements_different);
+    CPPUNIT_ASSERT(types_different);
+    CPPUNIT_ASSERT(atom_id_different);
 
     // Check other elements
     bool elements_changed = false;
@@ -485,6 +515,8 @@ void Test_Distributor::testSubConfigReDistribution()
         }
     }
 
+    // NOTE: It is truly possible that the elements, types and atom_id
+    //       distribution do not change, so...
     if ( !(elements_changed && atom_id_changed && types_changed) )
     {
         CPPUNIT_ASSERT(!elements_changed);
