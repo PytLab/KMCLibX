@@ -23,10 +23,12 @@ public:
     CPPUNIT_TEST_SUITE( Test_Distributor );
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testReDistribution );
+    CPPUNIT_TEST( testSubConfigReDistribution );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
     void testReDistribution();
+    void testSubConfigReDistribution();
 
 };
 

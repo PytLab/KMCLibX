@@ -234,9 +234,18 @@ void Test_Distributor::testReDistribution()
         }
     }
 
-    CPPUNIT_ASSERT(element_changed);
-    CPPUNIT_ASSERT(type_changed);
-    CPPUNIT_ASSERT(atom_id_changed);
+    if ( !(element_changed && atom_id_changed && type_changed) )
+    {
+        CPPUNIT_ASSERT(!element_changed);
+        CPPUNIT_ASSERT(!atom_id_changed);
+        CPPUNIT_ASSERT(!type_changed);
+    }
+    else
+    {
+        CPPUNIT_ASSERT(element_changed);
+        CPPUNIT_ASSERT(atom_id_changed);
+        CPPUNIT_ASSERT(type_changed);
+    }
 
     // Sort the redistributed vectors and compare them to the original ones.
     auto new_elements = config.elements();
@@ -258,6 +267,256 @@ void Test_Distributor::testReDistribution()
         CPPUNIT_ASSERT_EQUAL(ori_atom_id[i], new_atom_id[i]);
     }
 
+    // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Test_Distributor::testSubConfigReDistribution()
+{
+    // {{{
+
+    // Construct global configuration.
+    int nI = 4, nJ = 4, nK = 4, nB = 2;
+    std::vector<double> basis_coords = {0.0, 0.5};
+    std::vector<std::string> basis_elem = {"A", "B"};
+    std::vector<std::string> elements;
+    std::vector<std::string> site_types;
+    std::vector<std::vector<double> > coords;
+    std::vector<double> coord(3, 0.0);
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    coord[0] = i + basis_coords[b];
+                    coord[1] = j + basis_coords[b];
+                    coord[2] = k + basis_coords[b];
+                    coords.push_back(coord);
+                    elements.push_back("V");
+                    site_types.push_back("P");
+                }
+            }
+        }
+    }
+
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    // Change one specific element.
+    elements[0] = "A";
+    elements[1] = "B";
+    elements[32] = "B";
+    elements[2] = "A";
+    elements[3] = "B";
+
+    Configuration config(coords, elements, possible_types);
+
+    // Setup sitesmap.
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["P"] = 1;
+
+    SitesMap sitesmap(coords, site_types, possible_site_types);
+
+    // Setup interactions.
+    std::vector<Process> processes;
+
+    // Rate for all processes.
+    const double rate = 1.0;
+
+    // A diffusion upwards at basis 0.
+    {
+        std::vector<std::string> elements1 = {"A", "V"};
+        std::vector<std::string> elements2 = {"V", "A"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {0}, true);
+        processes.push_back(process);
+    }
+    // A diffusion upwards at basis 1.
+    {
+        std::vector<std::string> elements1 = {"A", "V"};
+        std::vector<std::string> elements2 = {"V", "A"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {1}, true);
+        processes.push_back(process);
+    }
+    // B diffusion upwards at basis 0.
+    {
+        std::vector<std::string> elements1 = {"B", "V"};
+        std::vector<std::string> elements2 = {"V", "B"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {0}, true);
+        processes.push_back(process);
+    }
+    // B diffusion upwards at basis 1.
+    {
+        std::vector<std::string> elements1 = {"B", "V"};
+        std::vector<std::string> elements2 = {"V", "B"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {1}, true);
+        processes.push_back(process);
+    }
+    // A + B.
+    {
+        std::vector<std::string> elements1 = {"A", "B"};
+        std::vector<std::string> elements2 = {"V", "V"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.5, 0.5, 0.5}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {0}, false);
+        processes.push_back(process);
+    }
+
+    Interactions interactions(processes, true);
+
+    // Construct a global lattice map.
+    const std::vector<int> repetitions = {4, 4, 4};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 2;
+
+    LatticeMap global_lattice(n_basis, repetitions, periodicity);
+
+    // Initialize match lists.
+    config.initMatchLists(global_lattice, interactions.maxRange());
+    sitesmap.initMatchLists(global_lattice, interactions.maxRange());
+
+    interactions.updateProcessMatchLists(config, global_lattice);
+
+    // Match all centers.
+    Matcher matcher;
+    std::vector<int> indices;
+    for (size_t i = 0; i < config.elements().size(); ++i)
+    {
+        indices.push_back(i);
+    }
+    matcher.calculateMatching(interactions, config, sitesmap,
+                              global_lattice, indices);
+
+    // Classify configuration.
+    const std::vector<std::string> fast_elements = {"V"};
+    matcher.classifyConfiguration(interactions,
+                                  config,
+                                  sitesmap,
+                                  global_lattice,
+                                  indices,
+                                  fast_elements);
+
+    // We have classified the species types in configuration, now split it.
+    const auto && sub_lattices = global_lattice.split(2, 2, 2);
+    const SubLatticeMap & sub_lattice = sub_lattices[0];
+
+    // Extract sub-configuration.
+    Configuration && sub_config = config.subConfiguration(global_lattice,
+                                                          sub_lattice);
+
+    // Check sub_lattice slow flags.
+    const auto slow_flags = sub_config.slowFlags();
+    CPPUNIT_ASSERT(slow_flags[0]);
+    CPPUNIT_ASSERT(slow_flags[1]);
+    for (size_t i = 2; i < slow_flags.size(); ++i)
+    {
+        CPPUNIT_ASSERT(!slow_flags[i]);
+    }
+
+    // Redistribution.
+    Distributor distributor;
+
+    // Copy the original variables.
+    auto ori_elements = sub_config.elements();
+    auto ori_types = sub_config.types();
+    auto ori_atom_id = sub_config.atomID();
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ori_atom_id.size()), 16);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ori_types.size()), 16);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ori_elements.size()), 16);
+
+    // Redistribute the sub-configuraiton.
+    distributor.reDistribute(sub_config);
+
+    // Check other elements
+    bool elements_changed = false;
+    bool atom_id_changed = false;
+    bool types_changed = false;
+
+    for (size_t i = 2; i < ori_elements.size(); ++i)
+    {
+        if (sub_config.elements()[i] != ori_elements[i])
+        {
+            elements_changed = true;
+        }
+
+        if (sub_config.atomID()[i] != ori_atom_id[i])
+        {
+            atom_id_changed = true;
+        }
+
+        if (sub_config.types()[i] != ori_types[i])
+        {
+            types_changed = true;
+        }
+    }
+
+    if ( !(elements_changed && atom_id_changed && types_changed) )
+    {
+        CPPUNIT_ASSERT(!elements_changed);
+        CPPUNIT_ASSERT(!atom_id_changed);
+        CPPUNIT_ASSERT(!types_changed);
+    }
+    else
+    {
+        CPPUNIT_ASSERT(elements_changed);
+        CPPUNIT_ASSERT(atom_id_changed);
+        CPPUNIT_ASSERT(types_changed);
+    }
+
+    // Sort the redistributed vectors and compare them to the original ones.
+    auto new_elements = sub_config.elements();
+    auto new_types = sub_config.types();
+    auto new_atom_id = sub_config.atomID();
+
+    std::sort(ori_elements.begin(), ori_elements.end());
+    std::sort(ori_types.begin(), ori_types.end());
+    std::sort(ori_atom_id.begin(), ori_atom_id.end());
+
+    std::sort(new_elements.begin(), new_elements.end());
+    std::sort(new_types.begin(), new_types.end());
+    std::sort(new_atom_id.begin(), new_atom_id.end());
+
+    for (size_t i = 0; i < ori_elements.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ori_elements[i], new_elements[i]);
+        CPPUNIT_ASSERT_EQUAL(ori_types[i], new_types[i]);
+        CPPUNIT_ASSERT_EQUAL(ori_atom_id[i], new_atom_id[i]);
+    }
     // }}}
 }
 
