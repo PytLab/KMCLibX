@@ -42,6 +42,7 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
                              const std::map<std::string, int> & possible_types) :
     n_moved_(0),
     elements_(elements),
+    possible_types_(possible_types),
     atom_id_elements_(elements),
     match_lists_(elements_.size()),
     slow_flags_(elements_.size(), true)
@@ -100,13 +101,56 @@ Configuration::Configuration(const std::vector<std::vector<double> > & coordinat
                              const std::map<std::string, int> & possible_types,
                              const std::vector<int> & atom_id,
                              const std::vector<bool> & slow_flags) :
-    Configuration(coordinates, elements, possible_types)
+    // NOTE: Members wrt atom id(atom_id_*) are not used in sub-configuration
+    // construction, so we set them to zero by default.
+    n_moved_(0),
+    atom_id_coordinates_(0),
+    elements_(elements),
+    possible_types_(possible_types),
+    atom_id_elements_(0),
+    atom_id_(atom_id),
+    match_lists_(elements_.size()),
+    slow_flags_(slow_flags)
 {
-    // Change the default atom ids.
-    atom_id_ = atom_id;
+    // {{{
 
-    // Change the default slow flags.
-    slow_flags_ = slow_flags;
+    // Setup the coordinates.
+    for (size_t i = 0; i < coordinates.size(); ++i)
+    {
+        coordinates_.push_back(Coordinate(coordinates[i][0],
+                                          coordinates[i][1],
+                                          coordinates[i][2]));
+    }
+
+    // Loop through the possible types map and find out what the maximum is.
+    std::map<std::string,int>::const_iterator it1 = possible_types.begin();
+    int max_type = 0;
+    for ( ; it1 != possible_types.end(); ++it1)
+    {
+        if (it1->second > max_type)
+        {
+            max_type = it1->second;
+        }
+    }
+
+    // Set the size of the type names list.
+    type_names_ = std::vector<std::string>(max_type+1);
+
+    // Fill the list.
+    it1 = possible_types.begin();
+    for ( ; it1 != possible_types.end(); ++it1 )
+     {
+         type_names_[it1->second] = it1->first;
+     }
+
+    // Setup the types from the element strings.
+    for (const std::string & element : elements)
+    {
+        std::map<std::string, int>::const_iterator it = possible_types.find(element);
+        types_.push_back(it->second);
+    }
+
+    // }}}
 }
 
 
