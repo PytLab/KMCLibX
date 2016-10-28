@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -34,6 +35,7 @@ public:
     CPPUNIT_TEST( testTypeNameQuery );
     CPPUNIT_TEST( testAtomIDElementsCoordinatesMovedIDs );
     CPPUNIT_TEST( testSubConfiguration );
+    CPPUNIT_TEST( testSplit );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -46,6 +48,7 @@ public:
     void testAtomIDElementsCoordinatesMovedIDs();
     void testTypeNameQuery();
     void testSubConfiguration();
+    void testSplit();
 
 };
 

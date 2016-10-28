@@ -1369,3 +1369,80 @@ void Test_Configuration::testSubConfiguration()
     // }}}
 }
 
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testSplit()
+{
+    // {{{
+
+    // Construct configuration.
+    int nI = 4, nJ = 4, nK = 4, nB = 2;
+    std::vector<double> basis_coords = {0.0, 0.5};
+    std::vector<std::string> basis_elem = {"A", "B"};
+    std::vector<std::string> elements;
+    std::vector<std::vector<double> > coords;
+    std::vector<double> coord(3, 0.0);
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    coord[0] = i + basis_coords[b];
+                    coord[1] = j + basis_coords[b];
+                    coord[2] = k + basis_coords[b];
+                    coords.push_back(coord);
+                    elements.push_back(basis_elem[b]);
+                }
+            }
+        }
+    }
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    // Change one specific element.
+    elements[1]  = "V";
+    elements[5]  = "V";
+    elements[17] = "V";
+    elements[21] = "V";
+
+    Configuration config(coords, elements, possible_types);
+
+    // Construct a global lattice map.
+    const std::vector<int> repetitions = {4, 4, 4};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 2;
+    LatticeMap global_lattice(n_basis, repetitions, periodicity);
+
+    // Split it.
+    const std::vector<Configuration> && sub_configs = config.split(global_lattice,
+                                                                   2, 2, 2);
+
+    // Check number of sub-configurations.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(sub_configs.size()), 8);
+
+    // Check each sub-configuration.
+    for (size_t i = 0; i < sub_configs.size(); ++i)
+    {
+        const auto & sub_config = sub_configs[i];
+        const auto & elements = sub_config.elements();
+
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(elements.size()), 16);
+
+        if (i < 4)
+        {
+            CPPUNIT_ASSERT_EQUAL(elements[1], static_cast<std::string>("V"));
+        }
+    }
+
+    // }}}
+}
+

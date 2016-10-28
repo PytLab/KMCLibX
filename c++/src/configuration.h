@@ -15,7 +15,8 @@
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-11   1.2          Modify match list presentation.
  *  zjshao     2016-10-15   1.4          Add fast slow classification.
- *  zjshao     2016-10-22   1.4          Add SubConfiguration class.
+ *  zjshao     2016-10-22   1.4          Add sub-configuration related
+ *                                       functions.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -173,6 +174,16 @@ public:
      */
     Configuration subConfiguration(const LatticeMap & lattice_map,
                                    const SubLatticeMap & sub_lattice_map) const;
+
+    /*! \brief Split configuration to sub-configurations.
+     *  \param lattice_map : The corresponding global lattice map.
+     *  \param x : The split number on x axis.
+     *  \param y : The split number on y axis.
+     *  \param z : The split number on z axis.
+     *  \return  : The list of splited sub-configuration objects.
+     */
+    std::vector<Configuration> split(const LatticeMap & lattice_map,
+                                     int x, int y, int c);
 
     /*! \brief Reset all species slow flags to be true.
      *  \param : The default fast element names.

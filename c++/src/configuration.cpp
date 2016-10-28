@@ -517,3 +517,24 @@ Configuration Configuration::subConfiguration(const LatticeMap & lattice_map,
     // }}}
 }
 
+
+// -----------------------------------------------------------------------------
+//
+std::vector<Configuration> Configuration::split(const LatticeMap & lattice_map,
+                                                int x, int y, int z)
+{
+    // Split global lattice map.
+    const std::vector<SubLatticeMap> && sub_lattices = lattice_map.split(x, y, z);
+
+    // Get sub-configurations.
+    std::vector<Configuration> sub_configs;
+
+    for (const SubLatticeMap & sub_lattice : sub_lattices)
+    {
+        Configuration && sub_config = subConfiguration(lattice_map, sub_lattice);
+        sub_configs.push_back(sub_config);
+    }
+
+    return sub_configs;
+}
+
