@@ -435,11 +435,11 @@ void Test_Distributor::testSubConfigReDistribution()
     const SubLatticeMap & sub_lattice = sub_lattices[0];
 
     // Extract sub-configuration.
-    Configuration && sub_config = config.subConfiguration(global_lattice,
-                                                          sub_lattice);
+    SubConfiguration && sub_config = config.subConfiguration(global_lattice,
+                                                             sub_lattice);
 
     // Copy the sub-configuration.
-    Configuration sub_config_copy = sub_config;
+    SubConfiguration sub_config_copy = sub_config;
 
     // Check sub_lattice slow flags.
     const auto slow_flags = sub_config.slowFlags();
