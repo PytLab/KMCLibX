@@ -1320,8 +1320,8 @@ void Test_Configuration::testSubConfiguration()
     const SubLatticeMap & sub_lattice = sub_lattices[1];
 
     // Extract sub-configuration.
-    const Configuration & sub_config = config.subConfiguration(global_lattice,
-                                                               sub_lattice);
+    const SubConfiguration & sub_config = config.subConfiguration(global_lattice,
+                                                                  sub_lattice);
 
     // Check sub-configuration.
     const std::vector<int> & ret_types = sub_config.types();
@@ -1423,8 +1423,7 @@ void Test_Configuration::testSplit()
     LatticeMap global_lattice(n_basis, repetitions, periodicity);
 
     // Split it.
-    const std::vector<Configuration> && sub_configs = config.split(global_lattice,
-                                                                   2, 2, 2);
+    const auto && sub_configs = config.split(global_lattice, 2, 2, 2);
 
     // Check number of sub-configurations.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(sub_configs.size()), 8);

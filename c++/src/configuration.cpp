@@ -469,8 +469,8 @@ void Configuration::resetSlowFlags(const std::vector<std::string> & fast_element
 
 // -----------------------------------------------------------------------------
 //
-Configuration Configuration::subConfiguration(const LatticeMap & lattice_map,
-                                              const SubLatticeMap & sub_lattice_map) const
+SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
+                                                 const SubLatticeMap & sub_lattice_map) const
 {
     // {{{
 
@@ -489,10 +489,13 @@ Configuration Configuration::subConfiguration(const LatticeMap & lattice_map,
     std::vector<std::vector<double> > coordinates;
     std::vector<int> atom_id;
     std::vector<bool> slow_flags;
+    std::vector<int> global_indices;
 
     for (int i = 0; i < nsites; ++i)
     {
+        // Get and collect global index.
         global_index = sub_lattice_map.globalIndex(i, lattice_map);
+        global_indices.push_back(global_index);
 
         // Collect elements.
         const std::string & element = elements_[global_index];
@@ -510,9 +513,12 @@ Configuration Configuration::subConfiguration(const LatticeMap & lattice_map,
     }
 
     // Construct local configuration.
-    return Configuration(coordinates, elements,
-                         Configuration::possibleTypes(),
-                         atom_id, slow_flags);
+    return SubConfiguration(coordinates,
+                            elements,
+                            this->possibleTypes(),
+                            atom_id,
+                            slow_flags,
+                            global_indices);
 
     // }}}
 }
@@ -520,21 +526,41 @@ Configuration Configuration::subConfiguration(const LatticeMap & lattice_map,
 
 // -----------------------------------------------------------------------------
 //
-std::vector<Configuration> Configuration::split(const LatticeMap & lattice_map,
-                                                int x, int y, int z)
+std::vector<SubConfiguration> Configuration::split(const LatticeMap & lattice_map,
+                                                   int x, int y, int z)
 {
     // Split global lattice map.
     const std::vector<SubLatticeMap> && sub_lattices = lattice_map.split(x, y, z);
 
     // Get sub-configurations.
-    std::vector<Configuration> sub_configs;
+    std::vector<SubConfiguration> sub_configs;
 
     for (const SubLatticeMap & sub_lattice : sub_lattices)
     {
-        Configuration && sub_config = subConfiguration(lattice_map, sub_lattice);
+        SubConfiguration && sub_config = subConfiguration(lattice_map, sub_lattice);
         sub_configs.push_back(sub_config);
     }
 
     return sub_configs;
+}
+
+
+// ----------------------------------------------------------------------------
+// Functions definitions for SubConfiguration class.
+// ----------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+//
+SubConfiguration:: \
+SubConfiguration(const std::vector<std::vector<double> > & coordinates,
+                 const std::vector<std::string> & elements,
+                 const std::map<std::string, int> & possible_types,
+                 const std::vector<int> & atom_id,
+                 const std::vector<bool> & slow_flags,
+                 const std::vector<int> & global_indices) :
+    Configuration(coordinates, elements, possible_types, atom_id, slow_flags),
+    global_indices_(global_indices)
+{
+    // NOTHING HERE.
 }
 

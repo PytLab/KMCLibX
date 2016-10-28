@@ -172,8 +172,8 @@ public:
      *                           extracted sub-configuration.
      *  \return : Sub-configuration object.
      */
-    Configuration subConfiguration(const LatticeMap & lattice_map,
-                                   const SubLatticeMap & sub_lattice_map) const;
+    SubConfiguration subConfiguration(const LatticeMap & lattice_map,
+                                      const SubLatticeMap & sub_lattice_map) const;
 
     /*! \brief Split configuration to sub-configurations.
      *  \param lattice_map : The corresponding global lattice map.
@@ -182,8 +182,8 @@ public:
      *  \param z : The split number on z axis.
      *  \return  : The list of splited sub-configuration objects.
      */
-    std::vector<Configuration> split(const LatticeMap & lattice_map,
-                                     int x, int y, int c);
+    std::vector<SubConfiguration> split(const LatticeMap & lattice_map,
+                                        int x, int y, int c);
 
     /*! \brief Reset all species slow flags to be true.
      *  \param : The default fast element names.
@@ -241,8 +241,6 @@ public:
 
 protected:
 
-private:
-
     /// Counter for the number of moved atom ids the last move.
     int n_moved_;
 
@@ -281,6 +279,55 @@ private:
 
     /// The species fast/slow flags, true if slow.
     std::vector<bool> slow_flags_;
+
+private:
+
+};
+
+
+/*! \brief Class for sub-configuration generation used to do operation on
+ *         global configuration seperately.
+ *
+ * NOTE: SubConfiguration defined below is just designed to be used in
+ *       re-distribution of Configuration object **ONLY**.
+ *       If you want to use it to do OTHER things, I think you have to
+ *       improve the definition of SubConfiguration class below.
+ */
+class SubConfiguration : public Configuration{
+
+public:
+
+    /*! \brief Constructor for SubConfiguration.
+     *  \param coordinates    : The coordinates of the sub-configuration.
+     *  \param elements       : The elements of the sub-configuration.
+     *  \param possible_types : A global mapping from type string to number.
+     *  \param global_atom_ids: The global atom ids for the sites in
+     *                          sub-configurations
+     *  \param slow_flags     : The slow flags for the sub-configuration.
+     *  \param global_indices : The indices in global configuration.
+     */
+    SubConfiguration(const std::vector<std::vector<double> > & coordinates,
+                     const std::vector<std::string> & elements,
+                     const std::map<std::string, int> & possible_types,
+                     const std::vector<int> & atom_id,
+                     const std::vector<bool> & slow_flags,
+                     const std::vector<int> & global_indices);
+
+    /* \brief Query for global indices.
+     */
+    const std::vector<int> & globalIndices() const
+    { return global_indices_; }
+
+    /*! \brief Declare the reDistribute member function of Distributor as
+     *         a friend function.
+     *  \param configuration : The reference of the configuration to be
+     *                         redistributed.
+     */
+    friend void Distributor::reDistribute(Configuration & configuration) const;
+
+private:
+    /// The indices in global configurations.
+    std::vector<int> global_indices_;
 
 };
 
