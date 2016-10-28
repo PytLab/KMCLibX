@@ -13,7 +13,7 @@
  *  history:
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
- *  zjshao     2016-10-24   1.4          Inital creation.
+ *  zjshao     2016-10-24   1.4          Initial creation.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -36,7 +36,7 @@ void Distributor::reDistribute(Configuration & configuration) const
 {
     // {{{
 
-    // Get the PROTECTED member variables of Configuration.
+    // Get the PRIVATE member variables of Configuration.
     std::vector<int> & types = configuration.types_;
     std::vector<int> & atom_id = configuration.atom_id_;
     std::vector<std::string> & elements = configuration.elements_;

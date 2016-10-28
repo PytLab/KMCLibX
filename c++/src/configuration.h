@@ -113,7 +113,6 @@ public:
     const std::vector<int> & types() const
     { return types_; }
 
-
     /*! \brief Const query for the possible types.
      *  \return : The possible types of the configuration.
      */

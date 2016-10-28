@@ -102,7 +102,7 @@ Configuration::Configuration(const std::vector<std::vector<double> > & coordinat
                              const std::vector<int> & atom_id,
                              const std::vector<bool> & slow_flags) :
     // NOTE: Members wrt atom id(atom_id_*) are not used in sub-configuration
-    // construction, so we set them to zero by default.
+    //       construction, so we set the lengths of them to zero by default.
     n_moved_(0),
     atom_id_coordinates_(0),
     elements_(elements),
