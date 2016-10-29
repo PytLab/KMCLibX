@@ -32,7 +32,7 @@
 // ----------------------------------------------------------------------------
 // TODO: OpenMp
 //
-void Distributor::reDistribute(Configuration & configuration) const
+void RandomDistributor::reDistribute(Configuration & configuration) const
 {
     // {{{
 
@@ -92,8 +92,9 @@ void Distributor::reDistribute(Configuration & configuration) const
     // }}}
 }
 
-void Distributor::updateLocalFromSubConfig(Configuration & global_config,
-                                           const SubConfiguration & sub_config) const
+void PartialRandomDistributor:: \
+updateLocalFromSubConfig(Configuration & global_config,
+                         const SubConfiguration & sub_config) const
 {
     // {{{
 

@@ -48,9 +48,10 @@ class Configuration {
 
 public:
 
-    /*! \brief Declare a friend class.
+    /*! \brief Declare friend classes.
      */
-    friend class Distributor;
+    friend class RandomDistributor;
+    friend class PartialRandomDistributor;
 
     /*! \brief Constructor for setting up the configuration.
      *  \param coordinates   : The coordinates of the configuration.
@@ -294,9 +295,10 @@ class SubConfiguration : public Configuration{
 
 public:
 
-    /*! \brief Declare a friend class.
+    /*! \brief Declare friend classes.
      */
-    friend class Distributor;
+    friend class RandomDistributor;
+    friend class PartialRandomDistributor;
 
     /*! \brief Constructor for SubConfiguration.
      *  \param coordinates    : The coordinates of the sub-configuration.

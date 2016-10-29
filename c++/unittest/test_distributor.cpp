@@ -23,13 +23,14 @@
 void Test_Distributor::testConstruction()
 {
     // Construction.
-    Distributor dis;
+    RandomDistributor random_dis;
+    PartialRandomDistributor partial_random_dis;
 }
 
 
 // ----------------------------------------------------------------------------
 //
-void Test_Distributor::testReDistribution()
+void Test_Distributor::testRandomReDistribution()
 {
     // {{{
     // Construct a lattice with 27 cells with 2 basis sites in one cell.
@@ -193,7 +194,7 @@ void Test_Distributor::testReDistribution()
                                   fast_elements);
 
     // Redistribution.
-    Distributor distributor;
+    RandomDistributor distributor;
 
     // Copy the original variables.
     auto ori_elements = config.elements();
@@ -273,7 +274,7 @@ void Test_Distributor::testReDistribution()
 
 // -----------------------------------------------------------------------------
 //
-void Test_Distributor::testSubConfigReDistribution()
+void Test_Distributor::testRandomSubConfigReDistribution()
 {
     // {{{
 
@@ -451,7 +452,7 @@ void Test_Distributor::testSubConfigReDistribution()
     }
 
     // Redistribution.
-    Distributor distributor;
+    RandomDistributor distributor;
 
     // Copy the original variables.
     auto ori_elements = sub_config.elements();
@@ -557,6 +558,7 @@ void Test_Distributor::testSubConfigReDistribution()
 //
 void Test_Distributor::testUpdateLocalFromSubConfig()
 {
+    // {{{
     // Construct global configuration.
     int nI = 4, nJ = 4, nK = 4, nB = 2;
     std::vector<double> basis_coords = {0.0, 0.5};
@@ -719,7 +721,7 @@ void Test_Distributor::testUpdateLocalFromSubConfig()
                                                              sub_lattice);
 
     // Redistribute the sub-configuration.
-    Distributor distributor;
+    PartialRandomDistributor distributor;
     distributor.reDistribute(sub_config);
 
     // Distribution in sub-configuration.
@@ -752,5 +754,7 @@ void Test_Distributor::testUpdateLocalFromSubConfig()
         CPPUNIT_ASSERT_EQUAL(glob_elements[global_index], sub_elements[i]);
         CPPUNIT_ASSERT_EQUAL(glob_atom_id[global_index], sub_atom_id[i]);
     }
+
+    // }}}
 }
 
