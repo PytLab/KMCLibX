@@ -48,6 +48,10 @@ class Configuration {
 
 public:
 
+    /*! \brief Declare a friend class.
+     */
+    friend class Distributor;
+
     /*! \brief Constructor for setting up the configuration.
      *  \param coordinates   : The coordinates of the configuration.
      *  \param elements      : The elements of the configuration.
@@ -188,20 +192,19 @@ public:
     /*! \brief Update local part of global configuration using sub-configuration.
      *  \param sub_config : The sub-configuration object.
      */
-    void updateLocal(const SubConfiguration & sub_config);
+    void updateLocalFromSubConfig(const SubConfiguration & sub_config);
+
+    /*! \brief Update global configuration using a list of sub-configurations.
+     *  \param sub_configs : The list of sub-configurations splited from global
+     *                       configuration.
+     */
+    void updateFromSubConfigs(const std::vector<SubConfiguration> & sub_configs);
 
     /*! \brief Reset all species slow flags to be true.
      *  \param : The default fast element names.
      *  \return : The list of reseted species slow flags.
      */
     void resetSlowFlags(const std::vector<std::string> & fast_elements = {});
-
-    /*! \brief Declare the reDistribute member function of Distributor as
-     *         a friend function.
-     *  \param configuration : The reference of the configuration to be
-     *                         redistributed.
-     */
-    friend void Distributor::reDistribute(Configuration & configuration) const;
 
     /*! \brief Update specific slow flag in configuration.
      *  \param type: The index of flag in global struture.
@@ -302,6 +305,10 @@ class SubConfiguration : public Configuration{
 
 public:
 
+    /*! \brief Declare a friend class.
+     */
+    friend class Distributor;
+
     /*! \brief Constructor for SubConfiguration.
      *  \param coordinates    : The coordinates of the sub-configuration.
      *  \param elements       : The elements of the sub-configuration.
@@ -322,13 +329,6 @@ public:
      */
     const std::vector<int> & globalIndices() const
     { return global_indices_; }
-
-    /*! \brief Declare the reDistribute member function of Distributor as
-     *         a friend function.
-     *  \param configuration : The reference of the configuration to be
-     *                         redistributed.
-     */
-    friend void Distributor::reDistribute(Configuration & configuration) const;
 
 private:
     /// The indices in global configurations.

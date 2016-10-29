@@ -1632,7 +1632,7 @@ void Test_Configuration::testUpdateLocal()
     const auto & sub_atom_id = sub_config.atomID();
 
     // Update local part of global configuration.
-    config.updateLocal(sub_config);
+    config.updateLocalFromSubConfig(sub_config);
 
     const auto & glob_types = config.types();
     const auto & glob_elements = config.elements();
