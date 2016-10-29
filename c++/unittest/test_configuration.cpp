@@ -1634,6 +1634,10 @@ void Test_Configuration::testUpdateLocal()
     // Update local part of global configuration.
     config.updateLocal(sub_config);
 
+    const auto & glob_types = config.types();
+    const auto & glob_elements = config.elements();
+    const auto & glob_atom_id = config.atomID();
+
     // Get local distribution in global configuration.
     const std::vector<int> global_indices = { 0,  1,  2,  3,  8,  9, 10, 11,
                                              32, 33, 34, 35, 40, 41, 42, 43};
@@ -1648,9 +1652,9 @@ void Test_Configuration::testUpdateLocal()
     {
         int global_index = global_indices[i];
 
-        CPPUNIT_ASSERT_EQUAL(config.types()[global_index], sub_types[i]);
-        CPPUNIT_ASSERT_EQUAL(config.elements()[global_index], sub_elements[i]);
-        CPPUNIT_ASSERT_EQUAL(config.atomID()[global_index], sub_atom_id[i]);
+        CPPUNIT_ASSERT_EQUAL(glob_types[global_index], sub_types[i]);
+        CPPUNIT_ASSERT_EQUAL(glob_elements[global_index], sub_elements[i]);
+        CPPUNIT_ASSERT_EQUAL(glob_atom_id[global_index], sub_atom_id[i]);
     }
 }
 
