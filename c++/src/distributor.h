@@ -25,9 +25,11 @@
 
 // Forward declarations.
 class Configuration;
+class SubConfiguration;
 class Matcher;
 
 /*! \brief Class for configuration/geometries redistribution.
+ *  NOTE: The class is a friend class of Configuration/SubConfiguration.
  */
 class Distributor {
 
@@ -40,10 +42,16 @@ public:
      *  \param configuration : The reference of the configuration to be
      *                         redistributed.
      *                       
-     *  NOTE: 1. This is a friend funciton of Cofiguration class.
-     *        2. The configuration must be passed after classification.
+     *  NOTE: The configuration must be passed after classification.
      */
     void reDistribute(Configuration & configuration) const; 
+
+    /*! \brief Update local part of global Configuration using sub-configuration.
+     *  \param global_config : The global configuration object.
+     *  \param sub_config    : The local configuration object.
+     */
+    void updateLocalFromSubConfig(Configuration & global_config,
+                                  const SubConfiguration & sub_config) const;
 
 protected:
 

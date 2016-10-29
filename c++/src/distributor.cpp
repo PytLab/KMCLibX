@@ -92,3 +92,25 @@ void Distributor::reDistribute(Configuration & configuration) const
     // }}}
 }
 
+void Distributor::updateLocalFromSubConfig(Configuration & global_config,
+                                           const SubConfiguration & sub_config) const
+{
+    // {{{
+
+    // Get global indices.
+    const std::vector<int> & global_indices = sub_config.globalIndices();
+
+    // Update local info in global configuration.
+    for (size_t i = 0; i < global_indices.size(); ++i)
+    {
+        int global_index = global_indices[i];
+
+        // Use at() to do bound check here.
+        global_config.types_.at(global_index) = sub_config.types()[i];
+        global_config.elements_.at(global_index) = sub_config.elements()[i];
+        global_config.atom_id_.at(global_index) = sub_config.atomID()[i];
+    }
+
+    // }}}
+}
+
