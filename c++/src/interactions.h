@@ -42,19 +42,24 @@ class Interactions {
 
 public:
 
+    /*! \brief Default constructor.
+     */
+    Interactions();
+
     /*! \brief Construct the interactions object from a list of processes.
      *  \param processes: The list of proceeses.
-     *  \param implicit_wildcards: A flag indicating if implicit wildcards should be added
-     *                             to the process matchlists.
+     *  \param implicit_wildcards: A flag indicating if implicit wildcards
+     *                             should be added to the process matchlists.
      */
     Interactions(const std::vector<Process> & processes,
                  const bool implicit_wildcards);
 
     /*! \brief Construct the interactions object from a list of processes.
      *  \param processes: The list of proceeses.
-     *  \param implicit_wildcards: A flag indicating if implicit wildcards should be added
-     *                             to the process matchlists.
-     *  \param rate_calculator: The custom rate calculator to use for updating the rates.
+     *  \param implicit_wildcards: A flag indicating if implicit wildcards
+     *                             should be added to the process matchlists.
+     *  \param rate_calculator: The custom rate calculator to use for updating
+     *                          the rates.
      */
     Interactions(const std::vector<CustomRateProcess> & processes,
                  const bool implicit_wildcards,
@@ -100,12 +105,14 @@ public:
     /*! \brief Const query for the probability table.
      *  \return : A handle to the present probability table.
      */
-    const std::vector<std::pair<double,int> > & probabilityTable() const { return probability_table_; }
+    const std::vector<std::pair<double,int> > & probabilityTable() const
+    { return probability_table_; }
 
     /*! \brief Const query for the available site for all processes.
      *  \return : A vector of available sites for all processes.
      */
-    const std::vector<int> & processAvailableSites() const { return process_available_sites_; }
+    const std::vector<int> & processAvailableSites() const
+    { return process_available_sites_; }
 
     /*! \brief Recalculate the table of process probabilities based on the
      *         number of available sites for each process and their rates.

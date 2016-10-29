@@ -38,7 +38,7 @@ public:
      *  \param simulation_timer : The timer for the simulation.
      *  \param lattice_map      : A lattice map object describing the lattice.
      *  \param interactions     : An interactions object describing all interactions
-     *                         and possible processes in the system.
+     *                            and possible processes in the system.
      */
     LatticeModel(Configuration & configuration,
                  SitesMap & sitesmap,
@@ -78,7 +78,7 @@ private:
      *         processes with all indices in the configuration.
      */
     void calculateInitialMatching();
-
+    
     /// A reference to the configuration given at construction.
     Configuration & configuration_;
 

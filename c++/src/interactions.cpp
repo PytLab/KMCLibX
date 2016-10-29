@@ -49,6 +49,21 @@ bool pairComp(const std::pair<double,int> & p1,
 
 // -----------------------------------------------------------------------------
 //
+Interactions::Interactions() :
+    processes_(0),
+    custom_rate_processes_(0),
+    process_pointers_(0),
+    probability_table_(0),
+    process_available_sites_(0),
+    implicit_wildcards_(true),
+    use_custom_rates_(false),
+    rate_calculator_placeholder_(RateCalculator()),
+    rate_calculator_(rate_calculator_placeholder_),
+    picked_index_(-1)
+{}
+
+// -----------------------------------------------------------------------------
+//
 Interactions::Interactions(const std::vector<Process> & processes,
                            const bool implicit_wildcards) :
     processes_(processes),
