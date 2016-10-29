@@ -557,9 +557,10 @@ void Configuration::updateLocal( const SubConfiguration & sub_config)
     {
         int global_index = global_indices[i];
 
-        types_[global_index] = sub_config.types()[i];
-        elements_[global_index] = sub_config.elements()[i];
-        atom_id_[global_index] = sub_config.atomID()[i];
+        // Use at() to do bound check here.
+        types_.at(global_index) = sub_config.types()[i];
+        elements_.at(global_index) = sub_config.elements()[i];
+        atom_id_.at(global_index) = sub_config.atomID()[i];
     }
 }
 
