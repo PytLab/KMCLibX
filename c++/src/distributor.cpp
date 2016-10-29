@@ -115,3 +115,27 @@ updateLocalFromSubConfig(Configuration & global_config,
     // }}}
 }
 
+
+// ----------------------------------------------------------------------------
+//
+void PartialRandomDistributor::reDistribute(Configuration & configuration,
+                                            const LatticeMap & lattice_map,
+                                            int x, int y, int z) const
+{
+    // {{{
+
+    // Split global configuration to sub-configuraitons.
+    std::vector<SubConfiguration> && sub_configs = configuration.split(lattice_map,
+                                                                       x, y, z);
+    // Loop over all sub-configurations to update global configuration.
+    for (SubConfiguration & sub_config : sub_configs)
+    {
+        // Re-distribute sub-configuration.
+        reDistribute(sub_config);
+        // Update local configuration.
+        updateLocalFromSubConfig(configuration, sub_config);
+    }
+
+    // }}}
+}
+

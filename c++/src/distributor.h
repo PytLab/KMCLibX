@@ -27,6 +27,7 @@
 class Configuration;
 class SubConfiguration;
 class Matcher;
+class LatticeMap;
 
 /*! \brief Class for configuration/geometries redistribution.
  *  NOTE: The class is a friend class of Configuration/SubConfiguration.
@@ -95,6 +96,10 @@ public:
      */
     virtual ~PartialRandomDistributor() {}
 
+    /*! \brief Re-distribution method from father class.
+     */
+    using RandomDistributor::reDistribute;
+
     /*! \brief Re-distribute the configuration by spliting and redistributing
      *         randomly.
      *  \param configuration : The reference of the configuration to be
@@ -102,6 +107,9 @@ public:
      *
      *  NOTE: The configuration must be passed after classification.
      */
+    void reDistribute(Configuration & configuration,
+                      const LatticeMap & lattice_map,
+                      int x, int y, int z) const;
 
     /*! \brief Update local part of global Configuration using sub-configuration.
      *  \param global_config (in/out) : The global configuration object.

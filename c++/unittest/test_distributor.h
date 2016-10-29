@@ -24,6 +24,7 @@ public:
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testRandomReDistribution );
     CPPUNIT_TEST( testRandomSubConfigReDistribution );
+    CPPUNIT_TEST( testPartialRandomReDistribute );
     CPPUNIT_TEST( testUpdateLocalFromSubConfig );
     CPPUNIT_TEST_SUITE_END();
 
@@ -31,6 +32,7 @@ public:
     void testRandomReDistribution();
     void testRandomSubConfigReDistribution();
     void testUpdateLocalFromSubConfig();
+    void testPartialRandomReDistribute();
 
 };
 
