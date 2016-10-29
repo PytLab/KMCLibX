@@ -185,6 +185,11 @@ public:
     std::vector<SubConfiguration> split(const LatticeMap & lattice_map,
                                         int x, int y, int c);
 
+    /*! \brief Update local part of global configuration using sub-configuration.
+     *  \param sub_config : The sub-configuration object.
+     */
+    void updateLocal(const SubConfiguration & sub_config);
+
     /*! \brief Reset all species slow flags to be true.
      *  \param : The default fast element names.
      *  \return : The list of reseted species slow flags.

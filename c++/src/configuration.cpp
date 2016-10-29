@@ -546,6 +546,25 @@ std::vector<SubConfiguration> Configuration::split(const LatticeMap & lattice_ma
 
 
 // ----------------------------------------------------------------------------
+//
+void Configuration::updateLocal( const SubConfiguration & sub_config)
+{
+    // Get global indices.
+    const std::vector<int> & global_indices = sub_config.globalIndices();
+
+    // Update local info in global configuration.
+    for (size_t i = 0; i < global_indices.size(); ++i)
+    {
+        int global_index = global_indices[i];
+
+        types_[global_index] = sub_config.types()[i];
+        elements_[global_index] = sub_config.elements()[i];
+        atom_id_[global_index] = sub_config.atomID()[i];
+    }
+}
+
+
+// ----------------------------------------------------------------------------
 // Functions definitions for SubConfiguration class.
 // ----------------------------------------------------------------------------
 
