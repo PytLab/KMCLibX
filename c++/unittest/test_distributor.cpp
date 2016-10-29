@@ -940,6 +940,32 @@ void Test_Distributor::testPartialRandomReDistribute()
     CPPUNIT_ASSERT_EQUAL(new_atom_id[0], 0);
     CPPUNIT_ASSERT_EQUAL(new_atom_id[1], 1);
 
+    bool elements_changed = false;
+    bool types_changed = false;
+    bool atom_id_changed = false;
+
+    for (size_t i = 2; i < ori_elements.size(); ++i)
+    {
+        if (new_elements[i] != ori_elements[i])
+        {
+            elements_changed = true;
+        }
+
+        if (new_types[i] != ori_types[i])
+        {
+            types_changed = true;
+        }
+
+        if (new_atom_id[i] != ori_atom_id[i])
+        {
+            atom_id_changed = true;
+        }
+    }
+
+    CPPUNIT_ASSERT(elements_changed);
+    CPPUNIT_ASSERT(types_changed);
+    CPPUNIT_ASSERT(atom_id_changed);
+
     // Sort all data.
     std::sort(ori_elements.begin(), ori_elements.end());
     std::sort(ori_types.begin(), ori_types.end());
