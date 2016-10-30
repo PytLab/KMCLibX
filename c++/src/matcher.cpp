@@ -54,7 +54,7 @@ Matcher::Matcher()
 // TODO: OpenMP.
 //
 std::vector<std::pair<int, int> > \
-Matcher::indexProcessToMatch(const Interactions & interactions,
+Matcher::indexProcessToMatch(const std::vector<Process *> & process_ptrs,
                              Configuration      & configuration,
                              const SitesMap     & sitesmap,
                              const LatticeMap   & lattice_map,
@@ -80,11 +80,11 @@ Matcher::indexProcessToMatch(const Interactions & interactions,
         const SiteMatchList & site_matchlist = sitesmap.matchList(index);
 
         // For each process, check if we should try to match.
-        for (size_t j = 0; j < interactions.processes().size(); ++j)
+        for (size_t j = 0; j < process_ptrs.size(); ++j)
         {
             // Check if the basis site is listed.
             const std::vector<int> & process_basis_sites = \
-                (*interactions.processes()[j]).basisSites();
+                (*process_ptrs[j]).basisSites();
 
             if ( std::find(process_basis_sites.begin(),
                            process_basis_sites.end(),
@@ -92,7 +92,7 @@ Matcher::indexProcessToMatch(const Interactions & interactions,
                   != process_basis_sites.end() )
             {
                 // Pick out the process.
-                const Process * process_ptr = interactions.processes()[j];
+                const Process * process_ptr = process_ptrs[j];
 
                 // Check if process site types is set.
                 if (process_ptr->hasSiteTypes())
@@ -143,8 +143,9 @@ void Matcher::calculateMatching(Interactions & interactions,
     // {{{
 
     // Build the list of indices and processes to match.
+    const std::vector<Process *> & process_ptrs = interactions.processes();
     const std::vector<std::pair<int,int> > && index_process_to_match = \
-        indexProcessToMatch(interactions, configuration, sitesmap,
+        indexProcessToMatch(process_ptrs, configuration, sitesmap,
                             lattice_map, indices);
 
     // Generate the lists of tasks.
@@ -488,8 +489,9 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
     configuration.resetSlowFlags(fast_elements);
 
     // Get the list of indices and process to match.
+    const std::vector<Process *> & fast_process_ptrs = interactions.fastProcesses();
     const std::vector<std::pair<int, int> > && index_process_to_match = \
-        indexProcessToMatch(interactions, configuration, sitesmap,
+        indexProcessToMatch(fast_process_ptrs, configuration, sitesmap,
                             lattice_map, indices);
 
     // Loop over all indices and processes.

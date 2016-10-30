@@ -68,7 +68,7 @@ public:
 
 
     /* \brief Build the list of indices and processes to match later.
-     *  \param interactions  : The interactions object holding info on possible processes.
+     *  \param process_ptrs  : The pointers of processes to be checked.
      *  \param configuration : The configuration which the list of indices refers to.
      *  \param sitesmap      : The sites map which the list of inidices refers to.
      *  \param lattice_map   : The lattice map describing the configuration.
@@ -76,7 +76,7 @@ public:
      *  \return index_process_to_match: The list of index and process to match.
      */
     std::vector<std::pair<int, int> > \
-    indexProcessToMatch(const Interactions & interactions,
+    indexProcessToMatch(const std::vector<Process *> & process_ptrs,
                         Configuration & configuration,
                         const SitesMap & sitesmap,
                         const LatticeMap & lattice_map,
