@@ -154,6 +154,8 @@ public:
     /*! \brief Pick an availabe process according to its probability.
      *  \return : The index of a possible available process picked according
      *            to its probability.
+     *
+     *  NOTE: The index is the index in slow processes.
      */
     int pickProcessIndex();
 

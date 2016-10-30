@@ -311,12 +311,12 @@ int Interactions::pickProcessIndex()
     // Find the lower bound - corresponding to the first element for which
     // the accumulated rate is not smaller than rnd, and the number
     // of available processes is larger than zero.
-    const std::vector<std::pair<double, int> >::const_iterator begin = probability_table_.begin();
-    const std::vector<std::pair<double, int> >::const_iterator end   = probability_table_.end();
-    const std::vector<std::pair<double, int> >::const_iterator it1   = std::lower_bound(begin,
-                                                                                        end,
-                                                                                        rnd_pair,
-                                                                                        pairComp);
+    const std::vector<std::pair<double, int> >::const_iterator begin = \
+        probability_table_.begin();
+    const std::vector<std::pair<double, int> >::const_iterator end = \
+        probability_table_.end();
+    const std::vector<std::pair<double, int> >::const_iterator it1 = \
+        std::lower_bound(begin, end, rnd_pair, pairComp); 
 
     // Find the index in the process.
     int picked_index = it1 - begin;
@@ -335,7 +335,7 @@ Process* Interactions::pickProcess()
     const int index = pickProcessIndex();
 
     // Update the process internal probablility table if needed.
-    process_pointers_[index]->updateRateTable();
+    slow_process_pointers_[index]->updateRateTable();
 
     return process_pointers_[index];
 }
