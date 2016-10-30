@@ -87,10 +87,32 @@ public:
      */
     std::vector<Process*> & processes() { return process_pointers_; }
 
+    /*! \brief Query for the fast processes.
+     *  \return : The pointers of fast processes of the system.
+     */
+    std::vector<Process *> & fastProcesses() { return fast_process_pointers_; }
+
+    /*! \brief Query for the slow processes.
+     *  \return : The pointers of slow processes of the system.
+     */
+    std::vector<Process *> & slowProcesses() { return slow_process_pointers_; }
+
     /*! \brief Const query for the processes.
      *  \return : A handle to the processes of the system.
      */
     const std::vector<Process*> & processes() const { return process_pointers_; }
+
+    /*! \brief Const query for the fast processes.
+     *  \return : The pointers of fast processes of the system.
+     */
+    const std::vector<Process *> & fastProcesses() const
+    { return fast_process_pointers_; }
+
+    /*! \brief Const query for the slow processes.
+     *  \return : The pointers of slow processes of the system.
+     */
+    const std::vector<Process *> & slowProcesses() const
+    { return slow_process_pointers_; }
 
     /*! \brief Const query for the rate calculator reference.
      *  \return : A handle to the rate calculator in use.
@@ -158,6 +180,12 @@ private:
 
     /// Pointers to the processes we use.
     std::vector<Process*> process_pointers_;
+
+    /// Pointers to the slow processes.
+    std::vector<Process *> slow_process_pointers_;
+
+    /// Pointers to the fast processes.
+    std::vector<Process *> fast_process_pointers_;
 
     /// The probability table.
     std::vector<std::pair<double,int> > probability_table_;

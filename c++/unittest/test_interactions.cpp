@@ -23,6 +23,7 @@
 //
 void Test_Interactions::testConstruction()
 {
+    // {{{
     std::vector<Process> processes;
     processes.push_back(Process());
     processes.push_back(Process());
@@ -37,13 +38,14 @@ void Test_Interactions::testConstruction()
     processes2.push_back(CustomRateProcess());
     Interactions interactions2(processes2, implicit_wildcards, rc);
     CPPUNIT_ASSERT( interactions2.useCustomRates() );
-    // DONE
+    // }}}
 }
 
 // -------------------------------------------------------------------------- //
 //
 void Test_Interactions::testQuery()
 {
+    // {{{
     // Setup two valid processes.
     std::vector<Process> processes;
 
@@ -92,7 +94,7 @@ void Test_Interactions::testQuery()
         const double rate = 13.7;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, rate, std::vector<int>(1,0));
+        Process p(c1, c2, rate, std::vector<int>(1,0), true);
         processes.push_back(p);
     }
 
@@ -102,8 +104,14 @@ void Test_Interactions::testQuery()
     // Query for the processes.
     const std::vector<Process*> & queried_processes = interactions.processes();
 
+    // Query for the slow and fast processes.
+    const std::vector<Process *> & queried_fast_processes = interactions.fastProcesses();
+    const std::vector<Process *> & queried_slow_processes = interactions.slowProcesses();
+
     // Check the length of the list of processes.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_processes.size()), 3 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_fast_processes.size()), 1);
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_slow_processes.size()), 2);
 
     // Get the types in the queried processes and check.
     CPPUNIT_ASSERT_EQUAL( queried_processes[0]->matchList()[0].match_type, 1 );
@@ -137,6 +145,7 @@ void Test_Interactions::testQuery()
 
     // Query for picked index.
     CPPUNIT_ASSERT_EQUAL(interactions.pickedIndex(), -1);
+    // }}}
 
 }
 
@@ -144,6 +153,7 @@ void Test_Interactions::testQuery()
 //
 void Test_Interactions::testUpdateAndPick()
 {
+    // {{{
     // Setup a list of processes.
     std::vector<Process> processes;
 
@@ -295,7 +305,7 @@ void Test_Interactions::testUpdateAndPick()
     seedRandom(false, 87);
     const Process & proc2 = (*interactions.pickProcess());
     CPPUNIT_ASSERT_EQUAL( &proc1, &proc2 );
-
+    // }}}
 }
 
 
@@ -303,6 +313,7 @@ void Test_Interactions::testUpdateAndPick()
 //
 void Test_Interactions::testUpdateAndPickCustom()
 {
+    // {{{
     // Setup a list of custom rate processes.
     std::vector<CustomRateProcess> processes;
 
@@ -476,7 +487,7 @@ void Test_Interactions::testUpdateAndPickCustom()
                                   24.0/43.0,
                                   1.0e-2 );
 
-    // DONE
+    // }}}
 }
 
 
@@ -484,6 +495,7 @@ void Test_Interactions::testUpdateAndPickCustom()
 //
 void Test_Interactions::testMaxRange()
 {
+    // {{{
     // Setup two valid processes.
     std::vector<Process> processes;
 
@@ -602,7 +614,7 @@ void Test_Interactions::testMaxRange()
     // This should have the max range 4.
     const Interactions interactions7(processes, true);
     CPPUNIT_ASSERT_EQUAL( interactions7.maxRange(), 4 );
-
+    // }}}
 }
 
 
@@ -610,6 +622,7 @@ void Test_Interactions::testMaxRange()
 //
 void Test_Interactions::testUpdateProcessMatchLists()
 {
+    // {{{
     // Setup two valid processes.
     std::vector<Process> processes;
 
@@ -813,6 +826,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
         CPPUNIT_ASSERT_DOUBLES_EQUAL( match[18].coordinate.z(), 0.0, 1.0e-10 );
 
     }
+    // }}}
 }
 
 
@@ -820,6 +834,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
 //
 void Test_Interactions::testUpdateProcessIDMoves()
 {
+    // {{{
     // Setup two valid processes.
     std::vector<Process> processes;
 
@@ -962,4 +977,6 @@ void Test_Interactions::testUpdateProcessIDMoves()
         CPPUNIT_ASSERT_EQUAL( match[4].match_type,  0 );
         CPPUNIT_ASSERT_EQUAL( match[5].match_type,  2 );
     }
+    // }}}
 }
+

@@ -65,14 +65,24 @@ Interactions::Interactions(const std::vector<Process> & processes,
     // Point the process pointers to the right places.
     for (size_t i = 0; i < processes_.size(); ++i)
     {
-        process_pointers_[i] = &processes_[i];
-    }
+        Process * process_ptr = &processes_[i];
+        process_pointers_[i] = process_ptr;
 
-    // DONE
+        // Classify fast and slow process pointers.
+        if ( process_ptr->fast() )
+        {
+            fast_process_pointers_.push_back(process_ptr);
+        }
+        else
+        {
+            slow_process_pointers_.push_back(process_ptr);
+        }
+    }
 }
 
 
 // -----------------------------------------------------------------------------
+// NOTE: There is no classification of fast and slow process pointers.
 //
 Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
                            const bool implicit_wildcards,
