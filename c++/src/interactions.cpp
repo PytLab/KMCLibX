@@ -104,10 +104,19 @@ Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
     // Point the process pointers to the right places.
     for (size_t i = 0; i < custom_rate_processes_.size(); ++i)
     {
-        process_pointers_[i] = &custom_rate_processes_[i];
-    }
+        Process * process_ptr = &custom_rate_processes_[i];
+        process_pointers_[i] = process_ptr;
 
-    // DONE
+        // Classify fast and slow process pointers.
+        if ( process_ptr->fast() )
+        {
+            fast_process_pointers_.push_back(process_ptr);
+        }
+        else
+        {
+            slow_process_pointers_.push_back(process_ptr);
+        }
+    }
 }
 
 
@@ -243,10 +252,12 @@ int Interactions::totalAvailableSites() const
 //
 void Interactions::updateProbabilityTable()
 {
+    // {{{
+
     // Loop over all processes.
-    std::vector<Process*>::const_iterator it1 = process_pointers_.begin();
+    std::vector<Process *>::const_iterator it1 = slow_process_pointers_.begin();
     std::vector<std::pair<double, int> >::iterator it2 = probability_table_.begin();
-    const std::vector<Process*>::const_iterator end = process_pointers_.end();
+    const std::vector<Process *>::const_iterator end = slow_process_pointers_.end();
 
     double previous_rate = 0.0;
     for ( ; it1 != end; ++it1, ++it2 )
@@ -260,6 +271,8 @@ void Interactions::updateProbabilityTable()
         // Store the number of available processes to filter out zeroes later.
         (*it2).second = n_sites;
     }
+
+    // }}}
 }
 
 
