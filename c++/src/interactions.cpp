@@ -7,17 +7,18 @@
 */
 
 
-/* ******************************************************************
+/* *****************************************************************************
  *  file   : interactions.cpp
  *  brief  : File for the implementation code of the Interactions class.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>
- *  ------------------------------------------------------------------
- *  zjshao     2016-06-26   1.3          Add picked index &
- *                                       process available sites.
- *  ------------------------------------------------------------------
- * ******************************************************************
+ *  ---------------------------------------------------------------------------
+ *  zjshao     2016-06-26   1.3          Add picked index & process available
+ *                                       sites.
+ *  zjshao     2016-10-30   1.4          Add slow/fast process classification
+ *  ---------------------------------------------------------------------------
+ * *****************************************************************************
  */
 
 #include <algorithm>
@@ -54,7 +55,6 @@ Interactions::Interactions(const std::vector<Process> & processes,
     processes_(processes),
     custom_rate_processes_(0),
     process_pointers_(processes.size(), NULL),
-    probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
     process_available_sites_(processes.size(), 0),
     implicit_wildcards_(implicit_wildcards),
     use_custom_rates_(false),
@@ -78,6 +78,10 @@ Interactions::Interactions(const std::vector<Process> & processes,
             slow_process_pointers_.push_back(process_ptr);
         }
     }
+
+    // Initialize probablity table after processes are classified.
+    probability_table_.resize(slow_process_pointers_.size(),
+                              std::pair<double, int>(0.0, 0));
 }
 
 
@@ -226,7 +230,7 @@ int Interactions::totalAvailableSites() const
 {
     // Loop through and sum all available sites on all processes.
     size_t sum = 0;
-    for (Process* const & process_pointer : process_pointers_)
+    for (const Process* const & process_pointer : process_pointers_)
     {
         sum += process_pointer->nSites();
     }
