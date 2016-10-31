@@ -32,7 +32,7 @@
 // ----------------------------------------------------------------------------
 // TODO: OpenMp
 //
-void RandomDistributor::reDistribute(Configuration & configuration) const
+std::vector<int> RandomDistributor::reDistribute(Configuration & configuration) const
 {
     // {{{
 
@@ -40,19 +40,23 @@ void RandomDistributor::reDistribute(Configuration & configuration) const
     std::vector<int> & types = configuration.types_;
     std::vector<int> & atom_id = configuration.atom_id_;
     std::vector<std::string> & elements = configuration.elements_;
+
     const std::vector<bool> & slow_flags = configuration.slowFlags();
+    const std::vector<int> & global_indices = configuration.globalIndices();
 
     // Extract all fast species to a list.
     std::vector<int> fast_types;
     std::vector<int> fast_atom_id;
     std::vector<std::string> fast_elements;
-    std::vector<int> fast_indices;
+    std::vector<int> fast_global_indices;
+    std::vector<int> fast_local_indices;
 
     for (size_t i = 0; i < slow_flags.size(); ++i)
     {
         if (!slow_flags[i])
         {
-            fast_indices.push_back(i);
+            fast_local_indices.push_back(i);
+            fast_global_indices.push_back(global_indices[i]);
             fast_atom_id.push_back(atom_id[i]);
             fast_types.push_back(types[i]);
             fast_elements.push_back(elements[i]);
@@ -63,7 +67,7 @@ void RandomDistributor::reDistribute(Configuration & configuration) const
     static std::default_random_engine generator(time(NULL));
 
     // Number of fast species.
-    const int n_fast = fast_indices.size();
+    const int n_fast = fast_local_indices.size();
 
     // Initialize a indices vector to shuffle other vectors.
     std::vector<int> shuffle_indices;
@@ -81,13 +85,15 @@ void RandomDistributor::reDistribute(Configuration & configuration) const
         const int index = shuffle_indices[i];
 
         // Index in the configuration.
-        const int config_index = fast_indices[i];
+        const int config_index = fast_local_indices[i];
 
         // Put the shuffled entries into configuration.
         types[config_index] = fast_types[index];
         atom_id[config_index] = fast_atom_id[index];
         elements[config_index] = fast_elements[index];
     }
+
+    return fast_global_indices;
 
     // }}}
 }
@@ -118,9 +124,9 @@ updateLocalFromSubConfig(Configuration & global_config,
 
 // ----------------------------------------------------------------------------
 //
-void PartialRandomDistributor::reDistribute(Configuration & configuration,
-                                            const LatticeMap & lattice_map,
-                                            int x, int y, int z) const
+std::vector<int> PartialRandomDistributor::reDistribute(Configuration & configuration,
+                                                        const LatticeMap & lattice_map,
+                                                        int x, int y, int z) const
 {
     // {{{
 
@@ -128,13 +134,20 @@ void PartialRandomDistributor::reDistribute(Configuration & configuration,
     std::vector<SubConfiguration> && sub_configs = configuration.split(lattice_map,
                                                                        x, y, z);
     // Loop over all sub-configurations to update global configuration.
+    std::vector<int> fast_indices(0);
     for (SubConfiguration & sub_config : sub_configs)
     {
         // Re-distribute sub-configuration.
-        reDistribute(sub_config);
+        std::vector<int> sub_fast_indices = reDistribute(sub_config);
         // Update local configuration.
         updateLocalFromSubConfig(configuration, sub_config);
+        // Insert sub_fast_indices to total fast indices.
+        fast_indices.insert(fast_indices.end(),
+                            sub_fast_indices.begin(),
+                            sub_fast_indices.end());
     }
+
+    return fast_indices;
 
     // }}}
 }

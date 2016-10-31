@@ -6,6 +6,7 @@
 */
 
 #include <algorithm>
+#include <iostream>
 
 #include "test_distributor.h"
 
@@ -201,7 +202,16 @@ void Test_Distributor::testRandomReDistribution()
     auto ori_types = config.types();
     auto ori_atom_id = config.atomID();
 
-    distributor.reDistribute(config);
+    std::vector<int> && affected_indices = distributor.reDistribute(config);
+
+    // Check affected indices.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(affected_indices.size()), 52);
+
+    //std::sort(affected_indices.begin(), affected_indices.end());
+    for (size_t i = 0, j = 2; i < affected_indices.size(); ++i, ++j)
+    {
+        CPPUNIT_ASSERT_EQUAL(affected_indices[i], static_cast<int>(j));
+    }
 
     // Check configuration after redistribution.
     // There should be no changes on the 0th and 1st elements.
@@ -925,7 +935,18 @@ void Test_Distributor::testPartialRandomReDistribute()
     PartialRandomDistributor distributor;
 
     // Re-distribution.
-    distributor.reDistribute(config, global_lattice, 2, 2, 2);
+    std::vector<int> && affected_indices = distributor.reDistribute(config,
+                                                                    global_lattice,
+                                                                    2, 2, 2);
+
+    // Check affected indices.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(affected_indices.size()), 4*4*4*2-2);
+
+    std::sort(affected_indices.begin(), affected_indices.end());
+    for (size_t i = 0, j = 2; i < affected_indices.size(); ++i, ++j)
+    {
+        CPPUNIT_ASSERT_EQUAL(affected_indices[i], static_cast<int>(j));
+    }
 
     // Check re-distributed configuration.
     auto new_elements = config.elements();

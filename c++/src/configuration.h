@@ -237,6 +237,14 @@ public:
     const std::vector<bool> & slowFlags() const
     { return slow_flags_; }
 
+    /*! \brief Query for indices.
+     */
+    const std::vector<int> & indices() const { return indices_; }
+
+    /*! \brief Query for global indices (same as indices)
+     */
+    virtual const std::vector<int> & globalIndices() const { return indices_; }
+
 protected:
 
     /// Counter for the number of moved atom ids the last move.
@@ -278,6 +286,9 @@ protected:
     /// The species fast/slow flags, true if slow.
     std::vector<bool> slow_flags_;
 
+    /// The indices in configuration.
+    std::vector<int> indices_;
+
 private:
 
 };
@@ -318,8 +329,7 @@ public:
 
     /* \brief Query for global indices.
      */
-    const std::vector<int> & globalIndices() const
-    { return global_indices_; }
+    const std::vector<int> & globalIndices() const { return global_indices_; }
 
 private:
     /// The indices in global configurations.
@@ -353,7 +363,6 @@ std::vector<Coordinate> Configuration::recentMoveVectors() const
     move_vectors.resize(n_moved_);
     return move_vectors;
 }
-
 
 #endif // __CONFIGURATION__
 

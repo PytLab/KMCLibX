@@ -23,6 +23,8 @@
 #ifndef __DISTRIBUTOR__
 #define __DISTRIBUTOR__
 
+#include <vector>
+
 // Forward declarations.
 class Configuration;
 class SubConfiguration;
@@ -48,7 +50,7 @@ public:
      *  \param configuration : The reference of the configuration to be
      *                         redistributed.
      */
-    virtual void reDistribute(Configuration & configuration) const = 0;
+    virtual std::vector<int> reDistribute(Configuration & configuration) const = 0;
 
 protected:
 
@@ -77,7 +79,7 @@ public:
      *                       
      *  NOTE: The configuration must be passed after classification.
      */
-    virtual void reDistribute(Configuration & configuration) const;
+    virtual std::vector<int> reDistribute(Configuration & configuration) const;
 
 };
 
@@ -107,9 +109,9 @@ public:
      *
      *  NOTE: The configuration must be passed after classification.
      */
-    void reDistribute(Configuration & configuration,
-                      const LatticeMap & lattice_map,
-                      int x, int y, int z) const;
+    std::vector<int> reDistribute(Configuration & configuration,
+                                  const LatticeMap & lattice_map,
+                                  int x, int y, int z) const;
 
     /*! \brief Update local part of global Configuration using sub-configuration.
      *  \param global_config (in/out) : The global configuration object.

@@ -89,6 +89,12 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
         types_.push_back(it->second);
     }
 
+    // Setup indices.
+    for (size_t i = 0; i < elements_.size(); ++i)
+    {
+        indices_.push_back(i);
+    }
+
     // }}}
 }
 
@@ -148,6 +154,12 @@ Configuration::Configuration(const std::vector<std::vector<double> > & coordinat
     {
         std::map<std::string, int>::const_iterator it = possible_types.find(element);
         types_.push_back(it->second);
+    }
+
+    // Setup indices.
+    for (size_t i = 0; i < elements_.size(); ++i)
+    {
+        indices_.push_back(i);
     }
 
     // }}}
