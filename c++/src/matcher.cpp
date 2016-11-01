@@ -505,17 +505,8 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
         const ProcessMatchList & process_matchlist = process.matchList();
         const ConfigMatchList & config_matchlist = configuration.matchList(conf_idx);
 
-        // Process type, slow or not.
-        const bool fast_process = process.fast();
-
-        if (!fast_process)
-        {
-            continue;
-        }
-
         // Check matching.
-        const bool in_list = process.isListed(conf_idx);
-        if (!in_list)
+        if ( !process.isListed(conf_idx) )
         {
             continue;
         }
