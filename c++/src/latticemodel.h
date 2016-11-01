@@ -21,6 +21,7 @@
 #include "latticemap.h"
 #include "interactions.h"
 #include "matcher.h"
+#include "distributor.h"
 
 // Forward declarations.
 class Configuration;
@@ -49,6 +50,15 @@ public:
     /*! \brief Function for taking one time step in the KMC lattice model.
      */
     void singleStep();
+
+    /*! \brief Function for redistributing configuration in KMC iteration.
+     *  \param fast_species : The list of default fast species.
+     *  \param x : The split number on x axis.
+     *  \param y : The split number on y axis.
+     *  \param z : The split number on z axis.
+     */
+    void redistribute(const std::vector<std::string> & fast_species,
+                      int x = 1, int y = 1, int z = 1);
 
     /*! \brief Query for the interactions.
      *  \return : A handle to the interactions stored on the class.
@@ -96,6 +106,9 @@ private:
 
     /// The Matcher to use for calculating matches and update the process lists.
     Matcher matcher_;
+
+    /// The random Distributor for re-distributing configuration.
+    PartialRandomDistributor distributor_;
 };
 
 

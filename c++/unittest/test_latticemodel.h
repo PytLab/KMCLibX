@@ -29,6 +29,7 @@ public:
     CPPUNIT_TEST( testSingleStepFunction );
     CPPUNIT_TEST( testSingleStepFunction2D );
     CPPUNIT_TEST( testAffectedIndicesRematching );
+    CPPUNIT_TEST( testRedistribute );
     CPPUNIT_TEST( testTiming );
     CPPUNIT_TEST_SUITE_END();
 
@@ -37,6 +38,7 @@ public:
     void testSingleStepFunction();
     void testSingleStepFunction2D();
     void testAffectedIndicesRematching();
+    void testRedistribute();
     void testTiming();
 
 };
