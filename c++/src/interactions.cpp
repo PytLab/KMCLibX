@@ -337,6 +337,6 @@ Process* Interactions::pickProcess()
     // Update the process internal probablility table if needed.
     slow_process_pointers_[index]->updateRateTable();
 
-    return process_pointers_[index];
+    return slow_process_pointers_[index];
 }
 
