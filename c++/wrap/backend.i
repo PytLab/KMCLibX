@@ -24,6 +24,7 @@
 #include "customrateprocess.h"
 #include "coordinate.h"
 #include "matcher.h"
+#include "distributor.h"
 #include "matchlist.h"
 #include "matchlistentry.h"
 #include "simulationtimer.h"
