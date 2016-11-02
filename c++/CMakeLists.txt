@@ -106,7 +106,7 @@ endif()
 # Includsion from the source.
 include_directories( ${KMCLib_SOURCE_DIR}/src )
 include_directories( ${KMCLib_SOURCE_DIR}/externals/include )
-include_directories( /usr/include/python2.7 )
+include_directories( /home/zjshao/.pyenv/versions/2.7.12/include/python2.7)
 
 
 # -----------------------------------------------------------------------------
@@ -125,12 +125,12 @@ add_subdirectory(unittest)
 # ADD THE WRAPPINGS
 # -----------------------------------------------------------------------------
 
-#add_subdirectory(wrap)
+add_subdirectory(wrap)
 
 # -----------------------------------------------------------------------------
 # ADD THE INSTALL TARGET
 # -----------------------------------------------------------------------------
 
 install( FILES ${CMAKE_BINARY_DIR}/wrap/Backend.py ${CMAKE_BINARY_DIR}/wrap/_Backend.so
-         DESTINATION ${CMAKE_BINARY_DIR}/../../python/src/KMCLib/Backend/ )
+    DESTINATION ${KMCLib_SOURCE_DIR}/../python/src/KMCLib/Backend/ )
 
