@@ -171,11 +171,6 @@ public:
     inline
     void wrap(Coordinate & c, const int direction) const;
 
-    /*! \brief Extract a specific sub-lattice from global lattice.
-     *  \return : The SubLatticeMap object.
-     */
-    SubLatticeMap subLatticeMap(int i, int j, int k) const;
-
     /*! \brief Split lattice to sub-lattice.
      *  \param nx : Split number on x axis.
      *  \param ny : Split number on y axis.

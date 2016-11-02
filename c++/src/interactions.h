@@ -43,10 +43,6 @@ class Interactions {
 
 public:
 
-    /*! \brief Default constructor.
-     */
-    Interactions();
-
     /*! \brief Construct the interactions object from a list of processes.
      *  \param processes: The list of proceeses.
      *  \param implicit_wildcards: A flag indicating if implicit wildcards
