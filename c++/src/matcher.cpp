@@ -506,7 +506,8 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
         const ConfigMatchList & config_matchlist = configuration.matchList(conf_idx);
 
         // Check matching.
-        if ( !process.isListed(conf_idx) )
+        bool in_list = process.isListed(conf_idx);
+        if (!in_list)
         {
             continue;
         }
