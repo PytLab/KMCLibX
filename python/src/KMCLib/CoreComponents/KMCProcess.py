@@ -471,6 +471,14 @@ class KMCProcess(object):
         """
         return self.__site_types
 
+    def fast(self):
+        """
+        Query for the fast flag.
+
+        :returns: The fast flag of the process.
+        """
+        return self.__fast
+
     def _script(self, variable_name="process"):
         """
         Generate a script representation of an instance.
