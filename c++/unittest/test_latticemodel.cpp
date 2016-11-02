@@ -2464,6 +2464,7 @@ void Test_LatticeModel::testAffectedIndicesRematching()
 //
 void Test_LatticeModel::testRedistribute()
 {
+    // {{{
     // Construct two global configurations.
     int nI = 4, nJ = 4, nK = 4, nB = 2;
     std::vector<double> basis_coords = {0.0, 0.5};
@@ -2664,8 +2665,183 @@ void Test_LatticeModel::testRedistribute()
         CPPUNIT_ASSERT_EQUAL(ori_types[i], new_types[i]);
         CPPUNIT_ASSERT_EQUAL(ori_atom_id[i], new_atom_id[i]);
     }
+    // }}}
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeModel::testSingleStepWithRedistribution()
+{
+    // Construct two global configurations.
+    int nI = 4, nJ = 4, nK = 4, nB = 2;
+    std::vector<double> basis_coords = {0.0, 0.5};
+    std::vector<std::string> basis_elem = {"A", "B"};
+    std::vector<std::string> elements;
+    std::vector<std::vector<double> > coords;
+    std::vector<std::string> site_types;
+    std::vector<double> coord(3, 0.0);
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    coord[0] = i + basis_coords[b];
+                    coord[1] = j + basis_coords[b];
+                    coord[2] = k + basis_coords[b];
+                    coords.push_back(coord);
+                    elements.push_back("V");
+                    site_types.push_back("P");
+                }
+            }
+        }
+    }
+
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    // Change one specific element.
+    elements[0] = "A";
+    elements[1] = "B";
+    elements[32] = "B";
+    elements[2] = "A";
+    elements[3] = "B";
+
+    Configuration config(coords, elements, possible_types);
+
+    // Setup sitesmap.
+    std::map<std::string, int> possible_site_types;
+    possible_site_types["*"] = 0;
+    possible_site_types["P"] = 1;
+
+    SitesMap sitesmap(coords, site_types, possible_site_types);
+
+    // Setup interactions.
+    std::vector<Process> processes;
+
+    // Rate for all processes.
+    const double rate = 1.0;
+
+    // Processes definitions.
+    // {{{
+    // A diffusion upwards at basis 0.
+    {
+        std::vector<std::string> elements1 = {"A", "V"};
+        std::vector<std::string> elements2 = {"V", "A"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {0}, true);
+        processes.push_back(process);
+    }
+    // A diffusion upwards at basis 1.
+    {
+        std::vector<std::string> elements1 = {"A", "V"};
+        std::vector<std::string> elements2 = {"V", "A"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {1}, true);
+        processes.push_back(process);
+    }
+    // B diffusion upwards at basis 0.
+    {
+        std::vector<std::string> elements1 = {"B", "V"};
+        std::vector<std::string> elements2 = {"V", "B"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {0}, true);
+        processes.push_back(process);
+    }
+    // B diffusion upwards at basis 1.
+    {
+        std::vector<std::string> elements1 = {"B", "V"};
+        std::vector<std::string> elements2 = {"V", "B"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.0, 0.0, 1.0}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {1}, true);
+        processes.push_back(process);
+    }
+    // A + B.
+    {
+        std::vector<std::string> elements1 = {"A", "B"};
+        std::vector<std::string> elements2 = {"V", "V"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.5, 0.5, 0.5}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {0}, false);
+        processes.push_back(process);
+    }
+    // V + V -> A + B.
+    {
+        std::vector<std::string> elements1 = {"V", "V"};
+        std::vector<std::string> elements2 = {"A", "B"};
+        std::vector<std::vector<double> > process_coords = {{0.0, 0.0, 0.0},
+                                                            {0.5, 0.5, 0.5}};
+        const Configuration config1(process_coords, elements1, possible_types);
+        const Configuration config2(process_coords, elements2, possible_types);
+
+        Process process(config1, config2, rate, {0}, false);
+        processes.push_back(process);
+    }
+    // }}}
+
+    Interactions interactions(processes, true);
+
+    // Construct a global lattice map.
+    const std::vector<int> repetitions = {4, 4, 4};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 2;
+
+    LatticeMap lattice_map(n_basis, repetitions, periodicity);
+
+    // Get a timer.
+    SimulationTimer timer;
+
+    // Construct the lattice model to test.
+    LatticeModel lattice_model(config, sitesmap, timer, lattice_map, interactions);
+
+    // Check single step with redistribution.
+    const std::vector<std::string> fast_species = {"V"};
+    const int redis_interval = 10;
+    int redis_counter = 1;
+    const int n_loop = 1000;
+
+    for (int i = 0; i < n_loop; ++i)
+    {
+        if (redis_counter % redis_interval == 0)
+        {
+            lattice_model.redistribute(fast_species, 2, 2, 2);
+            redis_counter = 1;
+        }
+        else
+        {
+            lattice_model.singleStep();
+            redis_counter++;
+        }
+    }
+}
 
 // -------------------------------------------------------------------------- //
 //

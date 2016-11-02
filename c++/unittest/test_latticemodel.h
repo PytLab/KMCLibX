@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -30,6 +31,7 @@ public:
     CPPUNIT_TEST( testSingleStepFunction2D );
     CPPUNIT_TEST( testAffectedIndicesRematching );
     CPPUNIT_TEST( testRedistribute );
+    CPPUNIT_TEST( testSingleStepWithRedistribution );
     CPPUNIT_TEST( testTiming );
     CPPUNIT_TEST_SUITE_END();
 
@@ -39,6 +41,7 @@ public:
     void testSingleStepFunction2D();
     void testAffectedIndicesRematching();
     void testRedistribute();
+    void testSingleStepWithRedistribution();
     void testTiming();
 
 };

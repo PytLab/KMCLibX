@@ -7,8 +7,17 @@
 */
 
 
-/*! \file  latticemodel.cpp
- *  \brief File for the implementation code of the LatticeModel class.
+/* ******************************************************************
+ *  file   : latticemodel.cpp
+ *  brief  : File for the implementation code of the LatticeModel class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-11-01   1.4          Add redistribution.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
 
 

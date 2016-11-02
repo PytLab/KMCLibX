@@ -15,8 +15,8 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-10   1.2          Modify match list presentation.
- *  zjshao     2016-04-10   2.0          Add site type.
- *  zjshao     2016-10-14   2.1          Add slow process flag.
+ *  zjshao     2016-04-10   1.3          Add site type.
+ *  zjshao     2016-10-14   1.4          Add slow process flag.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************

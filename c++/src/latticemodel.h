@@ -7,11 +7,18 @@
 */
 
 
-
-/*! \file  latticemodel.h
- *  \brief File for the LatticeModel class definition.
+/* ******************************************************************
+ *  file   : latticemodel.h
+ *  brief  : File for the LatticeModel class definition.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-11-01   1.4          Add redistribution.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
-
 
 
 #ifndef __LATTICEMODEL__
