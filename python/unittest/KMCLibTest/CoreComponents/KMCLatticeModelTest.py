@@ -343,11 +343,11 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Check picked index before running.
         self.assertEqual(interactions.pickedIndex(), -1)
 
-        # Run model.
-        model.run(control_parameters)
-
         # Check process available sites list after constructing model.
         self.assertNotEqual(interactions.processAvailableSites(), (0, 0, 0, 0))
+
+        # Run model.
+        model.run(control_parameters)
 
         # Check picked index after running.
         self.assertNotEqual(interactions.pickedIndex(), -1)

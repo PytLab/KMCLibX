@@ -101,7 +101,8 @@ class KMCLatticeModel(object):
         :param start_time: The start time for kMC loop, the default is 0.0
         :type: float.
 
-        :returns: The C++ LatticeModel based on the parameters given to this class on construction.
+        :returns: The C++ LatticeModel based on the parameters given to this
+                  class on construction.
         """
         if self.__backend is None:
             # Setup the C++ objects we need.
