@@ -94,11 +94,11 @@ class KMCLatticeModel(object):
         """
         return self.__interactions
 
-    def _backend(self, start_time=None):
+    def _backend(self, start_time):
         """
         Function for generating the C++ backend reperesentation of this object.
 
-        :param start_time: The start time for kMC loop, the default is 0.0
+        :param start_time: The start time for kMC loop
         :type: float.
 
         :returns: The C++ LatticeModel based on the parameters given to this
@@ -113,9 +113,6 @@ class KMCLatticeModel(object):
                                                             cpp_lattice_map.nBasis())
 
             # Construct a timer.
-            if start_time is None:
-                start_time = 0.0
-
             self.__cpp_timer = Backend.SimulationTimer(start_time=start_time)
 
             # Construct the backend object.
@@ -132,8 +129,7 @@ class KMCLatticeModel(object):
             trajectory_filename=None,
             trajectory_type=None,
             analysis=None,
-            start_time=None,
-            extra_traj=None):
+            **kwargs):
         """
         Run the KMC lattice model simulation with specified parameters.
 
@@ -188,6 +184,14 @@ class KMCLatticeModel(object):
         else:
             msg = "Each element in the 'analysis' list must be an instance of KMCAnalysisPlugin."
             analysis = checkSequenceOf(analysis, KMCAnalysisPlugin, msg)
+
+        # Check the start time.
+        start_time = kwargs.pop("start_time", 0.0)
+        if not isinstance(start_time, float):
+            raise Error("The 'start_time' must be a float number.")
+
+        # Get the extra_traj.
+        extra_traj = kwargs.pop("extra_traj", None)
 
         # Set and seed the backend random number generator.
         if not Backend.setRngType(control_parameters.rngType()):
