@@ -310,8 +310,8 @@ class KMCLatticeModelTest(unittest.TestCase):
         model = KMCLatticeModel(config, sitesmap, interactions)
 
         # Get the match types out.
-        match_types = [l.match_type
-                       for l in model._backend().interactions().processes()[0].matchList()]
+        matchlist = model._backend(0.0).interactions().processes()[0].matchList()
+        match_types = [l.match_type for l in matchlist]
 
         # This does not have wildcards added.
         ref_match_types = [1, 2, 2, 2, 2, 1]
@@ -324,8 +324,8 @@ class KMCLatticeModelTest(unittest.TestCase):
         model = KMCLatticeModel(config, sitesmap, interactions)
 
         # Check the process matchlists again.
-        match_types = [l.match_type
-                       for l in model._backend().interactions().processes()[0].matchList()]
+        matchlist = model._backend(0.0).interactions().processes()[0].matchList()
+        match_types = [l.match_type for l in matchlist]
 
         ref_match_types = [1, 2, 2, 2, 2,
                            0, 0, 0, 0, 0,
@@ -414,7 +414,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Create the model.
         model = KMCLatticeModel(config, sitesmap, interactions)
-        cpp_model = model._backend()
+        cpp_model = model._backend(start_time=0.0)
 
         # Check attributes.
         self.assertEqual(interactions.pickedIndex(), -1)
@@ -512,11 +512,9 @@ class KMCLatticeModelTest(unittest.TestCase):
         model = KMCLatticeModel(config, sitesmap, interactions)
 
         # Get the match types out.
-        match_types = [l.match_type
-                       for l in model._backend().interactions().processes()[0].matchList()]
-
-        ret_site_types = [l.site_type
-                          for l in model._backend().interactions().processes()[0].matchList()]
+        matchlist = model._backend(0.0).interactions().processes()[0].matchList()
+        match_types = [l.match_type for l in matchlist]
+        ret_site_types = [l.site_type for l in matchlist]
 
         # This does not have wildcards added.
         ref_match_types = [1, 2, 2, 2, 2, 1]
@@ -533,10 +531,9 @@ class KMCLatticeModelTest(unittest.TestCase):
         model = KMCLatticeModel(config, sitesmap, interactions)
 
         # Check the process matchlists again.
-        match_types = [l.match_type
-                       for l in model._backend().interactions().processes()[0].matchList()]
-        ret_site_types = [l.site_type
-                          for l in model._backend().interactions().processes()[0].matchList()]
+        matchlist = model._backend(0.0).interactions().processes()[0].matchList()
+        match_types = [l.match_type for l in matchlist]
+        ret_site_types = [l.site_type for l in matchlist]
 
         ref_match_types = [1, 2, 2, 2, 2,
                            0, 0, 0, 0, 0,
@@ -1693,7 +1690,7 @@ STEP 1000
         model = KMCLatticeModel(config, sitesmap, interactions)
 
         # Get the c++ backend out.
-        cpp_model = model._backend()
+        cpp_model = model._backend(start_time=0.0)
 
         # Check that this backend object is stored on the class.
         self.assertTrue(model._KMCLatticeModel__backend == cpp_model)
@@ -1775,7 +1772,7 @@ STEP 1000
         model = KMCLatticeModel(config, sitesmap, interactions)
 
         # Get the c++ backend out.
-        cpp_model = model._backend()
+        cpp_model = model._backend(start_time=0.0)
 
         # Check that this backend object is stored on the class.
         self.assertTrue(model._KMCLatticeModel__backend == cpp_model)
