@@ -46,7 +46,8 @@ public:
      */
     virtual ~BaseDistributor() {}
 
-    /*! \brief Pure virtual memeber function for inheritance from derived classes.
+    /*! \brief Pure virtual memeber function which would be overrode by
+     *         other derived classes.
      *  \param configuration : The reference of the configuration to be
      *                         redistributed.
      */

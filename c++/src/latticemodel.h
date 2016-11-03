@@ -64,7 +64,7 @@ public:
      *  \param y : The split number on y axis.
      *  \param z : The split number on z axis.
      */
-    void redistribute(const std::vector<std::string> & fast_species,
+    void redistribute(const std::vector<std::string> & fast_species = {},
                       int x = 1, int y = 1, int z = 1);
 
     /*! \brief Query for the interactions.
