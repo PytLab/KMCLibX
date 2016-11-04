@@ -11,6 +11,8 @@
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
+from KMCLib.Utilities.CheckUtilities import checkSequenceOf
+from KMCLib.Utilities.CheckUtilities import checkBoolean
 from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
 
@@ -97,12 +99,43 @@ class KMCControlParameters(object):
         # Check and set the random number generator type.
         rng_type = kwargs.pop("rng_type", None)
         self.__rng_type = self.__checkRngType(rng_type, "MT")
+
+        # Check and set start time.
+        start_time = kwargs.pop("start_time", None)
+        self.__start_time = self.__checkStartTime(start_time, 0.0)
+
+        # Check the extra trjactory output parameter.
+        extra_traj = kwargs.pop("extra_traj", None)
+        self.__extra_traj = self.__checkExtraTraj(extra_traj, None)
+
+        # Check redistribution operation flag.
+        do_redistribution = kwargs.pop("do_redistribution", None)
+        self.__do_redistribution = checkBoolean(do_redistribution, False,
+                                                "do_redistribution")
+
+        if self.__do_redistribution:
+            # Check redistribution interval.
+            redistribution_interval = kwargs.pop("redistribution_interval", None)
+            self.__redistribution_interval = checkPositiveInteger(redistribution_interval,
+                                                                  10, "redistribution_interval")
+            if self.__redistribution_interval == 0:
+                raise Error("redistribution_interval must be a positive integer.")
+
+            # Check fast species.
+            fast_species = kwargs.pop("fast_species", None)
+            self.__fast_species = self.__checkFastSpecies(fast_species, [])
+
+            # Check nsplits.
+            nsplits = kwargs.pop("nsplits", None)
+            self.__nsplits = self.__checkNsplits(nsplits, (1, 1, 1))
+
         # }}}
 
     def __checkAnalysisInterval(self, analysis_interval):
         """
         Private helper function to check the analysis interval input.
         """
+        # {{{
         if analysis_interval is None:
             return 1
         elif type(analysis_interval) is int:
@@ -126,11 +159,13 @@ class KMCControlParameters(object):
             raise Error(msg)
 
         return analysis_interval
+        # }}}
 
     def __checkRngType(self, rng_type, default):
         """
         Private helper function to check the random number generator input.
         """
+        # {{{
         if rng_type is None:
             rng_type = default
 
@@ -142,9 +177,75 @@ class KMCControlParameters(object):
                      }
 
         if not rng_type in rng_dict.keys():
-            raise Error("'rng_type' input must be one of the supported types. Check the documentation for the list of supported types. Default is 'MT' (Mersenne-Twister) [std::mt19937].")
+            msg = ("'rng_type' input must be one of the supported types." +
+                   "Check the documentation for the list of supported types." +
+                   "Default is 'MT' (Mersenne-Twister) [std::mt19937].")
+            raise Error(msg)
 
         return rng_dict[rng_type]
+        # }}}
+
+    def __checkStartTime(self, start_time, default):
+        """
+        Private helper function to check the start time for KMC simulation.
+        """
+        if start_time is None:
+            return default
+
+        checkPositiveFloat(start_time, default, "start_time")
+
+        return start_time
+
+    def __checkExtraTraj(self, extra_traj, default):
+        """
+        Private helper function to check the extra trajectory output control parameter.
+        """
+        # {{{
+        if extra_traj is None:
+            return default
+
+        checkSequenceOf(extra_traj, int, msg="'extra_traj' is not a sequence of int")
+
+        start, end, interval = extra_traj
+        msg = "Bad extra trajectory paramter: {}".format(extra_traj)
+        for i in extra_traj:
+            if i < 0:
+                raise Error(msg)
+        if start >= end:
+            raise Error(msg)
+        if interval > (end - start):
+            raise Error(msg)
+
+        return extra_traj
+        # }}}
+
+    def __checkFastSpecies(self, fast_species, default):
+        """
+        Private helper function to check default fast species.
+        """
+        if fast_species is None:
+            return []
+
+        msg = "The parameter 'fast_species' must be a sequence of strings."
+        fast_species = checkSequenceOf(fast_species, str, msg)
+
+        # In case that a str is passed in.
+        if not hasattr(fast_species, "__iter__"):
+            raise Error(msg)
+
+        return fast_species
+
+    def __checkNsplits(self, nsplits, default):
+        if nsplits is None:
+            return default
+
+        nsplits = checkSequenceOfPositiveIntegers(nsplits, "nsplits")
+
+        if len(nsplits) != 3:
+            msg = "Length of nsplits must be equal to 3."
+            raise Error(msg)
+
+        return nsplits
 
     def timeLimit(self):
         """
@@ -199,4 +300,40 @@ class KMCControlParameters(object):
         Query for the pseudo random number generator type.
         """
         return self.__rng_type
+
+    def startTime(self):
+        """
+        Query for the start time.
+        """
+        return self.__start_time
+
+    def extraTraj(self):
+        """
+        Query for extra trojectory setting paramter.
+        """
+        return self.__extra_traj
+
+    def doRedistribution(self):
+        """
+        Query for the flag for redistribution operation.
+        """
+        return self.__do_redistribution
+
+    def redistributionInterval(self):
+        """
+        Query for the interval of redistribution operation.
+        """
+        return self.__redistribution_interval
+
+    def fastSpecies(self):
+        """
+        Query for the default fast species.
+        """
+        return self.__fast_species
+
+    def nsplits(self):
+        """
+        Query for the split number.
+        """
+        return self.__nsplits
 
