@@ -720,12 +720,12 @@ class KMCLatticeModelTest(unittest.TestCase):
         # The control parameters.
         control_parameters = KMCControlParameters(number_of_steps=1000,
                                                   dump_interval=500,
-                                                  seed=2013)
+                                                  seed=2013,
+                                                  start_time=1.2345e-1)
 
         # Run the model for 1000 steps.
         ab_flip_model.run(control_parameters,
-                          trajectory_filename=trajectory_filename,
-                          start_time=1.2345e-1)
+                          trajectory_filename=trajectory_filename)
         # }}}
 
     def testRun2WithSiteTypes(self):

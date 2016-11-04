@@ -53,6 +53,7 @@ class KMCLatticeModel(object):
                              states and barriers to use in the simulation.
 
         """
+        # {{{
         # Check the configuration.
         if not isinstance(configuration, KMCConfiguration):
             msg = ("The 'configuration' parameter to the KMCLatticeModel " +
@@ -88,6 +89,7 @@ class KMCLatticeModel(object):
 
         # Set logger.
         self.__logger = logging.getLogger("KMCLibX.KMCLatticeModel")
+        # }}}
 
     def interactions(self):
         """
@@ -107,6 +109,7 @@ class KMCLatticeModel(object):
         :returns: The C++ LatticeModel based on the parameters given to this
                   class on construction.
         """
+        # {{{
         if self.__backend is None:
             # Setup the C++ objects we need.
             cpp_config = self.__configuration._backend()
@@ -126,12 +129,13 @@ class KMCLatticeModel(object):
                                                   cpp_interactions)
         # Return.
         return self.__backend
+        # }}}
 
     def run(self,
             control_parameters=None,
             trajectory_filename=None,
             trajectory_type=None,
-            analysis=None, **kwargs):
+            analysis=None):
         """
         Run the KMC lattice model simulation with specified parameters.
 
@@ -148,24 +152,6 @@ class KMCLatticeModel(object):
 
         :param analysis: A list of instantiated analysis objects that should be
                          used for on-the-fly analysis.
-
-        :param start_time: The start time for KMC loop, default value is 0.0
-
-        :param extra_traj: The range and interval for extra trajectories output,
-                           tuple of int.
-                           e.g. (1000, 2000, 10) means output trajectories
-                           from 1000 to 2000 every 10 steps.
-
-        :param do_redistribution: The flag for doing configuration re-distribution, bool.
-
-        :param redistribution_interval: The interval for redistribution operation, int.
-                                        The default value is 100.
-
-        :param fase_species: The names of fast species, list/tuple of str.
-
-        :param nsplits: The split number on axis x, y and z, tuple of int.
-                        Default value is (1, 1, 1) means no splits.
-
         """
         # {{{
         # Check the input.
@@ -204,43 +190,6 @@ class KMCLatticeModel(object):
                    "instance of KMCAnalysisPlugin.")
             analysis = checkSequenceOf(analysis, KMCAnalysisPlugin, msg)
 
-        # Check the start time.
-        start_time = kwargs.pop("start_time", None)
-        start_time = checkPositiveFloat(start_time, 0.0, "start_time")
-
-        extra_traj = kwargs.pop("extra_traj", None)
-
-        # Check flag for redistribution.
-        do_redistribution = kwargs.pop("do_redistribution", False)
-        if do_redistribution:
-            checkBoolean(do_redistribution, False, "do_redistribution")
-
-        if do_redistribution:
-            # Check interval of re-distribution operation.
-            redistribution_interval = kwargs.pop("redistribution_interval", 100)
-            checkPositiveInteger(redistribution_interval, 100, "redistribution_interval")
-
-            # Check fast species.
-            fast_species = kwargs.pop("fast_species", [])
-            if fast_species:
-                msg = "The parameter 'fast_species' must be a sequence of strings."
-                checkSequenceOf(fast_species, str, msg) 
-                # Check species validity.
-                for species in fast_species:
-                    if species not in self.__configuration.possibleTypes():
-                        msg = "Species {} is not in possible types".format(species)
-                        raise Error(msg)
-
-            # Check nsplits.
-            nsplits = kwargs.pop("nsplits", (1, 1, 1))
-            checkSequenceOfPositiveIntegers(nsplitss)
-
-
-        # Check if there are parameters left.
-        if kwargs and mpi_master:
-            msg = "There are redandunt parameters: {}".format(kwargs.keys())
-            self.__logger.warning(msg)
-
         # Set and seed the backend random number generator.
         if not Backend.setRngType(control_parameters.rngType()):
             raise Error("DEVICE random number generator is not supported by your system, " +
@@ -256,6 +205,7 @@ class KMCLatticeModel(object):
             self.__logger.info("")
             self.__logger.info("setting up the backend C++ object.")
 
+        start_time = control_parameters.startTime()
         cpp_model = self._backend(start_time)
 
         # Print the initial matching information if above the verbosity threshold.
@@ -297,6 +247,14 @@ class KMCLatticeModel(object):
         n_steps = control_parameters.numberOfSteps()
         n_dump = control_parameters.dumpInterval()
         analysis_interv = control_parameters.analysisInterval()
+        extra_traj = control_parameters.extraTraj()
+
+        # Re-distribution related parameters.
+        do_redistribution = control_parameters.doRedistribution()
+        if do_redistribution:
+            redistribution_interval = control_parameters.redistributionInterval()
+            fast_species = control_parameters.fastSpecies()
+            nsplits = control_parameters.nsplits()
 
         # Check validity of analysis number.
         if type(analysis_interv) in (list, tuple):
@@ -442,6 +400,7 @@ class KMCLatticeModel(object):
 
         :returns: A script that can generate this kmc lattice model.
         """
+        # {{{
         # Get the configuration and interactions scripts.
         configuration_script = self.__configuration._script(variable_name="configuration")
         interactions_script = self.__interactions._script(variable_name="interactions")
@@ -460,6 +419,7 @@ class KMCLatticeModel(object):
         # Return the script.
         return (configuration_script + sitesmap_script + interactions_script +
                 comment_string + lattice_model_string)
+        # }}}
 
     def __printMatchInfo(self, cpp_model):
         """ """
