@@ -20,13 +20,7 @@ class KMCControlParameters(object):
     Class for handling the control parameters that goes in to a KMC simulation.
     """
 
-    def __init__(self,
-                 time_limit=None,
-                 number_of_steps=None,
-                 dump_interval=None,
-                 analysis_interval=None,
-                 seed=None,
-                 rng_type=None):
+    def __init__(self, **kwargs):
         """
         Constructuor for the KMCControlParameters object that
         holds all parameters controlling the flow of the KMC simulation.
@@ -74,28 +68,36 @@ class KMCControlParameters(object):
                          There is also the option 'DEVICE' for using a random device
                          installed on the macine through [rng = std::random_device] in C++. Note
                          however that you should spend some time evaluating this option to make
-                         sure it works as you expect if you have a random device installed, since this
-                         has not been tested with a random device by the KMCLib developers.
+                         sure it works as you expect if you have a random device installed,
+                         since this has not been tested with a random device by the KMCLib developers.
         :type rng_type: str
         """
+        # {{{
         # Check and set the time limit.
+        time_limit = kwargs.pop("time_limit", None)
         self.__time_limit = checkPositiveFloat(time_limit, float("inf"), "time_limit")
 
         # Check and set the number of steps.
+        number_of_steps = kwargs.pop("number_of_steps", None)
         self.__number_of_steps = checkPositiveInteger(number_of_steps, 0,
                                                       "number_of_steps")
 
+        dump_interval = kwargs.pop("dump_interval", None)
         self.__dump_interval = checkPositiveInteger(dump_interval, 1,
                                                     "dump_interval")
 
         # Check the analysis intervals.
+        analysis_interval = kwargs.pop("analysis_interval", None)
         self.__analysis_interval = self.__checkAnalysisInterval(analysis_interval)
 
+        seed = kwargs.pop("seed", None)
         self.__time_seed = (seed is None)
         self.__seed = checkPositiveInteger(seed, 1, "seed")
 
         # Check and set the random number generator type.
+        rng_type = kwargs.pop("rng_type", None)
         self.__rng_type = self.__checkRngType(rng_type, "MT")
+        # }}}
 
     def __checkAnalysisInterval(self, analysis_interval):
         """
@@ -197,3 +199,4 @@ class KMCControlParameters(object):
         Query for the pseudo random number generator type.
         """
         return self.__rng_type
+
