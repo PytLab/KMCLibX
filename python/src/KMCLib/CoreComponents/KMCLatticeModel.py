@@ -20,6 +20,9 @@ from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
+from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
+from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
+from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 #from KMCLib.Utilities.PrintUtilities import prettyPrint
 from KMCLib.Utilities.PrintUtilities import convert_time
 from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
@@ -128,28 +131,43 @@ class KMCLatticeModel(object):
             control_parameters=None,
             trajectory_filename=None,
             trajectory_type=None,
-            analysis=None,
-            **kwargs):
+            analysis=None, **kwargs):
         """
         Run the KMC lattice model simulation with specified parameters.
 
-        :param control_paramters:   An instance of KMCControlParameters specifying
-                                    number of steps to run etc.
+        :param control_paramters: An instance of KMCControlParameters specifying
+                                  number of steps to run etc.
 
         :param trajectory_filename: The filename of the trajectory. If not given
                                     no trajectory will be saved.
 
-        :param trajectory_type:     The type of trajectory to use. Either 'lattice' or 'xyz'.
-                                    The 'lattice' format shows the types at the latice points.
-                                    The 'xyz' format gives type and coordinate for each particle.
-                                    The default type is 'lattice'.
-        :param analysis:            A list of instantiated analysis objects that should be used for on-the-fly analysis.
+        :param trajectory_type: The type of trajectory to use. Either 'lattice' or 'xyz'.
+                                The 'lattice' format shows the types at the latice points.
+                                The 'xyz' format gives type and coordinate for each particle.
+                                The default type is 'lattice'.
+
+        :param analysis: A list of instantiated analysis objects that should be
+                         used for on-the-fly analysis.
 
         :param start_time: The start time for KMC loop, default value is 0.0
 
-        :param extra_traj: The range and interval for extra trajectories output, tuple of int.
-                           e.g. (1000, 2000, 10) means output trajectories from 1000 to 2000 every 10 steps.
+        :param extra_traj: The range and interval for extra trajectories output,
+                           tuple of int.
+                           e.g. (1000, 2000, 10) means output trajectories
+                           from 1000 to 2000 every 10 steps.
+
+        :param do_redistribution: The flag for doing configuration re-distribution, bool.
+
+        :param redistribution_interval: The interval for redistribution operation, int.
+                                        The default value is 100.
+
+        :param fase_species: The names of fast species, list/tuple of str.
+
+        :param nsplits: The split number on axis x, y and z, tuple of int.
+                        Default value is (1, 1, 1) means no splits.
+
         """
+        # {{{
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):
             msg = ("The 'control_parameters' input to the KMCLatticeModel run funtion" +
@@ -182,16 +200,46 @@ class KMCLatticeModel(object):
         if analysis is None:
             analysis = []
         else:
-            msg = "Each element in the 'analysis' list must be an instance of KMCAnalysisPlugin."
+            msg = ("Each element in the 'analysis' list must be an" +
+                   "instance of KMCAnalysisPlugin.")
             analysis = checkSequenceOf(analysis, KMCAnalysisPlugin, msg)
 
         # Check the start time.
-        start_time = kwargs.pop("start_time", 0.0)
-        if not isinstance(start_time, float):
-            raise Error("The 'start_time' must be a float number.")
+        start_time = kwargs.pop("start_time", None)
+        start_time = checkPositiveFloat(start_time, 0.0, "start_time")
 
-        # Get the extra_traj.
         extra_traj = kwargs.pop("extra_traj", None)
+
+        # Check flag for redistribution.
+        do_redistribution = kwargs.pop("do_redistribution", False)
+        if do_redistribution:
+            checkBoolean(do_redistribution, False, "do_redistribution")
+
+        if do_redistribution:
+            # Check interval of re-distribution operation.
+            redistribution_interval = kwargs.pop("redistribution_interval", 100)
+            checkPositiveInteger(redistribution_interval, 100, "redistribution_interval")
+
+            # Check fast species.
+            fast_species = kwargs.pop("fast_species", [])
+            if fast_species:
+                msg = "The parameter 'fast_species' must be a sequence of strings."
+                checkSequenceOf(fast_species, str, msg) 
+                # Check species validity.
+                for species in fast_species:
+                    if species not in self.__configuration.possibleTypes():
+                        msg = "Species {} is not in possible types".format(species)
+                        raise Error(msg)
+
+            # Check nsplits.
+            nsplits = kwargs.pop("nsplits", (1, 1, 1))
+            checkSequenceOfPositiveIntegers(nsplitss)
+
+
+        # Check if there are parameters left.
+        if kwargs and mpi_master:
+            msg = "There are redandunt parameters: {}".format(kwargs.keys())
+            self.__logger.warning(msg)
 
         # Set and seed the backend random number generator.
         if not Backend.setRngType(control_parameters.rngType()):
@@ -271,7 +319,13 @@ class KMCLatticeModel(object):
             # Loop over the steps.
             step = 0
             current_time = 0.0
+
+            # Flags for what operation is in process.
+            redistribution = False
+            kmcstep = False
+
             while(1):
+                # Start from step 1.
                 step += 1
 
                 # Check if it is possible to take a step.
@@ -279,67 +333,93 @@ class KMCLatticeModel(object):
                 if nP == 0:
                     raise Error("No more available processes.")
 
+                # Get which operation would be done in this iteration.
+                if do_redistribution and (step % redistribution_interval) == 0:
+                    redistribution = True
+                    step -= 1
+                else:
+                    kmcstep = True
+
                 # Take a step.
-                cpp_model.singleStep()
+                if kmcstep:
+                    cpp_model.singleStep()
 
-                # Time increase.
-                current_time = self.__cpp_timer.simulationTime()
+                    # Time increase.
+                    current_time = self.__cpp_timer.simulationTime()
 
-                if ((step) % n_dump == 0):
-                    #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
-                    #           (step, self.__cpp_timer.simulationTime()))
-                    if mpi_master:
-                        msg = ("[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. " +
-                               "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e}) delta: {:<10.5e}")
-                        step_percent = int(float(step)/n_steps*100)
-                        time_percent = current_time/end_time*100
-                        hour, minute, second = convert_time(current_time)
-                        self.__logger.info(msg.format(step_percent, time_percent, step,
-                                                      hour, minute, int(second), current_time,
-                                                      self.__cpp_timer.deltaTime()))
+                    if (step % n_dump == 0):
+                        #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
+                        #           (step, self.__cpp_timer.simulationTime()))
+                        if mpi_master:
+                            msg = ("[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. " +
+                                   "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e}) delta: {:<10.5e}")
+                            step_percent = int(float(step)/n_steps*100)
+                            time_percent = current_time/end_time*100
+                            hour, minute, second = convert_time(current_time)
+                            self.__logger.info(msg.format(step_percent, time_percent, step,
+                                                          hour, minute, int(second), current_time,
+                                                          self.__cpp_timer.deltaTime()))
 
-                    # Perform IO using the trajectory object.
-                    if use_trajectory:
-                        trajectory.append(simulation_time=current_time,
-                                          step=step,
-                                          configuration=self.__configuration)
+                        # Perform IO using the trajectory object.
+                        if use_trajectory:
+                            trajectory.append(simulation_time=current_time,
+                                              step=step,
+                                              configuration=self.__configuration)
 
-                # Extra trajectorie output.
-                if extra_traj is not None:
-                    start, end, interval = extra_traj
-                    if step >= start and step <= end and (step % interval == 0):
-                        trajectory.append(simulation_time=current_time,
-                                          step=step,
-                                          configuration=self.__configuration)
-
-                # Run all other python analysis.
-                for intv, ap in zip(analysis_interv, analysis):
-                    # NOTE: intv(interval) can be int or list/tuple of int here.
-
-                    if type(intv) is int and ((step % intv) == 0):
-                        ap.registerStep(step=step,
-                                        time=current_time,
-                                        configuration=self.__configuration,
-                                        interactions=self.__interactions)
-
-                    elif type(intv) in (list, tuple):
-                        start, end, interval = intv
+                    # Extra trajectorie output.
+                    if extra_traj is not None:
+                        start, end, interval = extra_traj
                         if step >= start and step <= end and (step % interval == 0):
+                            trajectory.append(simulation_time=current_time,
+                                              step=step,
+                                              configuration=self.__configuration)
+
+                    # Run all other python analysis.
+                    for intv, ap in zip(analysis_interv, analysis):
+                        # NOTE: intv(interval) can be int or list/tuple of int here.
+
+                        if type(intv) is int and ((step % intv) == 0):
                             ap.registerStep(step=step,
                                             time=current_time,
                                             configuration=self.__configuration,
                                             interactions=self.__interactions)
 
-                # Check loop conditions.
-                if step >= n_steps:
-                    if mpi_master:
-                        self.__logger.info("Max kMC step reached, kMC iteration finish.")
-                    break
+                        elif type(intv) in (list, tuple):
+                            start, end, interval = intv
+                            if step >= start and step <= end and (step % interval == 0):
+                                ap.registerStep(step=step,
+                                                time=current_time,
+                                                configuration=self.__configuration,
+                                                interactions=self.__interactions)
 
-                if current_time > end_time:
+                    # Check loop conditions.
+                    if step >= n_steps:
+                        if mpi_master:
+                            self.__logger.info("Max kMC step reached, kMC iteration finish.")
+                        break
+
+                    if current_time > end_time:
+                        if mpi_master:
+                            self.__logger.info("Time limit reached, kMC iteration finish.")
+                        break
+
+                if redistribution:
+                    # Re-distribute the configuration.
+                    cpp_model.redistribute(fast_species, *nsplit)
+
+                    # Time increase.
+                    current_time = self.__cpp_timer.simulationTime()
+
                     if mpi_master:
-                        self.__logger.info("Time limit reached, kMC iteration finish.")
-                    break
+                        msg = ("Configuration re-distribution is executed. " +
+                               "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e})")
+                        hour, minute, second = convert_time(current_time)
+                        self.__logger.info(msg.format(hour, minute, int(second), current_time))
+
+                    if use_trajectory:
+                        trajectory.append(simulation_time=current_time,
+                                          step=step,
+                                          configuration=self.__configuration)
 
         finally:
 
@@ -350,6 +430,7 @@ class KMCLatticeModel(object):
             # Perform the analysis post processing.
             for ap in analysis:
                 ap.finalize()
+        # }}}
 
     def _script(self, variable_name="model"):
         """
