@@ -73,6 +73,28 @@ class KMCControlParameters(object):
                          sure it works as you expect if you have a random device installed,
                          since this has not been tested with a random device by the KMCLib developers.
         :type rng_type: str
+
+        :param start_time: The start time for KMC loop, default value is 0.0
+        :type start_time: float
+
+        :param extra_traj: The range and interval for extra trajectories output
+                           e.g. (1000, 2000, 10) means output trajectories
+                           from 1000 to 2000 every 10 steps.
+        :type extra_traj: tuple of int.
+
+        :param do_redistribution: The flag for doing configuration re-distribution.
+        :type do_redistribution: bool
+
+        :param redistribution_interval: The interval for redistribution operation.
+                                        The default value is 100.
+        :type redistribution_interval: int
+
+        :param fase_species: The names of fast species, list/tuple of str.
+        :type fast_species: list of str
+
+        :param nsplits: The split number on axis x, y and z, tuple of int.
+                        Default value is (1, 1, 1) means no splits.
+        :type nsplits: list/tuple of int
         """
         # {{{
         # Check and set the time limit.
