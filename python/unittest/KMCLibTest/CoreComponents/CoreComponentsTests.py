@@ -21,8 +21,7 @@ from KMCProcessTest import KMCProcessTest
 from KMCUnitCellTest import KMCUnitCellTest
 
 def suite():
-    suite = unittest.TestSuite(
-        [
+    suite = unittest.TestSuite([
          unittest.TestLoader().loadTestsFromTestCase(KMCConfigurationTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCSitesMapTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCControlParametersTest),
@@ -31,7 +30,8 @@ def suite():
          unittest.TestLoader().loadTestsFromTestCase(KMCLatticeTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCLocalConfigurationTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCProcessTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCUnitCellTest)])
+         unittest.TestLoader().loadTestsFromTestCase(KMCUnitCellTest)
+])
     return suite
 
 
