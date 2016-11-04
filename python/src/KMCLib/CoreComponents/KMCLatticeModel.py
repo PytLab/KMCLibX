@@ -277,6 +277,7 @@ class KMCLatticeModel(object):
             # Loop over the steps.
             step = 0
             current_time = 0.0
+            redistribution_counter = 0
 
             # Flags for what operation is in process.
             redistribution = False
@@ -285,6 +286,7 @@ class KMCLatticeModel(object):
             while(1):
                 # Start from step 1.
                 step += 1
+                redistribution_counter += 1
 
                 # Check if it is possible to take a step.
                 nP = cpp_model.interactions().totalAvailableSites()
@@ -292,8 +294,10 @@ class KMCLatticeModel(object):
                     raise Error("No more available processes.")
 
                 # Get which operation would be done in this iteration.
-                if do_redistribution and (step % redistribution_interval) == 0:
+                if (do_redistribution and
+                        redistribution_counter % redistribution_interval == 0):
                     redistribution = True
+                    redistribution_counter = 0
                     step -= 1
                 else:
                     kmcstep = True
@@ -363,7 +367,7 @@ class KMCLatticeModel(object):
 
                 if redistribution:
                     # Re-distribute the configuration.
-                    cpp_model.redistribute(fast_species, *nsplit)
+                    cpp_model.redistribute(fast_species, *nsplits)
 
                     # Time increase.
                     current_time = self.__cpp_timer.simulationTime()
