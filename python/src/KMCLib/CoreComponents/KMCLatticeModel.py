@@ -379,6 +379,9 @@ class KMCLatticeModel(object):
                                           step=step,
                                           configuration=self.__configuration)
 
+                redistribution = False
+                kmcstep = False
+
         finally:
 
             # Flush the trajectory buffers when done.
