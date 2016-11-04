@@ -122,7 +122,7 @@ def checkSequence(sequence, msg="The tested object is not a sequence."):
     :param msg: Non-default error message to print.
     :type msg: string
 
-    :returns:        The valid sequence object.
+    :returns: The valid sequence object.
     """
     # Check that this is a sequence.
     if not ('__len__' in dir(sequence)):
@@ -285,6 +285,33 @@ def checkPositiveFloat(parameter, default_parameter, parameter_name):
 
     # Check value.
     if parameter < 0.0:
+        raise Error(msg)
+
+    # Checked.
+    return parameter
+
+
+def checkBoolean(parameter, default_parameter, parameter_name):
+    """
+    Utility function for checking that a parameter is a boolean.
+
+    :param parameter: The parameter to check.
+
+    :param default_parameter: The value to use if the parameter value is None
+
+    :param parameter_name: The name of the parameter to use in error messages.
+    :type parameter_name: str
+
+    :returns: The checked parameter.
+    """
+    # Set default.
+    if parameter is None:
+        parameter = default_parameter
+
+    # The error message.
+    msg = "The parameter '{}' must be given as a boolean.".format(parameter_name)
+    # Check type.
+    if not isinstance(parameter, bool):
         raise Error(msg)
 
     # Checked.
