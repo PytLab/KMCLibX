@@ -2673,6 +2673,7 @@ void Test_LatticeModel::testRedistribute()
 //
 void Test_LatticeModel::testSingleStepWithRedistribution()
 {
+    // {{{
     // Construct two global configurations.
     int nI = 4, nJ = 4, nK = 4, nB = 2;
     std::vector<double> basis_coords = {0.0, 0.5};
@@ -2841,6 +2842,7 @@ void Test_LatticeModel::testSingleStepWithRedistribution()
             redis_counter++;
         }
     }
+    // }}}
 }
 
 // -------------------------------------------------------------------------- //

@@ -267,6 +267,7 @@ class KMCConfiguration(object):
         :returns: A KMCLib Python script, as a string,
                   that can generate this configuration.
         """
+        # {{{
         # Get the lattice script.
         lattice_script = self.__lattice._script(variable_name="lattice")
 
@@ -407,3 +408,5 @@ bulk_configuration = BulkConfiguration(
 
         # Setup and return the whole script.
         return header + cell_script + elements_script + coordinates_script + config_script
+        # }}}
+
