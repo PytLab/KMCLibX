@@ -13,6 +13,7 @@ import unittest
 import numpy
 import sys
 import os
+from copy import deepcopy
 
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
@@ -1994,6 +1995,141 @@ model = KMCLatticeModel(
         
         # }}}
 
+    def testRedistribution(self):
+        " Make sure the redistribution method can change the configuration correctly. "
+        # {{{
+        # Cell.
+        cell_vectors = [[1.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0],
+                        [0.0, 0.0, 1.0]]
+
+        basis_points = [[0.0, 0.0, 0.0],
+                        [0.0, 0.5, 0.5]]
+
+        unit_cell = KMCUnitCell(cell_vectors, basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4, 4, 4),
+                             periodic=(True, True, True))
+
+        # Configuration.
+        types = ["V"]*4*4*4*2
+
+        types[0] = "A"
+        types[1] = "B"
+        types[32] = "B"
+        types[2] = "A"
+        types[3] = "B"
+
+        possible_types = ["A", "B", "V"]
+
+        configuration = KMCConfiguration(lattice=lattice,
+                                         types=types,
+                                         possible_types=possible_types)
+
+        # Sitesmap.
+        site_types = ["P"]*4*4*4*2
+        possible_site_types = ["P"]
+        sitesmap = KMCSitesMap(lattice=lattice,
+                               types=site_types,
+                               possible_types=possible_site_types)
+
+        # Interactions.
+        rate = 1.0
+
+        # A diffusion upwards at basis 0.
+        coordinates = [[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
+        elements_before = ["A", "V"]
+        elements_after = ["V", "A"]
+        basis_sites = [0]
+        process_1 = KMCProcess(coordinates=coordinates,
+                               elements_before=elements_before,
+                               elements_after=elements_after,
+                               basis_sites=basis_sites,
+                               rate_constant=rate,
+                               fast=True)
+
+        # A diffusion upwards at basis 1.
+        coordinates = [[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
+        elements_before = ["A", "V"]
+        elements_after = ["V", "A"]
+        basis_sites = [1]
+        process_2 = KMCProcess(coordinates=coordinates,
+                               elements_before=elements_before,
+                               elements_after=elements_after,
+                               basis_sites=basis_sites,
+                               rate_constant=rate,
+                               fast=True)
+
+        # B diffusion upwards at basis 0.
+        coordinates = [[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
+        elements_before = ["B", "V"]
+        elements_after = ["V", "B"]
+        basis_sites = [0]
+        process_3 = KMCProcess(coordinates=coordinates,
+                               elements_before=elements_before,
+                               elements_after=elements_after,
+                               basis_sites=basis_sites,
+                               rate_constant=rate,
+                               fast=True)
+
+        # B diffusion upwards at basis 1.
+        coordinates = [[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
+        elements_before = ["B", "V"]
+        elements_after = ["V", "B"]
+        basis_sites = [1]
+        process_4 = KMCProcess(coordinates=coordinates,
+                               elements_before=elements_before,
+                               elements_after=elements_after,
+                               basis_sites=basis_sites,
+                               rate_constant=rate,
+                               fast=True)
+
+        # A + B -> V + V
+        coordinates = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]
+        elements_before = ["A", "B"]
+        elements_after = ["V", "V"]
+        basis_sites = [0]
+        process_5 = KMCProcess(coordinates=coordinates,
+                               elements_before=elements_before,
+                               elements_after=elements_after,
+                               basis_sites=basis_sites,
+                               rate_constant=rate,
+                               fast=False)
+
+        # V + V -> A + B
+        coordinates = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]
+        elements_before = ["V", "V"]
+        elements_after = ["A", "B"]
+        basis_sites = [0]
+        process_6 = KMCProcess(coordinates=coordinates,
+                               elements_before=elements_before,
+                               elements_after=elements_after,
+                               basis_sites=basis_sites,
+                               rate_constant=rate,
+                               fast=False)
+        processes = [process_1, process_2, process_3, process_4, process_5, process_6]
+        interactions = KMCInteractions(processes, implicit_wildcards=True)
+
+        # Setup the model.
+        model = KMCLatticeModel(configuration, sitesmap, interactions)
+
+        ori_types = deepcopy(configuration.types())
+
+        # Redistribute.
+        cpp_model = model._backend(start_time=0.0)
+        cpp_model.redistribute(["V"], 2, 2, 2)
+        new_types = deepcopy(configuration.types())
+
+        # Check.
+
+        # The first two elemwnts should be the same.
+        self.assertListEqual(ori_types[: 2], new_types[: 2])
+
+        self.assertNotEqual(ori_types[2:], new_types[2:])
+
+        # }}}
 
 if __name__ == '__main__':
     unittest.main()
