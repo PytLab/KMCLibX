@@ -8,13 +8,15 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
+import logging
+
+from KMCLib.Backend import Backend
+from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
 from KMCLib.Utilities.CheckUtilities import checkBoolean
-from KMCLib.Backend import Backend
-from KMCLib.Exceptions.Error import Error
 
 
 class KMCControlParameters(object):
@@ -97,6 +99,9 @@ class KMCControlParameters(object):
         :type nsplits: list/tuple of int
         """
         # {{{
+        # Set logger.
+        self.__logger = logging.getLogger("KMCLibX.KMCControlParameters")
+
         # Check and set the time limit.
         time_limit = kwargs.pop("time_limit", None)
         self.__time_limit = checkPositiveFloat(time_limit, float("inf"), "time_limit")
@@ -150,6 +155,11 @@ class KMCControlParameters(object):
             # Check nsplits.
             nsplits = kwargs.pop("nsplits", None)
             self.__nsplits = self.__checkNsplits(nsplits, (1, 1, 1))
+
+        # Check if there are redundant arguments passed in.
+        if kwargs:
+            msg = "Redundant control parameters: {}".format(kwargs.keys())
+            self.__logger.warning(msg)
 
         # }}}
 
