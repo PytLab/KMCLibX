@@ -239,9 +239,9 @@ int Interactions::totalAvailableSites() const
 {
     // Loop through and sum all available sites on all processes.
     size_t sum = 0;
-    for (const Process* const & process_pointer : process_pointers_)
+    for (const Process* const & slow_process_pointer : slow_process_pointers_)
     {
-        sum += process_pointer->nSites();
+        sum += slow_process_pointer->nSites();
     }
 
     return static_cast<int>(sum);

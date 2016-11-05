@@ -137,7 +137,7 @@ void Test_Interactions::testQuery()
     interactions.processes()[2]->addSite(177777);
     interactions.processes()[2]->addSite(177777);
 
-    CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 9 );
+    CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 6 );
 
     // Query for the rate calculator.
     const RateCalculator & rc = interactions.rateCalculator();
