@@ -34,7 +34,8 @@ class KMCProcess(object):
                  move_vectors=None,
                  basis_sites=None,
                  rate_constant=None,
-                 site_types=None):
+                 site_types=None,
+                 fast=None):
         """
         Constructor for the KMCProcess.
 
@@ -57,10 +58,11 @@ class KMCProcess(object):
 
         :param move_vectors: A set of vectors in the local coordinates that define
                              which elements are moved to which place in the move.
-                             The vectors are given as a list of tuples, where the first
-                             element in each tuple indicates which index is moved and
-                             the second element in the tuple is a vector in local coordinates
-                             indicating where the move is to.
+                             The vectors are given as a list of tuples, where the
+                             first element in each tuple indicates which index
+                             is moved and the second element in the tuple is a
+                             vector in local coordinates indicating where the
+                             move is to.
 
         :param basis_sites: The basis sites in the lattice at which the process
                             can possibly be applied. Only if the length of this
@@ -72,7 +74,11 @@ class KMCProcess(object):
 
         :param site_types: The site types, as a list of strings, on which the
                            process is performed. If no site types is provided,
-                           then the default value None would be used in Process object.
+                           then the default value None would be used in Process
+                           object.
+
+        :param fast: The flag for type of the process, fast or slow.
+        :type fast: bool
 
         """
         # Check the coordinates.
@@ -90,6 +96,16 @@ class KMCProcess(object):
         if site_types:
             site_types = checkTypes(site_types, len(coordinates))
 
+        # Check fast.
+        if fast is not None:
+            if not isinstance(fast, bool):
+                msg = "Wrong type for fast parameter, it should be a bool not {}"
+                msg = msg.format(type(fast))
+                raise ValueError(msg)
+        else:
+            # Default value.
+            fast = False
+
         # Check that the elements represents a valid move.
         self.__checkValidMoveElements(elements_before, elements_after)
 
@@ -97,6 +113,7 @@ class KMCProcess(object):
         self.__elements_before = elements_before
         self.__elements_after = elements_after
         self.__site_types = site_types
+        self.__fast = fast
 
         # Check that the move vectors are compatible with the elements.
         self.__move_vectors = self.__checkValidMoveVectors(move_vectors)
@@ -454,6 +471,14 @@ class KMCProcess(object):
         """
         return self.__site_types
 
+    def fast(self):
+        """
+        Query for the fast flag.
+
+        :returns: The fast flag of the process.
+        """
+        return self.__fast
+
     def _script(self, variable_name="process"):
         """
         Generate a script representation of an instance.
@@ -464,6 +489,7 @@ class KMCProcess(object):
 
         :returns: A script that can generate this process object.
         """
+        # {{{
         # Define the float format string.
         ff = "%15.6e"
 
@@ -610,3 +636,5 @@ class KMCProcess(object):
                 basis_sites_string + "\n" +
                 rate_constant_string + "\n\n" +
                 process_string + "\n")
+        # }}}
+

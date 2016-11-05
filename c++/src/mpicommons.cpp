@@ -93,3 +93,4 @@ void MPICommons::barrier(const MPI_Comm comm)
     MPI_Barrier( comm );
 #endif
 }
+

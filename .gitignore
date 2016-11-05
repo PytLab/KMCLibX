@@ -60,3 +60,6 @@ tags
 # Log file.
 out.log
 
+# Auto-generated files.
+mpiflag.h
+

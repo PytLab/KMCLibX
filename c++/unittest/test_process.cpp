@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -11,7 +12,6 @@
 
 // Include the files to test.
 #include "process.h"
-
 #include "configuration.h"
 #include "random.h"
 
@@ -53,19 +53,28 @@ void Test_Process::testConstruction()
     basis_sites[1] = 23;
     basis_sites[2] = 11;
     const double rate = 13.7;
-    Process process(config1, config2, rate, basis_sites);
+
+    Process process1(config1, config2, rate, basis_sites);
 
     // Check that there are no listed indices by default.
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process1.nSites()), 0);
 
     // Check that the basis sites can be returned correctly.
-    const std::vector<int> ret_basis_sites = process.basisSites();
+    const std::vector<int> ret_basis_sites = process1.basisSites();
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[0], basis_sites[0] );
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[1], basis_sites[1] );
     CPPUNIT_ASSERT_EQUAL( ret_basis_sites[2], basis_sites[2] );
 
     // Check the site type setting flag.
-    CPPUNIT_ASSERT( !process.hasSiteTypes() );
+    CPPUNIT_ASSERT( !process1.hasSiteTypes() );
+
+    // Check the fast process flag.
+    CPPUNIT_ASSERT( !process1.fast() );
+
+    // Check another constuctor with fast being true.
+    Process process2(config1, config2, rate, basis_sites, true);
+
+    CPPUNIT_ASSERT( process2.fast() );
 
     // }}}
 }

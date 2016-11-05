@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -36,6 +37,10 @@ public:
     CPPUNIT_TEST( testWrap );
     CPPUNIT_TEST( testWrapLong );
     CPPUNIT_TEST( testBasisSiteFromIndex );
+    CPPUNIT_TEST( testSubLatticeConstruction );
+    CPPUNIT_TEST( testGlobalIndex );
+    CPPUNIT_TEST( testLatticeSplit );
+    CPPUNIT_TEST( testLatticeSplitFail );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
@@ -50,6 +55,10 @@ public:
     void testWrap();
     void testWrapLong();
     void testBasisSiteFromIndex();
+    void testSubLatticeConstruction();
+    void testGlobalIndex();
+    void testLatticeSplit();
+    void testLatticeSplitFail();
 
 };
 

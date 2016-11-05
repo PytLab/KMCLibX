@@ -7,8 +7,17 @@
 */
 
 
-/*! \file  latticemodel.cpp
- *  \brief File for the implementation code of the LatticeModel class.
+/* ******************************************************************
+ *  file   : latticemodel.cpp
+ *  brief  : File for the implementation code of the LatticeModel class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-11-01   1.4          Add redistribution.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
 
 
@@ -57,7 +66,7 @@ void LatticeModel::calculateInitialMatching()
     // Update the interactions matchlists.
     interactions_.updateProcessMatchLists(configuration_, lattice_map_);
 
-   // Match all centeres.
+    // Match all centeres.
     std::vector<int> indices;
 
     for(size_t i = 0; i < configuration_.elements().size(); ++i)
@@ -89,8 +98,43 @@ void LatticeModel::singleStep()
     simulation_timer_.propagateTime(interactions_.totalRate());
 
     // Run the re-matching of the affected sites and their neighbours.
-    const std::vector<int> & indices = \
+    const std::vector<int> && indices = \
         lattice_map_.supersetNeighbourIndices(process.affectedIndices(),
+                                              interactions_.maxRange());
+
+    matcher_.calculateMatching(interactions_,
+                               configuration_,
+                               sitesmap_,
+                               lattice_map_,
+                               indices);
+
+    // Update the interactions' probability table.
+    interactions_.updateProbabilityTable();
+
+    // Update the interactions' process available sites.
+    interactions_.updateProcessAvailableSites();
+}
+
+// ----------------------------------------------------------------------------
+//
+void LatticeModel::redistribute(const std::vector<std::string> & fast_species,
+                                int x, int y, int z)
+{
+    // Classify species in current configuration.
+    matcher_.classifyConfiguration(interactions_,
+                                   configuration_,
+                                   sitesmap_,
+                                   lattice_map_,
+                                   configuration_.indices(),
+                                   fast_species);
+
+    // Re-distribute the current configuration.
+    const std::vector<int> affected_indices = \
+        distributor_.reDistribute(configuration_, lattice_map_, x, y, z);
+
+    // Run the re-matching of the affected sites and their neighbours.
+    const std::vector<int> && indices = \
+        lattice_map_.supersetNeighbourIndices(affected_indices,
                                               interactions_.maxRange());
 
     matcher_.calculateMatching(interactions_,

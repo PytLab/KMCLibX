@@ -7,15 +7,29 @@
 */
 
 
-
-/*! \file  matcher.h
- *  \brief File for the Matcher class definition.
+/* ******************************************************************
+ *  file   : matcher.h
+ *  brief  : File for the definition of the Matcher class.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-04-11   1.2          Change match list presentation,
+ *                                       Remove the isMatch function.
+ *
+ *  zjshao     2016-10-15   1.4          Add fast and slow species
+ *                                       classification.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
+
 
 #ifndef __MATCHER__
 #define __MATCHER__
 
 #include <vector>
+#include <string>
 
 // Forward declarations.
 class Interactions;
@@ -52,6 +66,23 @@ public:
      */
     Matcher();
 
+
+    /* \brief Build the list of indices and processes to match later.
+     *  \param process_ptrs  : The pointers of processes to be checked.
+     *  \param configuration : The configuration which the list of indices refers to.
+     *  \param sitesmap      : The sites map which the list of inidices refers to.
+     *  \param lattice_map   : The lattice map describing the configuration.
+     *  \param indices       : The configuration indices that will be checked.
+     *  \return index_process_to_match: The list of index and process to match.
+     */
+    std::vector<std::pair<int, int> > \
+    indexProcessToMatch(const std::vector<Process *> & process_ptrs,
+                        Configuration & configuration,
+                        const SitesMap & sitesmap,
+                        const LatticeMap & lattice_map,
+                        const std::vector<int> & indices) const;
+
+
     /*! \brief Calculate/update the matching of provided indices with
      *         all possible processes.
      *  \param interactions  : The interactions object holding info on possible processes.
@@ -68,13 +99,18 @@ public:
                            const std::vector<int> & indices) const;
 
 
-    /*! \brief Calculate the matching for a list of match tasks (pairs of indices and processes).
-     *  \param index_process_to_match : The list of indices and process numbers to match.
+    /*! \brief Calculate the matching for a list of match tasks (pairs of indices
+     *         and processes).
+     *  \param index_process_to_match : The list of indices and process numbers
+     *                                  to match.
      *  \param interactions           : The interactions to get the processes from.
      *  \param configuration          : The configuration which the index refers to.
-     *  \param remove_tasks (out)     : A vector that will be filled with tasks for removal after match.
-     *  \param update_tasks (out)     : A vector that will be filled with tasks for update after match.
-     *  \param add_tasks    (out)     : A vector that will be filled with tasks for adding after match.
+     *  \param remove_tasks (out)     : A vector that will be filled with tasks
+     *                                  for removal after match.
+     *  \param update_tasks (out)     : A vector that will be filled with tasks
+     *                                  for update after match.
+     *  \param add_tasks    (out)     : A vector that will be filled with tasks
+     *                                  for adding after match.
      */
     void matchIndicesWithProcesses(const std::vector<std::pair<int,int> > & index_process_to_match,
                                    const Interactions  & interactions,
@@ -121,15 +157,20 @@ public:
                             const Configuration  & configuration,
                             const RateCalculator & rate_calculator) const;
 
-    /*! \brief Calculate/update the matching of a provided index and process.
-     *  \param process       : The process to check against and update if needed.
-     *  \param configuration : The configuration which the index refers to.
-     *  \param index         : The configuration index for which the neighbourhood should
-     *                         be matched against the process.
+    /*! \brief Classify slow/fast species in configuration.
+     *  \param interactions       : The interactions object holding info on possible
+     *                              processes.
+     *  \param configuration(out) : The configuration which the list of indices refers to.
+     *  \param sitesmap      : The sites map which the list of inidices refers to.
+     *  \param lattice_map   : The lattice map describing the configuration.
+     *  \param indices       : The configuration indices that will be checked.
      */
-    void calculateMatching(Process & process,
-                           Configuration & configuration,
-                           const int index) const;
+    void classifyConfiguration(const Interactions & interactions,
+                               Configuration      & configuration,
+                               const SitesMap     & sitesmap,
+                               const LatticeMap   & lattice_map,
+                               const std::vector<int> & indices,
+                               const std::vector<std::string> & fast_elements = {}) const;
 
 protected:
 

@@ -105,8 +105,7 @@ T_vector splitOverProcesses(const T_vector & global,
 
 
     // Calculate everyones chunk sizes.
-    std::vector< std::pair<int,int> > chunks = determineChunks(size,
-                                                               global_len);
+    std::vector< std::pair<int,int> > chunks = determineChunks(size, global_len);
 
     // Determine which elements to work on base on my rank.
     const int start  = chunks[rank].first;
@@ -127,8 +126,7 @@ T_vector splitOverProcesses(const T_vector & global,
 // -------------------------------------------------------------------------- //
 //
 template <class T_vector>
-T_vector joinOverProcesses(const T_vector & local,
-                           const MPI_Comm & comm)
+T_vector joinOverProcesses(const T_vector & local, const MPI_Comm & comm)
 {
     // PERFORMME: Prototyping. Chunks does not need to be this involved.
 
@@ -152,8 +150,7 @@ T_vector joinOverProcesses(const T_vector & local,
     T_vector global_data(global_len);
 
     // Calculate everyones chunk sizes.
-    std::vector< std::pair<int,int> > chunks = determineChunks(size,
-                                                               global_len);
+    std::vector< std::pair<int,int> > chunks = determineChunks(size, global_len);
 
     // Determine which elements to take base on my rank.
     const int start  = chunks[rank].first;
@@ -175,3 +172,4 @@ T_vector joinOverProcesses(const T_vector & local,
 
 
 #endif // __MPIROUTINES__
+

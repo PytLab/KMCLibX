@@ -14,7 +14,8 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-10   1.2          Modify match list presentation.
- *  zjshao     2016-04-10   2.0          Add site type.
+ *  zjshao     2016-04-10   1.3          Add site type.
+ *  zjshao     2016-10-14   1.4          Add fast process flag.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -62,6 +63,16 @@ public:
      *                         atom id moves are considered.
      *  \param process_number: The id number of the process.
      *  \param site_types    : The site type on which the process is performed.
+     *  \param fast          : The flag for fast process or not.
+     *
+     *  NOTE: The name of flag in process is **FAST** which is different from
+     *        that in configuration, but the default value is false meaning
+     *        that the default process is slow process.
+     *
+     *        In a word, the process and species in configuration are all slow
+     *        by default, once the species is found participating in fast process
+     *        it is converted to fast species.
+     *
      */
     Process(const Configuration & first,
             const Configuration & second,
@@ -70,7 +81,25 @@ public:
             const std::vector<int> & move_origins = {},
             const std::vector<Coordinate> & move_vectors = {},
             const int process_number = -1,
-            const std::vector<int> & site_types = {});
+            const std::vector<int> & site_types = {},
+            const bool fast = false);
+
+    /*! \brief Constructor for the process with fast flag provided explicitly.
+     *  \param first         : The first configuration, to match against the local
+     *                         coordinates around an active site.
+     *  \param second        : The second configuration, to update the local
+     *                         configuration with if the process is selected.
+     *                         It is assumed that the first and second configuration
+     *                         has identical coordinates.
+     *  \param rate          : The rate in Hz associated with the process.
+     *  \param basis_sites   : The basis sites where this process is applicable.
+     *  \param fast          : The flag for fast process or not.
+     */
+    Process(const Configuration & first,
+            const Configuration & second,
+            const double rate,
+            const std::vector<int> & basis_sites,
+            const bool fast);
 
     /*! \brief Virtual destructor needed for use as base class.
      */
@@ -181,6 +210,11 @@ public:
      */
     bool hasSiteTypes() const { return has_site_types_; }
 
+    /*! \brief Query for the fast process flag.
+     *  \return : Whether the process is fast process.
+     */
+    bool fast() const { return fast_; }
+
 protected:
 
     /// The process number.
@@ -214,6 +248,9 @@ protected:
 
     /// The flag whether site type is set.
     bool has_site_types_;
+
+    /// The flag whether process is fast process.
+    bool fast_;
 
 private:
 

@@ -24,6 +24,7 @@ class KMCControlParametersTest(unittest.TestCase):
 
     def testConstructionAndQuery(self):
         """ Test the construction of the control parametes object """
+        # {{{
         # Default construction.
         control_params = KMCControlParameters()
 
@@ -48,9 +49,11 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertEqual(control_params.seed(), 2013)
         self.assertFalse(control_params.timeSeed())
         self.assertEqual(control_params.rngType(), Backend.DEVICE)
+        # }}}
 
     def testAnalysisInterval(self):
         """ Test all valid values of the analysis_interval parameter. """
+        # {{{
         control_params = KMCControlParameters()
         self.assertEqual(control_params.analysisInterval(), 1)
 
@@ -71,9 +74,11 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertRaises(Error, lambda: KMCControlParameters(analysis_interval=(1, 2, 3, (1, 2))))
         self.assertRaises(Error, lambda: KMCControlParameters(analysis_interval=(-11, 2, 3)))
         self.assertRaises(Error, lambda: KMCControlParameters(analysis_interval=(1, 2, 3, (1, -4, 1))))
+        # }}}
 
     def testRngTypeInput(self):
         """ Test all valid values of the rng_type parameter. """
+        # {{{
         control_params = KMCControlParameters()
         self.assertEqual(control_params.rngType(), Backend.MT)
 
@@ -99,6 +104,120 @@ class KMCControlParametersTest(unittest.TestCase):
         # Wrong type.
         self.assertRaises( Error,
                            lambda : KMCControlParameters(rng_type=123))
+        # }}}
+
+    def testStartTime(self):
+        """ Make sure we can set start time correctly. """
+        control_params = KMCControlParameters()
+        self.assertEqual(control_params.startTime(), 0.0)
+
+        control_params = KMCControlParameters(start_time=1.0)
+        self.assertEqual(control_params.startTime(), 1.0)
+
+        # Negative value.
+        self.assertRaises(Error, KMCControlParameters, start_time=-1.0)
+
+        # Wrong type.
+        self.assertRaises(Error, KMCControlParameters, start_time=(1, 1))
+
+    def testExtraTraj(self):
+        " Make sure we can set extra trajectory setting parameter correctly. "
+        control_params = KMCControlParameters()
+        self.assertEqual(control_params.extraTraj(), None)
+
+        control_params = KMCControlParameters(extra_traj=(0, 100, 2))
+        self.assertTupleEqual(control_params.extraTraj(), (0, 100, 2))
+
+        # Wrong start and end.
+        self.assertRaises(Error, KMCControlParameters, extra_traj=(2, 0, 1))
+
+        # Wrong interval.
+        self.assertRaises(Error, KMCControlParameters, extra_traj=(0, 100, 101))
+
+        # Wrong type.
+        self.assertRaises(Error, KMCControlParameters, extra_traj=1)
+        self.assertRaises(Error, KMCControlParameters, extra_traj=1.0)
+        self.assertRaises(Error, KMCControlParameters, extra_traj=(1.0, 100.0, 1.0))
+        self.assertRaises(Error, KMCControlParameters, extra_traj=('a', 'as'))
+
+    def testDoRedistribution(self):
+        " Make sure the redistribution flag can be set correctly. "
+        control_params = KMCControlParameters()
+        self.assertFalse(control_params.doRedistribution())
+
+        control_params = KMCControlParameters(do_redistribution=True)
+        self.assertTrue(control_params.doRedistribution())
+
+        # Wrong type.
+        self.assertRaises(Error, KMCControlParameters, do_redistribution=1)
+
+    def testRedistributionInterval(self):
+        " Make sure the redistribution_interval can be set correctly. "
+        control_params = KMCControlParameters(do_redistribution=True)
+        self.assertEqual(control_params.redistributionInterval(), 10)
+
+        control_params = KMCControlParameters(do_redistribution=True,
+                                              redistribution_interval=100)
+        self.assertEqual(control_params.redistributionInterval(), 100)
+
+        # Wrong type.
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          redistribution_interval=100.0)
+
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          redistribution_interval=(1,2,3))
+
+        control_params = KMCControlParameters(redistribution_interval=100)
+        self.assertRaises(AttributeError, control_params.redistributionInterval)
+
+    def testFastSpecies(self):
+        " Make sure the default fast species can be set properly. "
+        control_params = KMCControlParameters(do_redistribution=True)
+        self.assertListEqual(control_params.fastSpecies(), [])
+
+        control_params = KMCControlParameters(do_redistribution=True,
+                                              fast_species=["V"])
+        self.assertListEqual(control_params.fastSpecies(), ["V"])
+
+        # Wrong type.
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          fast_species=[1, 2])
+
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          fast_species="as")
+
+        control_params = KMCControlParameters(fast_species=["V"])
+        self.assertRaises(AttributeError, control_params.fastSpecies)
+
+    def testNsplits(self):
+        " Make sure the nsplits can be set correctly. "
+        control_params = KMCControlParameters(do_redistribution=True)
+        self.assertTupleEqual(control_params.nsplits(), (1, 1, 1))
+
+        control_params = KMCControlParameters(do_redistribution=True,
+                                              nsplits=(2, 2, 2))
+        self.assertTupleEqual(control_params.nsplits(), (2, 2, 2))
+
+        # Wrong type.
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          nsplits=2)
+
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          nsplits="as")
+
+        # Wrong length.
+        self.assertRaises(Error, KMCControlParameters,
+                         do_redistribution=True,
+                         nsplits=(2, 2))
+
+        control_params = KMCControlParameters(nsplits=(2, 2, 2))
+        self.assertRaises(AttributeError, control_params.nsplits)
 
     def testConstructionFail(self):
         """ Make sure we can not give invalid paramtes on construction. """

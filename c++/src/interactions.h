@@ -7,17 +7,18 @@
 */
 
 
-/* ******************************************************************
+/* *****************************************************************************
  *  file   : interactions.h
  *  brief  : File for the Interactions class definition.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>
- *  ------------------------------------------------------------------
- *  zjshao     2016-06-26   1.3          Add picked index &
- *                                       process available sites.
- *  ------------------------------------------------------------------
- * ******************************************************************
+ *  ---------------------------------------------------------------------------
+ *  zjshao     2016-06-26   1.3          Add picked index & process available
+ *                                       sites.
+ *  zjshao     2016-10-30   1.4          Add slow/fast process classification
+ *  ---------------------------------------------------------------------------
+ * *****************************************************************************
  */
 
 #ifndef __INTERACTIONS__
@@ -44,17 +45,18 @@ public:
 
     /*! \brief Construct the interactions object from a list of processes.
      *  \param processes: The list of proceeses.
-     *  \param implicit_wildcards: A flag indicating if implicit wildcards should be added
-     *                             to the process matchlists.
+     *  \param implicit_wildcards: A flag indicating if implicit wildcards
+     *                             should be added to the process matchlists.
      */
     Interactions(const std::vector<Process> & processes,
                  const bool implicit_wildcards);
 
     /*! \brief Construct the interactions object from a list of processes.
      *  \param processes: The list of proceeses.
-     *  \param implicit_wildcards: A flag indicating if implicit wildcards should be added
-     *                             to the process matchlists.
-     *  \param rate_calculator: The custom rate calculator to use for updating the rates.
+     *  \param implicit_wildcards: A flag indicating if implicit wildcards
+     *                             should be added to the process matchlists.
+     *  \param rate_calculator: The custom rate calculator to use for updating
+     *                          the rates.
      */
     Interactions(const std::vector<CustomRateProcess> & processes,
                  const bool implicit_wildcards,
@@ -82,10 +84,32 @@ public:
      */
     std::vector<Process*> & processes() { return process_pointers_; }
 
+    /*! \brief Query for the fast processes.
+     *  \return : The pointers of fast processes of the system.
+     */
+    std::vector<Process *> & fastProcesses() { return fast_process_pointers_; }
+
+    /*! \brief Query for the slow processes.
+     *  \return : The pointers of slow processes of the system.
+     */
+    std::vector<Process *> & slowProcesses() { return slow_process_pointers_; }
+
     /*! \brief Const query for the processes.
      *  \return : A handle to the processes of the system.
      */
     const std::vector<Process*> & processes() const { return process_pointers_; }
+
+    /*! \brief Const query for the fast processes.
+     *  \return : The pointers of fast processes of the system.
+     */
+    const std::vector<Process *> & fastProcesses() const
+    { return fast_process_pointers_; }
+
+    /*! \brief Const query for the slow processes.
+     *  \return : The pointers of slow processes of the system.
+     */
+    const std::vector<Process *> & slowProcesses() const
+    { return slow_process_pointers_; }
 
     /*! \brief Const query for the rate calculator reference.
      *  \return : A handle to the rate calculator in use.
@@ -100,12 +124,14 @@ public:
     /*! \brief Const query for the probability table.
      *  \return : A handle to the present probability table.
      */
-    const std::vector<std::pair<double,int> > & probabilityTable() const { return probability_table_; }
+    const std::vector<std::pair<double,int> > & probabilityTable() const
+    { return probability_table_; }
 
     /*! \brief Const query for the available site for all processes.
      *  \return : A vector of available sites for all processes.
      */
-    const std::vector<int> & processAvailableSites() const { return process_available_sites_; }
+    const std::vector<int> & processAvailableSites() const
+    { return process_available_sites_; }
 
     /*! \brief Recalculate the table of process probabilities based on the
      *         number of available sites for each process and their rates.
@@ -124,6 +150,8 @@ public:
     /*! \brief Pick an availabe process according to its probability.
      *  \return : The index of a possible available process picked according
      *            to its probability.
+     *
+     *  NOTE: The index is the index in slow processes.
      */
     int pickProcessIndex();
 
@@ -151,6 +179,12 @@ private:
 
     /// Pointers to the processes we use.
     std::vector<Process*> process_pointers_;
+
+    /// Pointers to the slow processes.
+    std::vector<Process *> slow_process_pointers_;
+
+    /// Pointers to the fast processes.
+    std::vector<Process *> fast_process_pointers_;
 
     /// The probability table.
     std::vector<std::pair<double,int> > probability_table_;

@@ -9,12 +9,15 @@
 
 /* ******************************************************************
  *  file   : configuration.cpp
- *  brief  : File for the implementation code of the Configuration class.
+ *  brief  : File for the implementation code of the Configuration class
+ *           and the SubConfiguraion class.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-04-11   1.2          Modify match list presentation.
+ *  zjshao     2016-10-15   1.4          Add fast/slow classification.
+ *  zjshao     2016-10-22   1.4          Add SubConfiguration class.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -36,11 +39,13 @@ static ConfigMatchList tmp_config_match_list__(0);
 //
 Configuration::Configuration(std::vector<std::vector<double> > const & coordinates,
                              std::vector<std::string> const & elements,
-                             const std::map<std::string,int> & possible_types) :
+                             const std::map<std::string, int> & possible_types) :
     n_moved_(0),
     elements_(elements),
+    possible_types_(possible_types),
     atom_id_elements_(elements),
-    match_lists_(elements_.size())
+    match_lists_(elements_.size()),
+    slow_flags_(elements_.size(), true)
 {
     // {{{
 
@@ -82,6 +87,79 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     {
         std::map<std::string, int>::const_iterator it = possible_types.find(element);
         types_.push_back(it->second);
+    }
+
+    // Setup indices.
+    for (size_t i = 0; i < elements_.size(); ++i)
+    {
+        indices_.push_back(i);
+    }
+
+    // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+
+Configuration::Configuration(const std::vector<std::vector<double> > & coordinates,
+                             const std::vector<std::string> & elements,
+                             const std::map<std::string, int> & possible_types,
+                             const std::vector<int> & atom_id,
+                             const std::vector<bool> & slow_flags) :
+    // NOTE: Members wrt atom id(atom_id_*) are not used in sub-configuration
+    //       construction, so we set the lengths of them to zero by default.
+    n_moved_(0),
+    atom_id_coordinates_(0),
+    elements_(elements),
+    possible_types_(possible_types),
+    atom_id_elements_(0),
+    atom_id_(atom_id),
+    match_lists_(elements_.size()),
+    slow_flags_(slow_flags)
+{
+    // {{{
+
+    // Setup the coordinates.
+    for (size_t i = 0; i < coordinates.size(); ++i)
+    {
+        coordinates_.push_back(Coordinate(coordinates[i][0],
+                                          coordinates[i][1],
+                                          coordinates[i][2]));
+    }
+
+    // Loop through the possible types map and find out what the maximum is.
+    std::map<std::string,int>::const_iterator it1 = possible_types.begin();
+    int max_type = 0;
+    for ( ; it1 != possible_types.end(); ++it1)
+    {
+        if (it1->second > max_type)
+        {
+            max_type = it1->second;
+        }
+    }
+
+    // Set the size of the type names list.
+    type_names_ = std::vector<std::string>(max_type+1);
+
+    // Fill the list.
+    it1 = possible_types.begin();
+    for ( ; it1 != possible_types.end(); ++it1 )
+     {
+         type_names_[it1->second] = it1->first;
+     }
+
+    // Setup the types from the element strings.
+    for (const std::string & element : elements)
+    {
+        std::map<std::string, int>::const_iterator it = possible_types.find(element);
+        types_.push_back(it->second);
+    }
+
+    // Setup indices.
+    for (size_t i = 0; i < elements_.size(); ++i)
+    {
+        indices_.push_back(i);
     }
 
     // }}}
@@ -262,8 +340,7 @@ const ConfigMatchList & Configuration::matchList(const int origin_index,
 
 // -----------------------------------------------------------------------------
 //
-void Configuration::performProcess(Process & process,
-                                   const int site_index)
+void Configuration::performProcess(Process & process, const int site_index)
 {
     // {{{
 
@@ -272,28 +349,28 @@ void Configuration::performProcess(Process & process,
 
     // Get the proper match lists.
     const ProcessMatchList & process_match_list = process.matchList();
-    const ConfigMatchList & site_match_list    = matchList(site_index);
+    const ConfigMatchList & config_match_list = matchList(site_index);
 
     // Iterators to the match list entries.
-    ProcessMatchList::const_iterator it1 = process_match_list.begin();
-    ConfigMatchList::const_iterator it2 = site_match_list.begin();
+    ProcessMatchList::const_iterator proc_it = process_match_list.begin();
+    ConfigMatchList::const_iterator conf_it = config_match_list.begin();
 
     // Iterators to the info storages.
-    std::vector<int>::iterator it3 = process.affectedIndices().begin();
-    std::vector<int>::iterator it4 = moved_atom_ids_.begin();
-    std::vector<Coordinate>::iterator it5 = recent_move_vectors_.begin();
+    std::vector<int>::iterator affected_it = process.affectedIndices().begin();
+    std::vector<int>::iterator atom_it = moved_atom_ids_.begin();
+    std::vector<Coordinate>::iterator vect_it = recent_move_vectors_.begin();
 
     // Reset the moved counter.
     n_moved_ = 0;
 
     // Loop over the match lists and get the types and indices out.
-    for( ; it1 != process_match_list.end(); ++it1, ++it2)
+    for( ; proc_it != process_match_list.end(); ++proc_it, ++conf_it)
     {
         // Get the type out of the process match list.
-        const int update_type = (*it1).update_type;
+        const int update_type = (*proc_it).update_type;
 
         // Get the index out of the configuration match list.
-        const int index = (*it2).index;
+        const int index = (*conf_it).index;
 
         // NOTE: The > 0 is needed for handling the wildcard match.
         if (types_[index] != update_type && update_type > 0)
@@ -302,32 +379,32 @@ void Configuration::performProcess(Process & process,
             const int atom_id = atom_id_[index];
 
             // Apply the move vector to the atom coordinate.
-            atom_id_coordinates_[atom_id] += (*it1).move_coordinate;
+            atom_id_coordinates_[atom_id] += (*proc_it).move_coordinate;
 
             // Set the type at this index.
             types_[index]    = update_type;
             elements_[index] = type_names_[update_type];
 
             // Update the atom id element.
-            if (!(*it1).has_move_coordinate)
+            if (!(*proc_it).has_move_coordinate)
             {
                 atom_id_elements_[atom_id] = elements_[index];
             }
 
             // Mark this index as affected.
-            (*it3) = index;
-            ++it3;
+            (*affected_it) = index;
+            ++affected_it;
 
             // Mark this atom_id as moved
             // (include the replaced atom_id).
-            (*it4) = atom_id;
-            ++it4;
+            (*atom_it) = atom_id;
+            ++atom_it;
             ++n_moved_;
 
             // Save this move vector
             // (include the replace move Coordinate(0.0, 0.0, 0.0)).
-            (*it5) = (*it1).move_coordinate;
-            ++it5;
+            (*vect_it) = (*proc_it).move_coordinate;
+            ++vect_it;
         }
     }
 
@@ -343,8 +420,8 @@ void Configuration::performProcess(Process & process,
         const int match_list_index_from = process_id_moves[i].first;
         const int match_list_index_to   = process_id_moves[i].second;
 
-        const int lattice_index_from = site_match_list[match_list_index_from].index;
-        const int lattice_index_to   = site_match_list[match_list_index_to].index;
+        const int lattice_index_from = config_match_list[match_list_index_from].index;
+        const int lattice_index_to   = config_match_list[match_list_index_to].index;
 
         id_updates[i].first  = atom_id_[lattice_index_from];
         id_updates[i].second = lattice_index_to;
@@ -363,5 +440,139 @@ void Configuration::performProcess(Process & process,
     }
 
     // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+// TODO: OpenMP.
+//
+void Configuration::resetSlowFlags(const std::vector<std::string> & fast_elements)
+{
+    // {{{
+    // If no default fast species, set all flags true.
+    if (fast_elements.empty())
+    {
+        for (size_t i = 0; i < slow_flags_.size(); ++i)
+        {
+            slow_flags_[i] = true;
+        }
+    }
+    // Or set default fast species to be false.
+    else
+    {
+        for (size_t i = 0; i < slow_flags_.size(); ++i)
+        {
+            const std::string element = elements_[i];
+            auto it = std::find(fast_elements.begin(), fast_elements.end(), element);
+            if ( it != fast_elements.end() )
+            {
+                slow_flags_[i] = false;
+            }
+            else
+            {
+                slow_flags_[i] = true;
+            }
+        }
+    }
+    // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
+                                                 const SubLatticeMap & sub_lattice_map) const
+{
+    // {{{
+
+    // Check lattice map and sub-lattice map.
+    checkLatticeMaps(lattice_map, sub_lattice_map);
+
+    // Site number in configuraiton/latticemap.
+    const int nsites = sub_lattice_map.repetitionsA() * \
+                       sub_lattice_map.repetitionsB() * \
+                       sub_lattice_map.repetitionsC() * \
+                       sub_lattice_map.nBasis();
+
+    // Loop over local indices to collect coordinates and elements.
+    int global_index;
+    std::vector<std::string> elements;
+    std::vector<std::vector<double> > coordinates;
+    std::vector<int> atom_id;
+    std::vector<bool> slow_flags;
+    std::vector<int> global_indices;
+
+    for (int i = 0; i < nsites; ++i)
+    {
+        // Get and collect global index.
+        global_index = sub_lattice_map.globalIndex(i, lattice_map);
+        global_indices.push_back(global_index);
+
+        // Collect elements.
+        const std::string & element = elements_[global_index];
+        elements.push_back(element);
+
+        // Collect coordinates.
+        const Coordinate & coord = coordinates_[global_index];
+        coordinates.push_back({coord.x(), coord.y(), coord.z()});
+
+        // Collect global atom ids.
+        atom_id.push_back(atom_id_[global_index]);
+
+        // Collect global slow flags.
+        slow_flags.push_back(slow_flags_[global_index]);
+    }
+
+    // Construct local configuration.
+    return SubConfiguration(coordinates,
+                            elements,
+                            this->possibleTypes(),
+                            atom_id,
+                            slow_flags,
+                            global_indices);
+
+    // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+std::vector<SubConfiguration> Configuration::split(const LatticeMap & lattice_map,
+                                                   int x, int y, int z)
+{
+    // Split global lattice map.
+    const std::vector<SubLatticeMap> && sub_lattices = lattice_map.split(x, y, z);
+
+    // Get sub-configurations.
+    std::vector<SubConfiguration> sub_configs;
+
+    for (const SubLatticeMap & sub_lattice : sub_lattices)
+    {
+        SubConfiguration && sub_config = subConfiguration(lattice_map, sub_lattice);
+        sub_configs.push_back(sub_config);
+    }
+
+    return sub_configs;
+}
+
+
+// ----------------------------------------------------------------------------
+// Functions definitions for SubConfiguration class.
+// ----------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+//
+SubConfiguration:: \
+SubConfiguration(const std::vector<std::vector<double> > & coordinates,
+                 const std::vector<std::string> & elements,
+                 const std::map<std::string, int> & possible_types,
+                 const std::vector<int> & atom_id,
+                 const std::vector<bool> & slow_flags,
+                 const std::vector<int> & global_indices) :
+    Configuration(coordinates, elements, possible_types, atom_id, slow_flags),
+    global_indices_(global_indices)
+{
+    // NOTHING HERE.
 }
 

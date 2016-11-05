@@ -128,10 +128,10 @@ int main (int argc, char *argv[])
 #if RUNMPI == true
     if (MPICommons::isMaster())
     {
-        CppUnit::stdCOut() << std::endl << "Running KMCLib C++ unit tests on " << MPICommons::size() << " MPI processes." << std::endl;
+        CppUnit::stdCOut() << std::endl << "Running KMCLibX C++ unit tests on " << MPICommons::size() << " MPI processes." << std::endl;
     }
 #else
-    CppUnit::stdCOut() << std::endl << "Running KMCLib C++ unit tests." << std::endl;
+    CppUnit::stdCOut() << std::endl << "Running KMCLibX C++ unit tests." << std::endl;
 
 #endif
 
@@ -163,3 +163,4 @@ int main (int argc, char *argv[])
     // DONE
     return 0;
 }
+

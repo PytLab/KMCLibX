@@ -2,6 +2,7 @@
 
 
 # Copyright (c)  2013  Mikael Leetmaa
+# Copyright (c)  2016-2019 Shao Zhengjiang
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -51,6 +52,7 @@ class KMCProcessTest(unittest.TestCase):
         self.assertListEqual(p._KMCProcess__basis_sites, basis_sites)
         self.assertListEqual(p._KMCProcess__move_vectors, move_vectors)
         self.assertIsNone(p._KMCProcess__site_types)
+        self.assertFalse(p._KMCProcess__fast)
         # }}}
 
     def testConstructionWithSiteTypes(self):
@@ -72,7 +74,8 @@ class KMCProcessTest(unittest.TestCase):
                        move_vectors=move_vectors,
                        basis_sites=basis_sites,
                        rate_constant=1.0,
-                       site_types=site_types)
+                       site_types=site_types,
+                       fast=True)
 
         # Check that we got a valid instance.
         self.assertTrue(isinstance(p, KMCProcess))
@@ -84,6 +87,7 @@ class KMCProcessTest(unittest.TestCase):
         self.assertListEqual(p._KMCProcess__basis_sites, basis_sites)
         self.assertListEqual(p._KMCProcess__move_vectors, move_vectors)
         self.assertListEqual(p._KMCProcess__site_types, site_types)
+        self.assertTrue(p._KMCProcess__fast)
         # }}}
 
     def testConstructionSorting(self):

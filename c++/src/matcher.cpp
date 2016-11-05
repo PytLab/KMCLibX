@@ -9,7 +9,7 @@
 
 /* ******************************************************************
  *  file   : matcher.cpp
- *  brief  : File for the Process class definition.
+ *  brief  : File for the Matcher class implimentation.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>
@@ -17,15 +17,18 @@
  *  zjshao     2016-04-11   1.2          Change match list presentation,
  *                                       Remove the isMatch function.
  *
+ *  zjshao     2016-10-20   1.4          Add configuration classification.
+ *
  *  ------------------------------------------------------------------
  * ******************************************************************
- */
-/*! \file  matcher.cpp
- *  \brief File for the implementation code of the Matcher class.
  */
 
 #include <cstdio>
 #include <algorithm>
+
+#ifdef DEBUG
+#include <cassert>
+#endif
 
 #include "matcher.h"
 #include "process.h"
@@ -48,18 +51,23 @@ Matcher::Matcher()
 
 // -----------------------------------------------------------------------------
 //
-void Matcher::calculateMatching(Interactions & interactions,
-                                Configuration & configuration,
-                                const SitesMap & sitesmap,
-                                const LatticeMap & lattice_map,
-                                const std::vector<int> & indices) const
+// TODO: OpenMP.
+//
+std::vector<std::pair<int, int> > \
+Matcher::indexProcessToMatch(const std::vector<Process *> & process_ptrs,
+                             Configuration      & configuration,
+                             const SitesMap     & sitesmap,
+                             const LatticeMap   & lattice_map,
+                             const std::vector<int> & indices) const
 {
     // {{{
 
-    // Build the list of indices and processes to match.
+    // PERFORMME: May use OpenMP here to parallelize the check loop.
 
-    std::vector<std::pair<int,int> > index_process_to_match;
-    for(size_t i = 0; i < indices.size(); ++i)
+    // The pair list to be returned.
+    std::vector<std::pair<int, int> > index_process_to_match;
+
+    for (size_t i = 0; i < indices.size(); ++i)
     {
         // Get the index.
         const int index = indices[i];
@@ -72,19 +80,19 @@ void Matcher::calculateMatching(Interactions & interactions,
         const SiteMatchList & site_matchlist = sitesmap.matchList(index);
 
         // For each process, check if we should try to match.
-        for (size_t j = 0; j < interactions.processes().size(); ++j)
+        for (size_t j = 0; j < process_ptrs.size(); ++j)
         {
             // Check if the basis site is listed.
             const std::vector<int> & process_basis_sites = \
-                (*interactions.processes()[j]).basisSites();
+                (*process_ptrs[j]).basisSites();
 
             if ( std::find(process_basis_sites.begin(),
                            process_basis_sites.end(),
                            basis_site) \
-                    != process_basis_sites.end() )
+                  != process_basis_sites.end() )
             {
                 // Pick out the process.
-                const Process * process_ptr = interactions.processes()[j];
+                const Process * process_ptr = process_ptrs[j];
 
                 // Check if process site types is set.
                 if (process_ptr->hasSiteTypes())
@@ -112,14 +120,35 @@ void Matcher::calculateMatching(Interactions & interactions,
         }
 
         // Update the configuration match list for this index if it will be used.
-        if (use_index)
+        if ( use_index )
         {
             configuration.updateMatchList(index);
         }
     }
 
-    // Generate the lists of tasks.
+    return index_process_to_match;
 
+    // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Matcher::calculateMatching(Interactions & interactions,
+                                Configuration & configuration,
+                                const SitesMap & sitesmap,
+                                const LatticeMap & lattice_map,
+                                const std::vector<int> & indices) const
+{
+    // {{{
+
+    // Build the list of indices and processes to match.
+    const std::vector<Process *> & process_ptrs = interactions.processes();
+    const std::vector<std::pair<int,int> > && index_process_to_match = \
+        indexProcessToMatch(process_ptrs, configuration, sitesmap,
+                            lattice_map, indices);
+
+    // Generate the lists of tasks.
     std::vector<RemoveTask> remove_tasks;
     std::vector<RateTask>   update_tasks;
     std::vector<RateTask>   add_tasks;
@@ -132,13 +161,15 @@ void Matcher::calculateMatching(Interactions & interactions,
                               add_tasks);
 
     // Calculate the new rates in needed.
-
     if (interactions.useCustomRates())
     {
         // Create a common task list for getting a good load balance.
         std::vector<RateTask> global_tasks(add_tasks.size()+update_tasks.size());
-        std::copy( update_tasks.begin(), update_tasks.end(),
-                   std::copy( add_tasks.begin(), add_tasks.end(), global_tasks.begin()) );
+        std::copy( update_tasks.begin(),
+                   update_tasks.end(),
+                   std::copy(add_tasks.begin(),
+                             add_tasks.end(),
+                             global_tasks.begin()) );
 
         // Split up the tasks.
         std::vector<RateTask> local_tasks = splitOverProcesses(global_tasks);
@@ -164,7 +195,6 @@ void Matcher::calculateMatching(Interactions & interactions,
     }
 
     // Update the processes.
-
     updateProcesses(remove_tasks,
                     update_tasks,
                     add_tasks,
@@ -179,8 +209,8 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
                                         const Interactions  & interactions,
                                         const Configuration & configuration,
                                         std::vector<RemoveTask> & remove_tasks,
-                                        std::vector<RateTask>   & update_tasks,
-                                        std::vector<RateTask>   & add_tasks) const
+                                        std::vector<RateTask> & update_tasks,
+                                        std::vector<RateTask> & add_tasks) const
 {
     // {{{
 
@@ -437,3 +467,80 @@ double Matcher::updateSingleRate(const int index,
 
     // }}}
 }
+
+
+// -----------------------------------------------------------------------------
+//
+// TODO: MPI
+void Matcher::classifyConfiguration(const Interactions & interactions,
+                                    Configuration      & configuration,
+                                    const SitesMap     & sitesmap,
+                                    const LatticeMap   & lattice_map,
+                                    const std::vector<int> & indices,
+                                    const std::vector<std::string> & fast_elements) const
+{
+    // {{{
+
+    // NOTE: No sites type checking here, we assume that
+    //       all sites are equivalent, sitesmap may be
+    //       used in the future, if needed.
+
+    // Reset slow flags in configuration.
+    configuration.resetSlowFlags(fast_elements);
+
+    // Get the list of indices and process to match.
+    const std::vector<Process *> & fast_process_ptrs = interactions.fastProcesses();
+    const std::vector<std::pair<int, int> > && index_process_to_match = \
+        indexProcessToMatch(fast_process_ptrs, configuration, sitesmap,
+                            lattice_map, indices);
+
+    // Loop over all indices and processes.
+    for (const auto & idx_proc : index_process_to_match)
+    {
+        const int conf_idx = idx_proc.first;
+        const int proc_idx = idx_proc.second;
+
+        // Get configuration and process matchlists.
+        Process & process = *(interactions.processes()[proc_idx]);
+        const ProcessMatchList & process_matchlist = process.matchList();
+        const ConfigMatchList & config_matchlist = configuration.matchList(conf_idx);
+
+        // Check matching.
+        bool in_list = process.isListed(conf_idx);
+        if (!in_list)
+        {
+            continue;
+        }
+
+#ifdef DEBUG
+        // Assertion match and inlist consistency here
+        // just in case that there are bugs in interaction updating.
+        const bool is_match = whateverMatch(process_matchlist, config_matchlist);
+        assert(is_match && in_list);
+#endif
+
+        // Vars for match lists loop.
+        auto proc_it = process_matchlist.begin();
+        auto conf_it = config_matchlist.begin();
+
+        // Loop over the match lists to update slow flags of configuration.
+        for (; proc_it != process_matchlist.end(); ++proc_it, ++conf_it)
+        {
+            // The match type and updated type in process.
+            const int match_type = (*proc_it).match_type;
+            const int update_type = (*proc_it).update_type;
+
+            // The index in the global structure.
+            const int index = (*conf_it).index;
+
+            // Get the affected index.
+            if (match_type != update_type)
+            {
+                configuration.updateSlowFlag(index, false);
+            }
+        }
+    }
+
+    // }}}
+}
+

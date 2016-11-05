@@ -1,19 +1,24 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019 Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
 
+#include <iostream>
 // Include the test definition.
 #include "test_configuration.h"
 
 // Include the files to test.
 #include "configuration.h"
-
+#include "matcher.h"
+#include "interactions.h"
 #include "latticemap.h"
 #include "process.h"
+#include "distributor.h"
+#include "sitesmap.h"
 
 // -------------------------------------------------------------------------- //
 //
@@ -84,10 +89,87 @@ void Test_Configuration::testConstruction()
         CPPUNIT_ASSERT_EQUAL(ret_elements[i], elements[i]);
     }
 
+    // Check slow species flags.
+    const std::vector<bool> & slow_flags = config.slowFlags();
+    for (size_t i = 0; i < elements.size(); ++i)
+    {
+        // Default to be all slow species.
+        CPPUNIT_ASSERT(slow_flags[i]);
+    }
+
     // DONE
     // }}}
-
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testResetFastFlags()
+{
+    // {{{
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords = {
+        {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {2.0, 0.0, 0.0},
+        {0.0, 1.0, 0.0}, {1.0, 1.0, 0.0}, {2.0, 1.0, 0.0},
+        {0.0, 2.0, 0.0}, {1.0, 2.0, 0.0}, {2.0, 2.0, 0.0}
+    };
+
+    // Setup elements.
+    std::vector<std::string> elements = {"A", "B", "C",
+                                         "D", "E", "F",
+                                         "G", "I", "J"};
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+    possible_types["G"] = 7;
+    possible_types["I"] = 8;
+    possible_types["J"] = 9;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    config.updateSlowFlag(0, false);
+    config.updateSlowFlag(1, false);
+    const std::vector<bool> ref_flags = {false, false, true,
+                                         true, true, true,
+                                         true, true, true};
+    const std::vector<bool> & ret_flags = config.slowFlags();
+    
+    for (size_t i = 0; i < ref_flags.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ref_flags[i], ret_flags[i]);
+    }
+
+    // Check reseted flags.
+    const std::vector<bool> ref_reset_flags(9, true);
+    config.resetSlowFlags();
+    const std::vector<bool> & ret_reset_flags = config.slowFlags();
+    for (size_t i = 0; i < ref_flags.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ref_reset_flags[i], ret_reset_flags[i]);
+    }
+
+    // Check reseted flags with default fast species.
+    const std::vector<bool> ref_reset_flags2 = {false, true, true,
+                                                true, true, true,
+                                                true, true, true};
+    config.resetSlowFlags({"A"});
+    const std::vector<bool> & ret_reset_flags2 = config.slowFlags();
+    for (size_t i = 0; i < ref_flags.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ref_reset_flags2[i], ret_reset_flags2[i]);
+    }
+
+    // }}}
+}
+
 
 // ---------------------------------------------------------------------------//
 // Description: Test moved_atom_id_ and recent_move_vector 
@@ -1184,3 +1266,194 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
                                  1.0e-12);
     // }}}
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testSubConfiguration()
+{
+    // {{{
+
+    // Construct configuration.
+    int nI = 4, nJ = 4, nK = 4, nB = 2;
+    std::vector<double> basis_coords = {0.0, 0.5};
+    std::vector<std::string> basis_elem = {"A", "B"};
+    std::vector<std::string> elements;
+    std::vector<std::vector<double> > coords;
+    std::vector<double> coord(3, 0.0);
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    coord[0] = i + basis_coords[b];
+                    coord[1] = j + basis_coords[b];
+                    coord[2] = k + basis_coords[b];
+                    coords.push_back(coord);
+                    elements.push_back(basis_elem[b]);
+                }
+            }
+        }
+    }
+
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+
+    // Change one specific element.
+    elements[5] = "C";
+
+    Configuration config(coords, elements, possible_types);
+
+    // Construct a global lattice map.
+    const std::vector<int> repetitions = {4, 4, 4};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 2;
+
+    LatticeMap global_lattice(n_basis, repetitions, periodicity);
+    const auto && sub_lattices = global_lattice.split(2, 2, 2);
+
+    // Choose the 2nd sub-lattice to check.
+    const SubLatticeMap & sub_lattice = sub_lattices[1];
+
+    // Extract sub-configuration.
+    const SubConfiguration & sub_config = config.subConfiguration(global_lattice,
+                                                                  sub_lattice);
+
+    // Check sub-configuration.
+    const std::vector<int> & ret_types = sub_config.types();
+    const std::vector<std::string> & ret_elements = sub_config.elements();
+    const std::vector<Coordinate> & ret_coords = sub_config.coordinates();
+    const std::vector<int> & ret_atom_id = sub_config.atomID();
+    const std::vector<bool> & ret_slow_flags = sub_config.slowFlags();
+    const std::vector<int> & ret_global_indices = sub_config.globalIndices();
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_types.size()), 16);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_elements.size()), 16);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_coords.size()), 16);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_atom_id.size()), 16);
+
+    // Check specific element.
+    CPPUNIT_ASSERT_EQUAL(ret_elements[1], static_cast<std::string>("C"));
+    const std::vector<std::string> ref_elements = {
+        "A", "C", "A", "B", "A", "B", "A", "B", 
+        "A", "B", "A", "B", "A", "B", "A", "B", 
+    };
+
+    // Check coordinate values.
+    const std::vector<Coordinate> ref_coords = {
+        Coordinate(0.0, 0.0, 2.0), Coordinate(0.5, 0.5, 2.5),
+        Coordinate(0.0, 0.0, 3.0), Coordinate(0.5, 0.5, 3.5),
+        Coordinate(0.0, 1.0, 2.0), Coordinate(0.5, 1.5, 2.5),
+        Coordinate(0.0, 1.0, 3.0), Coordinate(0.5, 1.5, 3.5),
+        Coordinate(1.0, 0.0, 2.0), Coordinate(1.5, 0.5, 2.5),
+        Coordinate(1.0, 0.0, 3.0), Coordinate(1.5, 0.5, 3.5),
+        Coordinate(1.0, 1.0, 2.0), Coordinate(1.5, 1.5, 2.5),
+        Coordinate(1.0, 1.0, 3.0), Coordinate(1.5, 1.5, 3.5),
+    };
+
+    // Check atom ids.
+    const std::vector<int> ref_atom_id = { 4,  5,  6,  7, 12, 13, 14, 15,
+                                          36, 37, 38, 39, 44, 45, 46, 47};
+
+    // Check global indices.
+    const std::vector<int> ref_global_indices = { 4,  5,  6,  7, 12, 13, 14, 15,
+                                                 36, 37, 38, 39, 44, 45, 46, 47};
+
+
+    for (size_t i = 0; i < ref_coords.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ref_coords[i], ret_coords[i]);
+        CPPUNIT_ASSERT_EQUAL(ref_elements[i], ret_elements[i]);
+        CPPUNIT_ASSERT_EQUAL(ref_atom_id[i], ret_atom_id[i]);
+        CPPUNIT_ASSERT_EQUAL(ret_slow_flags[i], true);
+        CPPUNIT_ASSERT_EQUAL(ref_global_indices[i], ret_global_indices[i]);
+    }
+
+    // }}}
+}
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testSplit()
+{
+    // {{{
+
+    // Construct configuration.
+    int nI = 4, nJ = 4, nK = 4, nB = 2;
+    std::vector<double> basis_coords = {0.0, 0.5};
+    std::vector<std::string> basis_elem = {"A", "B"};
+    std::vector<std::string> elements;
+    std::vector<std::vector<double> > coords;
+    std::vector<double> coord(3, 0.0);
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    coord[0] = i + basis_coords[b];
+                    coord[1] = j + basis_coords[b];
+                    coord[2] = k + basis_coords[b];
+                    coords.push_back(coord);
+                    elements.push_back(basis_elem[b]);
+                }
+            }
+        }
+    }
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    // Change one specific element.
+    elements[1]  = "V";
+    elements[5]  = "V";
+    elements[17] = "V";
+    elements[21] = "V";
+
+    Configuration config(coords, elements, possible_types);
+
+    // Construct a global lattice map.
+    const std::vector<int> repetitions = {4, 4, 4};
+    std::vector<bool> periodicity(3, true);
+    const int n_basis = 2;
+    LatticeMap global_lattice(n_basis, repetitions, periodicity);
+
+    // Split it.
+    const auto && sub_configs = config.split(global_lattice, 2, 2, 2);
+
+    // Check number of sub-configurations.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(sub_configs.size()), 8);
+
+    // Check each sub-configuration.
+    for (size_t i = 0; i < sub_configs.size(); ++i)
+    {
+        const auto & sub_config = sub_configs[i];
+        const auto & elements = sub_config.elements();
+
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(elements.size()), 16);
+
+        if (i < 4)
+        {
+            CPPUNIT_ASSERT_EQUAL(elements[1], static_cast<std::string>("V"));
+        }
+    }
+
+    // }}}
+}
+

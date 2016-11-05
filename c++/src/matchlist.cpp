@@ -103,3 +103,4 @@ void configurationsToMatchList(const Configuration & first,
     // Sort the match list.
     std::sort(match_list.begin(), match_list.end());
 }
+

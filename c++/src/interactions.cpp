@@ -7,17 +7,18 @@
 */
 
 
-/* ******************************************************************
+/* *****************************************************************************
  *  file   : interactions.cpp
  *  brief  : File for the implementation code of the Interactions class.
  *
  *  history:
  *  <author>   <time>       <version>    <desc>
- *  ------------------------------------------------------------------
- *  zjshao     2016-06-26   1.3          Add picked index &
- *                                       process available sites.
- *  ------------------------------------------------------------------
- * ******************************************************************
+ *  ---------------------------------------------------------------------------
+ *  zjshao     2016-06-26   1.3          Add picked index & process available
+ *                                       sites.
+ *  zjshao     2016-10-30   1.4          Add slow/fast process classification
+ *  ---------------------------------------------------------------------------
+ * *****************************************************************************
  */
 
 #include <algorithm>
@@ -54,7 +55,6 @@ Interactions::Interactions(const std::vector<Process> & processes,
     processes_(processes),
     custom_rate_processes_(0),
     process_pointers_(processes.size(), NULL),
-    probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
     process_available_sites_(processes.size(), 0),
     implicit_wildcards_(implicit_wildcards),
     use_custom_rates_(false),
@@ -65,14 +65,28 @@ Interactions::Interactions(const std::vector<Process> & processes,
     // Point the process pointers to the right places.
     for (size_t i = 0; i < processes_.size(); ++i)
     {
-        process_pointers_[i] = &processes_[i];
+        Process * process_ptr = &processes_[i];
+        process_pointers_[i] = process_ptr;
+
+        // Classify fast and slow process pointers.
+        if ( process_ptr->fast() )
+        {
+            fast_process_pointers_.push_back(process_ptr);
+        }
+        else
+        {
+            slow_process_pointers_.push_back(process_ptr);
+        }
     }
 
-    // DONE
+    // Initialize probablity table after processes are classified.
+    probability_table_.resize(slow_process_pointers_.size(),
+                              std::pair<double, int>(0.0, 0));
 }
 
 
 // -----------------------------------------------------------------------------
+// NOTE: There is no classification of fast and slow process pointers.
 //
 Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
                            const bool implicit_wildcards,
@@ -90,10 +104,19 @@ Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
     // Point the process pointers to the right places.
     for (size_t i = 0; i < custom_rate_processes_.size(); ++i)
     {
-        process_pointers_[i] = &custom_rate_processes_[i];
-    }
+        Process * process_ptr = &custom_rate_processes_[i];
+        process_pointers_[i] = process_ptr;
 
-    // DONE
+        // Classify fast and slow process pointers.
+        if ( process_ptr->fast() )
+        {
+            fast_process_pointers_.push_back(process_ptr);
+        }
+        else
+        {
+            slow_process_pointers_.push_back(process_ptr);
+        }
+    }
 }
 
 
@@ -122,7 +145,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
 {
     // {{{
 
-    // NOTE: Do not check the site match list here, the coordinates in
+    // NOTE: No the site match list checking here, the coordinates in
     //       site match list are assumed to be the same as that in
     //       configuration match list. -- zjshao
 
@@ -159,27 +182,28 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
 
         // Perform the match where we add wildcards to fill the vacancies in the
         // process match list.
-        ProcessMatchList::iterator it1 = process_matchlist.begin();
-        ConfigMatchList::const_iterator it2 = config_matchlist.begin();
+        ProcessMatchList::iterator proc_it = process_matchlist.begin();
+        ConfigMatchList::const_iterator conf_it = config_matchlist.begin();
 
         // Insert the wildcards and update the indexing.
         int old_index = 0;
         int new_index = 0;
         std::vector<int> index_mapping(config_matchlist.size());
 
-        for ( ; it1 != process_matchlist.end() && it2 != config_matchlist.end(); ++it1, ++it2 )
+        for (; proc_it != process_matchlist.end() && conf_it != config_matchlist.end();
+               ++proc_it, ++conf_it )
         {
             // Check if there is a match in lattice point.
-            if( !(*it1).samePoint(*it2) )
+            if( !(*proc_it).samePoint(*conf_it) )
             {
-                // If not matching, add a wildcard entry to it1.
-                ProcessMatchListEntry wildcard_entry(*it2);
+                // If not matching, add a wildcard entry to proc_it.
+                ProcessMatchListEntry wildcard_entry(*conf_it);
                 wildcard_entry.match_type = 0;
                 wildcard_entry.update_type = 0;
                 wildcard_entry.site_type = 0;
 
-                it1 = process_matchlist.insert(it1, wildcard_entry);
-                // it1 now points to the newly inserted position.
+                proc_it = process_matchlist.insert(proc_it, wildcard_entry);
+                // proc_it now points to the newly inserted position.
 
                 ++new_index;
             }
@@ -215,9 +239,9 @@ int Interactions::totalAvailableSites() const
 {
     // Loop through and sum all available sites on all processes.
     size_t sum = 0;
-    for (Process* const & process_pointer : process_pointers_)
+    for (const Process* const & slow_process_pointer : slow_process_pointers_)
     {
-        sum += process_pointer->nSites();
+        sum += slow_process_pointer->nSites();
     }
 
     return static_cast<int>(sum);
@@ -228,10 +252,12 @@ int Interactions::totalAvailableSites() const
 //
 void Interactions::updateProbabilityTable()
 {
+    // {{{
+
     // Loop over all processes.
-    std::vector<Process*>::const_iterator it1 = process_pointers_.begin();
+    std::vector<Process *>::const_iterator it1 = slow_process_pointers_.begin();
     std::vector<std::pair<double, int> >::iterator it2 = probability_table_.begin();
-    const std::vector<Process*>::const_iterator end = process_pointers_.end();
+    const std::vector<Process *>::const_iterator end = slow_process_pointers_.end();
 
     double previous_rate = 0.0;
     for ( ; it1 != end; ++it1, ++it2 )
@@ -245,6 +271,8 @@ void Interactions::updateProbabilityTable()
         // Store the number of available processes to filter out zeroes later.
         (*it2).second = n_sites;
     }
+
+    // }}}
 }
 
 
@@ -283,12 +311,12 @@ int Interactions::pickProcessIndex()
     // Find the lower bound - corresponding to the first element for which
     // the accumulated rate is not smaller than rnd, and the number
     // of available processes is larger than zero.
-    const std::vector<std::pair<double, int> >::const_iterator begin = probability_table_.begin();
-    const std::vector<std::pair<double, int> >::const_iterator end   = probability_table_.end();
-    const std::vector<std::pair<double, int> >::const_iterator it1   = std::lower_bound(begin,
-                                                                                        end,
-                                                                                        rnd_pair,
-                                                                                        pairComp);
+    const std::vector<std::pair<double, int> >::const_iterator begin = \
+        probability_table_.begin();
+    const std::vector<std::pair<double, int> >::const_iterator end = \
+        probability_table_.end();
+    const std::vector<std::pair<double, int> >::const_iterator it1 = \
+        std::lower_bound(begin, end, rnd_pair, pairComp); 
 
     // Find the index in the process.
     int picked_index = it1 - begin;
@@ -307,8 +335,8 @@ Process* Interactions::pickProcess()
     const int index = pickProcessIndex();
 
     // Update the process internal probablility table if needed.
-    process_pointers_[index]->updateRateTable();
+    slow_process_pointers_[index]->updateRateTable();
 
-    return process_pointers_[index];
+    return slow_process_pointers_[index];
 }
 

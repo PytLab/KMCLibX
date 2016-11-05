@@ -18,13 +18,14 @@ from Utilities import UtilitiesTests
 
 
 def suite():
-    suite = unittest.TestSuite(
-        [AnalysisTests.suite(),
-         BackendTests.suite(),
-         CoreComponentsTests.suite(),
-         ExceptionsTests.suite(),
-         PluginInterfacesTests.suite(),
-         UtilitiesTests.suite()])
+    suite = unittest.TestSuite([
+        AnalysisTests.suite(),
+        BackendTests.suite(),
+        CoreComponentsTests.suite(),
+        ExceptionsTests.suite(),
+        PluginInterfacesTests.suite(),
+        UtilitiesTests.suite()
+    ])
     return suite
 
 if __name__ == '__main__':

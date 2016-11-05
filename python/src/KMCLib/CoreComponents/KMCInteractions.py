@@ -193,6 +193,7 @@ class KMCInteractions(object):
 
         :returns: The interactions object in C++
         """
+        # {{{
         if self.__backend is None:
 
             # Check the possible_types against the types in the processes.
@@ -245,6 +246,9 @@ class KMCInteractions(object):
                 else:
                     cpp_site_types = Backend.StdVectorInt()
 
+                # Setup fast flag.
+                fast = process.fast()
+
                 # Construct and store the C++ process.
                 if self.__rate_calculator is not None:
                     # Set the cutoff correctly.
@@ -268,7 +272,8 @@ class KMCInteractions(object):
                                                             cpp_move_origins,
                                                             cpp_move_vectors,
                                                             process_number,
-                                                            cpp_site_types))
+                                                            cpp_site_types,
+                                                            fast))
 
             # Construct the C++ interactions object.
             if self.__rate_calculator is not None:
@@ -281,6 +286,7 @@ class KMCInteractions(object):
 
         # Return the stored backend.
         return self.__backend
+        # }}}
 
     def _script(self, variable_name="interactions"):
         """
@@ -292,7 +298,7 @@ class KMCInteractions(object):
 
         :returns: A script that can generate this interactions object.
         """
-
+        # {{{
         # Loop through the list of interactions and for each one set up the
         # script for the pair of local configurations that goes together in a tuple.
         processes_script = ""
@@ -347,3 +353,5 @@ class KMCInteractions(object):
         # Return the script.
         return (comment_string + processes_script + processes_string +
                 sitesmap_script + "\n" + kmc_interactions_string)
+        # }}}
+
