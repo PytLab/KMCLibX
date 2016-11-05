@@ -2004,7 +2004,7 @@ model = KMCLatticeModel(
                         [0.0, 0.0, 1.0]]
 
         basis_points = [[0.0, 0.0, 0.0],
-                        [0.0, 0.5, 0.5]]
+                        [0.5, 0.5, 0.5]]
 
         unit_cell = KMCUnitCell(cell_vectors, basis_points)
 
