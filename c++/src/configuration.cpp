@@ -195,8 +195,8 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
 
     // Now that we know the size of the match lists we can allocate
     // memory for the moved_atom_ids_ vector.
-    moved_atom_ids_.resize(max_size);
-    recent_move_vectors_.resize(max_size);
+    moved_atom_ids_.resize(max_size, -1);
+    recent_move_vectors_.resize(max_size, Coordinate(0.0, 0.0, 0.0));
 
     // }}}
 }

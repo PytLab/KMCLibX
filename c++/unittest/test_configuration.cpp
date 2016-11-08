@@ -7,7 +7,9 @@
 */
 
 
-#include <iostream>
+#include <cassert>
+#include <cmath>
+
 // Include the test definition.
 #include "test_configuration.h"
 
@@ -278,10 +280,12 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
     // Test recent_moved_vectors_
     for (int i = 0; i < 12; ++i)
     {
-        const Coordinate & coord = configuration.recentMoveVectors()[i];
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.x(), 0.0, 1.0e-12);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), 0.0, 1.0e-12);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), 0.0, 1.0e-12);
+//        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.x(), 0.0, 1.0e-12);
+//        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), 0.0, 1.0e-12);
+//        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), 0.0, 1.0e-12);
+        assert (abs(configuration.recentMoveVectors()[i].x() - 0.0) < 1.0e-12);
+        assert (abs(configuration.recentMoveVectors()[i].y() - 0.0) < 1.0e-12);
+        assert (abs(configuration.recentMoveVectors()[i].z() - 0.0) < 1.0e-12);
     }
 
     // }}}
