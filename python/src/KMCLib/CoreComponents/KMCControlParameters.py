@@ -10,6 +10,7 @@
 
 import logging
 
+from KMCLib import mpi_master
 from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
@@ -157,7 +158,7 @@ class KMCControlParameters(object):
             self.__nsplits = self.__checkNsplits(nsplits, (1, 1, 1))
 
         # Check if there are redundant arguments passed in.
-        if kwargs:
+        if kwargs and mpi_master:
             msg = "Redundant control parameters: {}".format(kwargs.keys())
             self.__logger.warning(msg)
 
