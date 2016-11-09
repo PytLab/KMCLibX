@@ -278,7 +278,9 @@ def checkPositiveFloat(parameter, default_parameter, parameter_name):
         parameter = default_parameter
 
     # The error message.
-    msg = "The parameter '%s' must be given as a positive float."%(parameter_name)
+    msg = "The parameter {} must be given as a positive float, actual: {}"
+    msg = msg.format(parameter_name, parameter)
+
     # Check type.
     if not isinstance(parameter, float):
         raise Error(msg)
