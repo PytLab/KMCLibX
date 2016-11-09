@@ -279,10 +279,6 @@ class KMCLatticeModel(object):
             current_time = 0.0
             redistribution_counter = 0
 
-            # Flags for what operation is in process.
-            redistribution = False
-            kmcstep = False
-
             while(1):
                 # Start from step 1.
                 step += 1
@@ -293,79 +289,75 @@ class KMCLatticeModel(object):
                 if nP == 0:
                     raise Error("No more available processes.")
 
-                # Get which operation would be done in this iteration.
-                if (do_redistribution and
-                        redistribution_counter % redistribution_interval == 0):
-                    redistribution = True
-                    redistribution_counter = 0
-                    step -= 1
-                else:
-                    kmcstep = True
-
                 # Take a step.
-                if kmcstep:
-                    cpp_model.singleStep()
+                cpp_model.singleStep()
 
-                    # Time increase.
-                    current_time = self.__cpp_timer.simulationTime()
+                # Time increase.
+                current_time = self.__cpp_timer.simulationTime()
 
-                    if (step % n_dump == 0):
-                        #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
-                        #           (step, self.__cpp_timer.simulationTime()))
-                        if MPICommons.isMaster():
-                            msg = ("[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. " +
-                                   "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e}) delta: {:<10.5e}")
-                            step_percent = int(float(step)/n_steps*100)
-                            time_percent = current_time/end_time*100
-                            hour, minute, second = convert_time(current_time)
-                            self.__logger.info(msg.format(step_percent, time_percent, step,
-                                                          hour, minute, int(second), current_time,
-                                                          self.__cpp_timer.deltaTime()))
+                if (step % n_dump == 0):
+                    #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
+                    #           (step, self.__cpp_timer.simulationTime()))
+                    if MPICommons.isMaster():
+                        msg = ("[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. " +
+                               "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e}) delta: {:<10.5e}")
+                        step_percent = int(float(step)/n_steps*100)
+                        time_percent = current_time/end_time*100
+                        hour, minute, second = convert_time(current_time)
+                        self.__logger.info(msg.format(step_percent, time_percent, step,
+                                                      hour, minute, int(second), current_time,
+                                                      self.__cpp_timer.deltaTime()))
 
-                        # Perform IO using the trajectory object.
-                        if use_trajectory:
-                            trajectory.append(simulation_time=current_time,
-                                              step=step,
-                                              configuration=self.__configuration)
+                    # Perform IO using the trajectory object.
+                    if use_trajectory:
+                        trajectory.append(simulation_time=current_time,
+                                          step=step,
+                                          configuration=self.__configuration)
 
-                    # Extra trajectorie output.
-                    if extra_traj is not None:
-                        start, end, interval = extra_traj
+                # Extra trajectorie output.
+                if extra_traj is not None:
+                    start, end, interval = extra_traj
+                    if step >= start and step <= end and (step % interval == 0):
+                        trajectory.append(simulation_time=current_time,
+                                          step=step,
+                                          configuration=self.__configuration)
+
+                # Run all other python analysis.
+                for intv, ap in zip(analysis_interv, analysis):
+                    # NOTE: intv(interval) can be int or list/tuple of int here.
+
+                    if type(intv) is int and ((step % intv) == 0):
+                        ap.registerStep(step=step,
+                                        time=current_time,
+                                        configuration=self.__configuration,
+                                        interactions=self.__interactions)
+
+                    elif type(intv) in (list, tuple):
+                        start, end, interval = intv
                         if step >= start and step <= end and (step % interval == 0):
-                            trajectory.append(simulation_time=current_time,
-                                              step=step,
-                                              configuration=self.__configuration)
-
-                    # Run all other python analysis.
-                    for intv, ap in zip(analysis_interv, analysis):
-                        # NOTE: intv(interval) can be int or list/tuple of int here.
-
-                        if type(intv) is int and ((step % intv) == 0):
                             ap.registerStep(step=step,
                                             time=current_time,
                                             configuration=self.__configuration,
                                             interactions=self.__interactions)
 
-                        elif type(intv) in (list, tuple):
-                            start, end, interval = intv
-                            if step >= start and step <= end and (step % interval == 0):
-                                ap.registerStep(step=step,
-                                                time=current_time,
-                                                configuration=self.__configuration,
-                                                interactions=self.__interactions)
+                # Check loop conditions.
+                if step >= n_steps:
+                    if MPICommons.isMaster():
+                        self.__logger.info("Max kMC step reached, kMC iteration finish.")
+                    break
 
-                    # Check loop conditions.
-                    if step >= n_steps:
-                        if MPICommons.isMaster():
-                            self.__logger.info("Max kMC step reached, kMC iteration finish.")
-                        break
+                if current_time > end_time:
+                    if MPICommons.isMaster():
+                        self.__logger.info("Time limit reached, kMC iteration finish.")
+                    break
 
-                    if current_time > end_time:
-                        if MPICommons.isMaster():
-                            self.__logger.info("Time limit reached, kMC iteration finish.")
-                        break
+                # Do redistribution.
+                if (do_redistribution and
+                        redistribution_counter % redistribution_interval == 0):
 
-                if redistribution:
+                    # Reset counter.
+                    redistribution_counter = 0
+
                     # Re-distribute the configuration.
                     cpp_model.redistribute(fast_species, *nsplits)
                     # Time increase.
@@ -384,9 +376,6 @@ class KMCLatticeModel(object):
                         trajectory.append(simulation_time=current_time,
                                           step=step,
                                           configuration=self.__configuration)
-
-                redistribution = False
-                kmcstep = False
 
         finally:
 
