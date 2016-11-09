@@ -2113,12 +2113,12 @@ model = KMCLatticeModel(
         # Setup the model.
         model = KMCLatticeModel(configuration, sitesmap, interactions)
 
-        ori_types = deepcopy(configuration.types())
+        ori_types = deepcopy(model._KMCLatticeModel__configuration.types())
 
         # Redistribute.
         cpp_model = model._backend(start_time=0.0)
         cpp_model.redistribute(["V"], 2, 2, 2)
-        new_types = deepcopy(configuration.types())
+        new_types = deepcopy(model._KMCLatticeModel__configuration.types())
 
         # Check.
 
