@@ -1338,8 +1338,6 @@ steps.append(1000)
 types.append(["B","A","A","B","B","B","B","A","B","B","B","A","B","B","B","B"])
 """
 
-
-
         with open(lattice_trajectory_filename, "r") as t:
             lattice_data = t.read()
 

@@ -1,5 +1,3 @@
-
-
 # Copyright (c)  2012  Mikael Leetmaa
 # Copyright (c)  2016-2019 Shao Zhengjiang
 #
@@ -11,7 +9,9 @@
 import os
 import unittest
 
-# Import the tets.
+from KMCLib.Backend.Backend import MPICommons
+
+# Import the tests.
 from KMCLibTest import KMCLibTests
 
 
@@ -23,5 +23,6 @@ def suite():
 # Run the tests.
 if __name__ == '__main__':
     unittest.TextTestRunner(verbosity=2).run(suite())
-    os.remove("out.log")
+    if MPICommons.isMaster():
+        os.remove("out.log")
 

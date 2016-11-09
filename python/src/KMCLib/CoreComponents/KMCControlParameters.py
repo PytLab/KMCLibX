@@ -10,8 +10,8 @@
 
 import logging
 
-from KMCLib import mpi_master
 from KMCLib.Backend import Backend
+from KMCLib.Backend.Backend import MPICommons
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
@@ -158,7 +158,7 @@ class KMCControlParameters(object):
             self.__nsplits = self.__checkNsplits(nsplits, (1, 1, 1))
 
         # Check if there are redundant arguments passed in.
-        if kwargs and mpi_master:
+        if kwargs and MPICommons.isMaster():
             msg = "Redundant control parameters: {}".format(kwargs.keys())
             self.__logger.warning(msg)
 

@@ -67,12 +67,12 @@ class LatticeTrajectory(Trajectory):
             # Open the file and write the meta information.
             with open(self._trajectory_filename, 'w') as trajectory:
                 trajectory.write( "# KMCLibX Trajectory\n" )
-                trajectory.write( "version = \"2013.1.0\"\n" )
-                trajectory.write( "creation_time = \"%s\"\n"%(time.ctime()) )
+                trajectory.write( "version=\"2013.1.0\"\n" )
+                trajectory.write( "creation_time=\"%s\"\n"%(time.ctime()) )
 
                 # Write the sites.
-                sites_str = "sites = ["
-                indent    = " " * 8
+                sites_str = "sites=["
+                indent = " " * 7
                 for i, site in enumerate(sites):
                     sites_str += "[%15.6f,%15.6f,%15.6f]"%(site[0],site[1],site[2])
 
