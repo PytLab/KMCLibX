@@ -66,14 +66,14 @@ class LatticeTrajectory(Trajectory):
 
             # Open the file and write the meta information.
             with open(self._trajectory_filename, 'w') as trajectory:
-                trajectory.write( "# KMCLib Trajectory\n" )
-                trajectory.write( "version=\"2013.1.0\"\n" )
-                trajectory.write( "creation_time=\"%s\"\n"%(time.ctime()) )
+                trajectory.write( "# KMCLibX Trajectory\n" )
+                trajectory.write( "version = \"2013.1.0\"\n" )
+                trajectory.write( "creation_time = \"%s\"\n"%(time.ctime()) )
 
                 # Write the sites.
-                sites_str = "sites=["
-                indent    = " "*7
-                for i,site in enumerate(sites):
+                sites_str = "sites = ["
+                indent    = " " * 8
+                for i, site in enumerate(sites):
                     sites_str += "[%15.6f,%15.6f,%15.6f]"%(site[0],site[1],site[2])
 
                     # Handle the last site differently.
@@ -117,18 +117,18 @@ class LatticeTrajectory(Trajectory):
 
     def flush(self):
         """ Write all buffers to file. """
-        # Wite - but only if there is something to write.
-        if len(self.__simulation_time_buffer) > 0 and \
-                len(self.__step_buffer) > 0 and \
-                len(self.__types_buffer) > 0:
+        # Write - but only if there is something to write.
+        if (len(self.__simulation_time_buffer) > 0 and
+                len(self.__step_buffer) > 0 and
+                len(self.__types_buffer) > 0):
 
             self.__writeToFile(self.__simulation_time_buffer,
                                self.__step_buffer,
                                self.__types_buffer)
             # Reset.
             self.__simulation_time_buffer = []
-            self.__step_buffer            = []
-            self.__types_buffer           = []
+            self.__step_buffer = []
+            self.__types_buffer = []
 
     def __writeToFile(self, simulation_time_buffer, step_buffer, types_buffer):
         """
@@ -136,8 +136,8 @@ class LatticeTrajectory(Trajectory):
         The trajectory if flushed to file if the flush time limit has passed.
 
         :param simulation_time_buffer: A list of simulation times to be written to disk.
-        :param step_buffer:            A list of step numbers to be written.
-        :param types_buffer:           The types buffer given as a list of lists of strings.
+        :param step_buffer: A list of step numbers to be written.
+        :param types_buffer: The types buffer given as a list of lists of strings.
         """
         # Save to file.
 
@@ -169,5 +169,4 @@ class LatticeTrajectory(Trajectory):
 
         # While the others wait.
         MPICommons.barrier()
-
 
