@@ -27,6 +27,7 @@
 #include <algorithm>
 
 #ifdef DEBUG
+#include <iostream>
 #include <cassert>
 #endif
 
@@ -501,7 +502,7 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
         const int proc_idx = idx_proc.second;
 
         // Get configuration and process matchlists.
-        Process & process = *(interactions.processes()[proc_idx]);
+        Process & process = *(fast_process_ptrs[proc_idx]);
         const ProcessMatchList & process_matchlist = process.matchList();
         const ConfigMatchList & config_matchlist = configuration.matchList(conf_idx);
 
@@ -540,6 +541,21 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
             }
         }
     }
+
+#ifdef DEBUG
+    // Check the species can be classified correctly.
+    for (size_t i = 0; i < configuration.slowFlags().size(); ++i)
+    {
+        if (i > 0 && i % 50 == 0)
+        {
+            std::cout << std::endl;
+        }
+        else
+        {
+            std::cout << configuration.slowFlags()[i];
+        }
+    }
+#endif
 
     // }}}
 }
