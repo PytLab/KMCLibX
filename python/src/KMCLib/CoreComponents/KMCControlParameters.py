@@ -98,6 +98,9 @@ class KMCControlParameters(object):
         :param nsplits: The split number on axis x, y and z, tuple of int.
                         Default value is (1, 1, 1) means no splits.
         :type nsplits: list/tuple of int
+
+        :param redist_dump_interval: The dump interval of redistributed configuration.
+        :type int: int
         """
         # {{{
         # Set logger.
@@ -156,6 +159,12 @@ class KMCControlParameters(object):
             # Check nsplits.
             nsplits = kwargs.pop("nsplits", None)
             self.__nsplits = self.__checkNsplits(nsplits, (1, 1, 1))
+
+            # Check redistributed configuration dump interval.
+            redist_dump_interval = kwargs.pop("redist_dump_interval", None)
+            self.__redist_dump_interval = checkPositiveInteger(redist_dump_interval,
+                                                               self.__dump_interval,
+                                                               "redist_dump_interval")
 
         # Check if there are redundant arguments passed in.
         if kwargs and MPICommons.isMaster():
@@ -369,4 +378,10 @@ class KMCControlParameters(object):
         Query for the split number.
         """
         return self.__nsplits
+
+    def redistDumpInterval(self):
+        """
+        Query function for the dump interval of redistributed configuration.
+        """
+        return self.__redist_dump_interval
 

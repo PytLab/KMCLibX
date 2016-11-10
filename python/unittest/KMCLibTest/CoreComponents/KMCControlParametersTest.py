@@ -219,6 +219,29 @@ class KMCControlParametersTest(unittest.TestCase):
         control_params = KMCControlParameters(nsplits=(2, 2, 2))
         self.assertRaises(AttributeError, control_params.nsplits)
 
+    def testRedisDumpInterval(self):
+        " Make sure the redist_dump_interval can be set correctly. "
+        control_params = KMCControlParameters(do_redistribution=True)
+        # The default interval should be equal to the dump interval.
+        self.assertEqual(control_params.redistDumpInterval(), 1)
+
+        control_params = KMCControlParameters(do_redistribution=True,
+                                              redist_dump_interval=100)
+        self.assertEqual(control_params.redistDumpInterval(), 100)
+
+        # Wrong type.
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          redist_dump_interval=(1, 1, 1))
+
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          redist_dump_interval=0.1)
+
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          redist_dump_interval="asf")
+
     def testConstructionFail(self):
         """ Make sure we can not give invalid paramtes on construction. """
         # Negative values.

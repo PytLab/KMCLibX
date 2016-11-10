@@ -255,6 +255,7 @@ class KMCLatticeModel(object):
             redistribution_interval = control_parameters.redistributionInterval()
             fast_species = control_parameters.fastSpecies()
             nsplits = control_parameters.nsplits()
+            redist_dump_interval = control_parameters.redistDumpInterval()
 
         # Check validity of analysis number.
         if type(analysis_interv) in (list, tuple):
@@ -361,7 +362,7 @@ class KMCLatticeModel(object):
                     # Time increase.
                     current_time = self.__cpp_timer.simulationTime()
 
-                    if MPICommons.isMaster():
+                    if MPICommons.isMaster() and step % redist_dump_interval == 0:
                         msg = ("[{:>3d}%] [{:>6.2f}%] {} fast species are redistributed. " +
                                "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e})")
                         step_percent = int(float(step)/n_steps*100)
@@ -371,7 +372,7 @@ class KMCLatticeModel(object):
                         self.__logger.info(msg.format(step_percent, time_percent, nspecies,
                                                       hour, minute, int(second), current_time))
 
-                    if use_trajectory:
+                    if use_trajectory and step % redist_dump_interval == 0:
                         trajectory.append(simulation_time=current_time,
                                           step=step,
                                           configuration=self.__configuration)
