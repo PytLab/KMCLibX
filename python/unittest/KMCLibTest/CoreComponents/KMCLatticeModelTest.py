@@ -2117,7 +2117,7 @@ model = KMCLatticeModel(
 
         # Redistribute.
         cpp_model = model._backend(start_time=0.0)
-        cpp_model.redistribute(["V"], 2, 2, 2)
+        affected_indices = cpp_model.redistribute(["V"], 2, 2, 2)
         new_types = deepcopy(model._KMCLatticeModel__configuration.types())
 
         # Check.
@@ -2125,7 +2125,14 @@ model = KMCLatticeModel(
         # The first two elemwnts should be the same.
         self.assertListEqual(ori_types[: 2], new_types[: 2])
 
+        # Others should be different.
         self.assertNotEqual(ori_types[2:], new_types[2:])
+
+        # Check the fast species before redistribution.
+        self.assertEqual(4*4*4*2-2, len(affected_indices))
+        ref_affected_indices = range(2, 4*4*4*2)
+        ret_affected_indices = sorted(list(affected_indices))
+        self.assertListEqual(ref_affected_indices, ret_affected_indices)
 
         # }}}
 

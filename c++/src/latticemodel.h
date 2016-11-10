@@ -63,9 +63,10 @@ public:
      *  \param x : The split number on x axis.
      *  \param y : The split number on y axis.
      *  \param z : The split number on z axis.
+     *  \return  : The affected indices/the fast indices before the redistribution.
      */
-    void redistribute(const std::vector<std::string> & fast_species = {},
-                      int x = 1, int y = 1, int z = 1);
+    const std::vector<int> redistribute(const std::vector<std::string> & fast_species = {},
+                                        int x = 1, int y = 1, int z = 1);
 
     /*! \brief Query for the interactions.
      *  \return : A handle to the interactions stored on the class.

@@ -117,8 +117,9 @@ void LatticeModel::singleStep()
 
 // ----------------------------------------------------------------------------
 //
-void LatticeModel::redistribute(const std::vector<std::string> & fast_species,
-                                int x, int y, int z)
+const std::vector<int> \
+LatticeModel::redistribute(const std::vector<std::string> & fast_species,
+                           int x, int y, int z)
 {
     // Classify species in current configuration.
     matcher_.classifyConfiguration(interactions_,
@@ -148,5 +149,8 @@ void LatticeModel::redistribute(const std::vector<std::string> & fast_species,
 
     // Update the interactions' process available sites.
     interactions_.updateProcessAvailableSites();
+
+    // Return the affected indices.
+    return affected_indices;
 }
 
