@@ -354,23 +354,22 @@ class KMCLatticeModel(object):
                 # Do redistribution.
                 if (do_redistribution and
                         redistribution_counter % redistribution_interval == 0):
-
                     # Reset counter.
                     redistribution_counter = 0
-
                     # Re-distribute the configuration.
-                    cpp_model.redistribute(fast_species, *nsplits)
+                    affected_indices = cpp_model.redistribute(fast_species, *nsplits)
                     # Time increase.
                     current_time = self.__cpp_timer.simulationTime()
 
                     if MPICommons.isMaster():
-                        msg = ("[{:>3d}%] [{:>6.2f}%] Configuration re-distribution is executed. " +
+                        msg = ("[{:>3d}%] [{:>6.2f}%] {} fast species are redistributed. " +
                                "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e})")
                         step_percent = int(float(step)/n_steps*100)
                         time_percent = current_time/end_time*100
+                        nspecies = len(affected_indices)
                         hour, minute, second = convert_time(current_time)
-                        self.__logger.info(msg.format(step_percent, time_percent, hour,
-                                                      minute, int(second), current_time))
+                        self.__logger.info(msg.format(step_percent, time_percent, nspecies,
+                                                      hour, minute, int(second), current_time))
 
                     if use_trajectory:
                         trajectory.append(simulation_time=current_time,
