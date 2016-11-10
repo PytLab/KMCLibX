@@ -2608,7 +2608,8 @@ void Test_LatticeModel::testRedistribute()
 
     // Redistribute.
     const std::vector<std::string> fast_species = {"V"};
-    lattice_model.redistribute(fast_species, 2, 2, 2);
+    std::vector<int> affected_indices = lattice_model.redistribute(fast_species,
+                                                                   2, 2, 2);
 
     // Check redistributed configuration.
     auto new_config = lattice_model.configuration();
@@ -2664,6 +2665,13 @@ void Test_LatticeModel::testRedistribute()
         CPPUNIT_ASSERT_EQUAL(ori_elements[i], new_elements[i]);
         CPPUNIT_ASSERT_EQUAL(ori_types[i], new_types[i]);
         CPPUNIT_ASSERT_EQUAL(ori_atom_id[i], new_atom_id[i]);
+    }
+
+    // Check the affected indices.
+    std::sort(affected_indices.begin(), affected_indices.end());
+    for (size_t i = 0, j = 2; i < affected_indices.size(); ++i, ++j)
+    {
+        CPPUNIT_ASSERT_EQUAL(affected_indices[i], static_cast<int>(j));
     }
     // }}}
 }
