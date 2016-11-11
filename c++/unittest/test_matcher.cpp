@@ -2509,19 +2509,23 @@ void Test_Matcher::testClassifyConfiguration()
         CPPUNIT_ASSERT(slow_flag);
     }
 
+    // Get slow indices.
+    std::vector<int> slow_indices = {2};
+
     // Classify configuration.
     matcher.classifyConfiguration(interactions,
                                   config,
                                   sitesmap,
                                   lattice_map,
                                   indices,
-                                  fast_elements);
+                                  fast_elements,
+                                  slow_indices);
     const std::vector<bool> & classified_slow_flags = config.slowFlags();
 
     // Check classification result.
     for (size_t i = 0; i < classified_slow_flags.size(); ++i)
     {
-        if (i == 0 or i == 1)
+        if (i == 0 or i == 1 or i == 2)
         {
             CPPUNIT_ASSERT(classified_slow_flags[i]);
         }

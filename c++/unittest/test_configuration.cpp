@@ -168,18 +168,6 @@ void Test_Configuration::testResetFastFlags()
         CPPUNIT_ASSERT_EQUAL(ref_reset_flags2[i], ret_reset_flags2[i]);
     }
 
-    // Check flags reset with slow masks.
-    const std::vector<bool> slow_masks = {true, true, false,
-                                          false, false, false,
-                                          false, false, false};
-    const std::vector<bool> ref_reset_flags3(9, true);
-    config.resetSlowFlags({}, slow_masks);
-    const std::vector<bool> & ret_reset_flags3 = config.slowFlags();
-    for (size_t i = 0; i < ref_flags.size(); ++i)
-    {
-        CPPUNIT_ASSERT_EQUAL(ref_reset_flags3[i], ret_reset_flags3[i]);
-    }
-
     // }}}
 }
 
