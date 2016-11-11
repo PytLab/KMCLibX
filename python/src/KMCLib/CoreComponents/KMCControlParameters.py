@@ -95,6 +95,10 @@ class KMCControlParameters(object):
         :param fase_species: The names of fast species, list/tuple of str.
         :type fast_species: list of str
 
+        :param slow_indices_func: The function returning global indices of slow species
+                                  in the configuration.
+        :type slow_indices_func: A callable object.
+
         :param nsplits: The split number on axis x, y and z, tuple of int.
                         Default value is (1, 1, 1) means no splits.
         :type nsplits: list/tuple of int
@@ -155,6 +159,12 @@ class KMCControlParameters(object):
             # Check fast species.
             fast_species = kwargs.pop("fast_species", None)
             self.__fast_species = self.__checkFastSpecies(fast_species, [])
+
+            # Check the function returning slow indices.
+            self.__slow_indices_func = kwargs.pop("slow_indices_func", lambda *args: [])
+            if not hasattr(self.__slow_indices_func, "__call__"):
+                msg = "'fast_species' must be a callable object"
+                raise Error(msg)
 
             # Check nsplits.
             nsplits = kwargs.pop("nsplits", None)
@@ -384,4 +394,10 @@ class KMCControlParameters(object):
         Query function for the dump interval of redistributed configuration.
         """
         return self.__redist_dump_interval
+
+    def slowIndicesFunc(self):
+        """
+        Query function for slow indices function.
+        """
+        return self.__slow_indices_func
 

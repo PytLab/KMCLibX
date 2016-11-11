@@ -242,6 +242,16 @@ class KMCControlParametersTest(unittest.TestCase):
                           do_redistribution=True,
                           redist_dump_interval="asf")
 
+    def testSlowFlagsFunc(self):
+        " Make sure we can get the correct function to return slow indices. "
+        control_params = KMCControlParameters(do_redistribution=True)
+        # The default interval should be equal to the dump interval.
+        self.assertListEqual(control_params.slowIndicesFunc()(), [])
+
+        control_params = KMCControlParameters(do_redistribution=True,
+                                              slow_indices_func=lambda *args: [1, 2, 3])
+        self.assertListEqual(control_params.slowIndicesFunc()(), [1, 2, 3])
+
     def testConstructionFail(self):
         """ Make sure we can not give invalid paramtes on construction. """
         # Negative values.
