@@ -194,7 +194,8 @@ public:
      *  \param : The default fast element names.
      *  \return : The list of reseted species slow flags.
      */
-    void resetSlowFlags(const std::vector<std::string> & fast_elements = {});
+    void resetSlowFlags(const std::vector<std::string> & fast_elements = {},
+                        const std::vector<bool> & slow_masks = {});
 
     /*! \brief Update specific slow flag in configuration.
      *  \param type: The index of flag in global struture.

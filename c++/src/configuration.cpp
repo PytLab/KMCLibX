@@ -447,19 +447,20 @@ void Configuration::performProcess(Process & process, const int site_index)
 //
 // TODO: OpenMP.
 //
-void Configuration::resetSlowFlags(const std::vector<std::string> & fast_elements)
+void Configuration::resetSlowFlags(const std::vector<std::string> & fast_elements,
+                                   const std::vector<bool> & slow_masks)
 {
     // {{{
-    // If no default fast species, set all flags true.
-    if (fast_elements.empty())
+    // If no default fast species and no slow masks, set all flags true.
+    if ( fast_elements.empty() && slow_masks.empty() )
     {
         for (size_t i = 0; i < slow_flags_.size(); ++i)
         {
             slow_flags_[i] = true;
         }
     }
-    // Or set default fast species to be false.
-    else
+    // Set default fast species to be false.
+    else if ( !fast_elements.empty() )
     {
         for (size_t i = 0; i < slow_flags_.size(); ++i)
         {
@@ -470,6 +471,17 @@ void Configuration::resetSlowFlags(const std::vector<std::string> & fast_element
                 slow_flags_[i] = false;
             }
             else
+            {
+                slow_flags_[i] = true;
+            }
+        }
+    }
+    // So you see, the slow masks have higher priority than fast elements.
+    else
+    {
+        for (size_t i = 0; i < slow_flags_.size(); ++i)
+        {
+            if (slow_masks[i])
             {
                 slow_flags_[i] = true;
             }
