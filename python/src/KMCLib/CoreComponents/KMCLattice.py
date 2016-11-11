@@ -178,7 +178,8 @@ class KMCLattice(object):
 
     def _globalIndex(self, i, j, k, b):
         """
-        Utility function to calculate the index position in the full arrays (sites, types) given the cell indices.
+        Utility function to calculate the index position in the full arrays (sites, types)
+        given the cell indices.
 
         :param i: The cell number in the 'a' direction.
         :type i: int
@@ -214,6 +215,20 @@ class KMCLattice(object):
         # Return the lattice map.
         return self.__lattice_map
 
+    def neighbourIndices(self, index, shell=1):
+        """
+        Get the neighbouring indices of a given index.
+
+        :param index: The index to query for.
+        :type  index: int.
+
+        :param shell: The number of shells to include (in terms of primitive cells).
+        :type  shell: int.
+
+        :return: The list of indices of neighbours.
+        """
+        return list(self._map().neighbourIndices(index, shell))
+
     def _script(self, variable_name="lattice"):
         """
         Generate a script representation of an instance.
@@ -246,3 +261,4 @@ class KMCLattice(object):
 
 """
         return unit_cell_script + comment_string + lattice_string
+
