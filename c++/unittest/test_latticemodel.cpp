@@ -2507,6 +2507,7 @@ void Test_LatticeModel::testRedistribute()
     elements[32] = "B";
     elements[2] = "A";
     elements[3] = "B";
+    elements[63] = "A";
 
     Configuration config(coords, elements, possible_types);
 
@@ -2608,8 +2609,10 @@ void Test_LatticeModel::testRedistribute()
 
     // Redistribute.
     const std::vector<std::string> fast_species = {"V"};
+    const std::vector<int> slow_indices = {2};
     std::vector<int> affected_indices = lattice_model.redistribute(fast_species,
-                                                                   {}, 2, 2, 2);
+                                                                   slow_indices,
+                                                                   2, 2, 2);
 
     // Check redistributed configuration.
     auto new_config = lattice_model.configuration();
@@ -2630,7 +2633,7 @@ void Test_LatticeModel::testRedistribute()
     bool types_changed = false;
     bool atom_id_changed = false;
 
-    for (size_t i = 2; i < ori_elements.size(); ++i)
+    for (size_t i = 3; i < ori_elements.size(); ++i)
     {
         if (new_elements[i] != ori_elements[i])
         {
@@ -2669,7 +2672,7 @@ void Test_LatticeModel::testRedistribute()
 
     // Check the affected indices.
     std::sort(affected_indices.begin(), affected_indices.end());
-    for (size_t i = 0, j = 2; i < affected_indices.size(); ++i, ++j)
+    for (size_t i = 0, j = 3; i < affected_indices.size(); ++i, ++j)
     {
         CPPUNIT_ASSERT_EQUAL(affected_indices[i], static_cast<int>(j));
     }
@@ -2724,6 +2727,7 @@ void Test_LatticeModel::testSingleStepWithRedistribution()
     elements[32] = "B";
     elements[2] = "A";
     elements[3] = "B";
+    elements[68] = "A";
 
     Configuration config(coords, elements, possible_types);
 
@@ -2833,6 +2837,7 @@ void Test_LatticeModel::testSingleStepWithRedistribution()
 
     // Check single step with redistribution.
     const std::vector<std::string> fast_species = {"V"};
+    const std::vector<int> slow_indices = {2};
     const int redis_interval = 10;
     int redis_counter = 1;
     const int n_loop = 1000;
@@ -2841,7 +2846,7 @@ void Test_LatticeModel::testSingleStepWithRedistribution()
     {
         if (redis_counter % redis_interval == 0)
         {
-            lattice_model.redistribute(fast_species, {}, 2, 2, 2);
+            lattice_model.redistribute(fast_species, slow_indices, 2, 2, 2);
             redis_counter = 1;
         }
         else
