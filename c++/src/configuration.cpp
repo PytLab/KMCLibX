@@ -459,31 +459,36 @@ void Configuration::resetSlowFlags(const std::vector<std::string> & fast_element
             slow_flags_[i] = true;
         }
     }
-    // Set default fast species to be false.
-    else if ( !fast_elements.empty() )
-    {
-        for (size_t i = 0; i < slow_flags_.size(); ++i)
-        {
-            const std::string element = elements_[i];
-            auto it = std::find(fast_elements.begin(), fast_elements.end(), element);
-            if ( it != fast_elements.end() )
-            {
-                slow_flags_[i] = false;
-            }
-            else
-            {
-                slow_flags_[i] = true;
-            }
-        }
-    }
-    // So you see, the slow masks have higher priority than fast elements.
     else
     {
-        for (size_t i = 0; i < slow_flags_.size(); ++i)
+        // Set default fast species to be false.
+        if ( !fast_elements.empty() )
         {
-            if (slow_masks[i])
+            for (size_t i = 0; i < slow_flags_.size(); ++i)
             {
-                slow_flags_[i] = true;
+                const std::string element = elements_[i];
+                auto it = std::find(fast_elements.begin(),
+                                    fast_elements.end(),
+                                    element);
+                if ( it != fast_elements.end() )
+                {
+                    slow_flags_[i] = false;
+                }
+                else
+                {
+                    slow_flags_[i] = true;
+                }
+            }
+        }
+        // So you see, the slow masks have higher priority than fast elements.
+        if ( !slow_masks.empty() )
+        {
+            for (size_t i = 0; i < slow_flags_.size(); ++i)
+            {
+                if (slow_masks[i])
+                {
+                    slow_flags_[i] = true;
+                }
             }
         }
     }
