@@ -119,6 +119,7 @@ void LatticeModel::singleStep()
 //
 const std::vector<int> \
 LatticeModel::redistribute(const std::vector<std::string> & fast_species,
+                           const std::vector<int> & slow_indices,
                            int x, int y, int z)
 {
     // Classify species in current configuration.
@@ -127,7 +128,8 @@ LatticeModel::redistribute(const std::vector<std::string> & fast_species,
                                    sitesmap_,
                                    lattice_map_,
                                    configuration_.indices(),
-                                   fast_species);
+                                   fast_species,
+                                   slow_indices);
 
     // Re-distribute the current configuration.
     const std::vector<int> affected_indices = \

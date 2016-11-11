@@ -60,12 +60,14 @@ public:
 
     /*! \brief Function for redistributing configuration in KMC iteration.
      *  \param fast_species : The list of default fast species.
+     *  \param slow_indices : The indices on which the species is slow.
      *  \param x : The split number on x axis.
      *  \param y : The split number on y axis.
      *  \param z : The split number on z axis.
      *  \return  : The affected indices/the fast indices before the redistribution.
      */
     const std::vector<int> redistribute(const std::vector<std::string> & fast_species = {},
+                                        const std::vector<int> & slow_indices = {},
                                         int x = 1, int y = 1, int z = 1);
 
     /*! \brief Query for the interactions.

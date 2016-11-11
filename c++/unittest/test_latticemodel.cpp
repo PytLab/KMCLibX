@@ -2609,7 +2609,7 @@ void Test_LatticeModel::testRedistribute()
     // Redistribute.
     const std::vector<std::string> fast_species = {"V"};
     std::vector<int> affected_indices = lattice_model.redistribute(fast_species,
-                                                                   2, 2, 2);
+                                                                   {}, 2, 2, 2);
 
     // Check redistributed configuration.
     auto new_config = lattice_model.configuration();
@@ -2841,7 +2841,7 @@ void Test_LatticeModel::testSingleStepWithRedistribution()
     {
         if (redis_counter % redis_interval == 0)
         {
-            lattice_model.redistribute(fast_species, 2, 2, 2);
+            lattice_model.redistribute(fast_species, {}, 2, 2, 2);
             redis_counter = 1;
         }
         else
