@@ -358,7 +358,7 @@ class KMCLatticeModel(object):
                     # Reset counter.
                     redistribution_counter = 0
                     # Re-distribute the configuration.
-                    affected_indices = cpp_model.redistribute(fast_species, *nsplits)
+                    affected_indices = cpp_model.redistribute(fast_species, [], *nsplits)
                     # Time increase.
                     current_time = self.__cpp_timer.simulationTime()
 
