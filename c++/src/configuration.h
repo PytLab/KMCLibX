@@ -191,16 +191,11 @@ public:
                                         int x, int y, int c);
 
     /*! \brief Reset all species slow flags to be true.
-     *  \param : The default fast element names.
-     *  \param : The masks flags for slow species.
+     *  \param : The fast species names whose slow flags will be set false.
      *  \return : The list of reseted species slow flags.
      *
-     *  NOTE: The priority of slow masks is higher than that of fast elements,
-     *        meaning that the result of fast elements can be overrode by the
-     *        result of slow masks.
      */
-    void resetSlowFlags(const std::vector<std::string> & fast_elements = {},
-                        const std::vector<bool> & slow_masks = {});
+    void resetSlowFlags(const std::vector<std::string> & fast_elements = {});
 
     /*! \brief Update specific slow flag in configuration.
      *  \param type: The index of flag in global struture.

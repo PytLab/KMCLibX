@@ -478,7 +478,8 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
                                     const SitesMap     & sitesmap,
                                     const LatticeMap   & lattice_map,
                                     const std::vector<int> & indices,
-                                    const std::vector<std::string> & fast_elements) const
+                                    const std::vector<std::string> & fast_elements,
+                                    const std::vector<int> & slow_indices) const
 {
     // {{{
 
@@ -539,6 +540,15 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
             {
                 configuration.updateSlowFlag(index, false);
             }
+        }
+    }
+
+    // Reset the custom slow flags.
+    if ( !slow_indices.empty() )
+    {
+        for (int slow_index : slow_indices)
+        {
+            configuration.updateSlowFlag(slow_index, true);
         }
     }
 

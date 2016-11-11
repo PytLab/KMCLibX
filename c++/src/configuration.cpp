@@ -447,12 +447,11 @@ void Configuration::performProcess(Process & process, const int site_index)
 //
 // TODO: OpenMP.
 //
-void Configuration::resetSlowFlags(const std::vector<std::string> & fast_elements,
-                                   const std::vector<bool> & slow_masks)
+void Configuration::resetSlowFlags(const std::vector<std::string> & fast_elements)
 {
     // {{{
     // If no default fast species and no slow masks, set all flags true.
-    if ( fast_elements.empty() && slow_masks.empty() )
+    if ( fast_elements.empty() )
     {
         for (size_t i = 0; i < slow_flags_.size(); ++i)
         {
@@ -461,34 +460,19 @@ void Configuration::resetSlowFlags(const std::vector<std::string> & fast_element
     }
     else
     {
-        // Set default fast species to be false.
-        if ( !fast_elements.empty() )
+        for (size_t i = 0; i < slow_flags_.size(); ++i)
         {
-            for (size_t i = 0; i < slow_flags_.size(); ++i)
+            const std::string element = elements_[i];
+            auto it = std::find(fast_elements.begin(),
+                                fast_elements.end(),
+                                element);
+            if ( it != fast_elements.end() )
             {
-                const std::string element = elements_[i];
-                auto it = std::find(fast_elements.begin(),
-                                    fast_elements.end(),
-                                    element);
-                if ( it != fast_elements.end() )
-                {
-                    slow_flags_[i] = false;
-                }
-                else
-                {
-                    slow_flags_[i] = true;
-                }
+                slow_flags_[i] = false;
             }
-        }
-        // So you see, the slow masks have higher priority than fast elements.
-        if ( !slow_masks.empty() )
-        {
-            for (size_t i = 0; i < slow_flags_.size(); ++i)
+            else
             {
-                if (slow_masks[i])
-                {
-                    slow_flags_[i] = true;
-                }
+                slow_flags_[i] = true;
             }
         }
     }
