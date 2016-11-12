@@ -231,7 +231,7 @@ class KMCLattice(object):
         shell = int(distance) + 1
         candidate_indices =  list(self._map().neighbourIndices(index, shell))
 
-    def indexCoordinate(self, index):
+    def indexToCoordinate(self, index):
         """
         Get coordinate of a given index.
 
@@ -239,9 +239,19 @@ class KMCLattice(object):
         :type  index: int.
 
         :return: The coordinate of the index.
+        :type  : The 1d numpy array.
         """
         # Get the cell position.
-        pass
+        i, j, k, b = self.indexToCell(index)
+        basis_point = self.__unit_cell.basis()[b]
+        position = numpy.matrix([i, j, k]).T + numpy.matrix(basis_point).T
+
+        # Get coordinate.
+        basis_vectors = numpy.matrix(self.__unit_cell.cellVectors()).T
+        coordinate = basis_vectors*position
+        coordinate, = coordinate.T.tolist()
+
+        return numpy.array(coordinate)
 
     def indexToCell(self, index):
         """

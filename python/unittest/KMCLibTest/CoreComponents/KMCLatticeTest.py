@@ -448,6 +448,31 @@ class KMCLatticeTest(unittest.TestCase):
         ret_position = lattice.indexToCell(26)
         self.assertTupleEqual(ref_position, ret_position)
 
+    def testIndexToCoordinate(self):
+        " Make sure we can get correct coordinate of an index. "
+        cell_vectors = [[1.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0],
+                        [0.0, 0.0, 1.0]]
+
+        basis_points = [[0.0, 0.0, 0.0],
+                        [0.5, 0.5, 0.5]]
+
+        unit_cell = KMCUnitCell(cell_vectors, basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(3, 3, 3),
+                             periodic=(True, True, True))
+
+        # Check.
+        ref_coord = [1.0, 1.0, 1.0]
+        ret_coord = lattice.indexToCoordinate(26).tolist()
+        self.assertListEqual(ref_coord, ret_coord)
+
+        ref_coord = [2.5, 2.5, 2.5]
+        ret_coord = lattice.indexToCoordinate(53).tolist()
+        self.assertListEqual(ref_coord, ret_coord)
+
     def testScript(self):
         """ Check that we can generate a valid script. """
         cell_vectors = [[2.3, 0.0, 0.0],
