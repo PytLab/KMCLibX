@@ -215,22 +215,6 @@ class KMCLattice(object):
         # Return the lattice map.
         return self.__lattice_map
 
-    def neighbourIndices(self, index, distance=1.0):
-        """
-        Get the neighbouring indices of a given index.
-
-        :param index: The index to query for.
-        :type  index: int.
-
-        :param distance: The distance including the returned indices.
-        :type  distance: float.
-
-        :return: The list of indices of neighbours.
-        """
-        # Get the possible included indices.
-        shell = int(distance) + 1
-        candidate_indices =  list(self._map().neighbourIndices(index, shell))
-
     def indexToCoordinate(self, index):
         """
         Get coordinate of a given index.

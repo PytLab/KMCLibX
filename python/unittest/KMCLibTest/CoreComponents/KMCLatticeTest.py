@@ -401,28 +401,6 @@ class KMCLatticeTest(unittest.TestCase):
         # Check the instance.
         self.assertTrue(cpp_lattice_map == cpp_lattice_map2)
 
-    def testNeighbourIndices(self):
-        " Make sure we can get the correct neighbour indices of an index. "
-        cell_vectors = [[1.0, 0.0, 0.0],
-                        [0.0, 1.0, 0.0],
-                        [0.0, 0.0, 1.0]]
-
-        basis_points = [[0.0, 0.0, 0.0],
-                        [0.5, 0.5, 0.5]]
-
-        unit_cell = KMCUnitCell(cell_vectors, basis_points)
-
-        # Lattice.
-        lattice = KMCLattice(unit_cell=unit_cell,
-                             repetitions=(4, 4, 4),
-                             periodic=(True, True, True))
-
-        ref_neighbor_indices = [0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 16, 17,
-                                18, 19, 20, 21, 32, 33, 34, 35, 36, 37, 40, 41,
-                                42, 43, 44, 45, 48, 49, 50, 51, 52, 53, 64, 65,
-                                66, 67, 68, 69, 72, 73, 74, 75, 76, 77, 80, 81,
-                                82, 83, 84, 85]
-
     def testIndexToCell(self):
         " Make sure we can get correct position of an index. "
         cell_vectors = [[1.0, 0.0, 0.0],
