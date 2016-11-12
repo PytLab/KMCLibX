@@ -423,9 +423,30 @@ class KMCLatticeTest(unittest.TestCase):
                                 66, 67, 68, 69, 72, 73, 74, 75, 76, 77, 80, 81,
                                 82, 83, 84, 85]
 
-        ret_neighbor_indices = lattice.neighbourIndices(42)
+    def testIndexToCell(self):
+        " Make sure we can get correct position of an index. "
+        cell_vectors = [[1.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0],
+                        [0.0, 0.0, 1.0]]
 
-        self.assertListEqual(ret_neighbor_indices, ref_neighbor_indices)
+        basis_points = [[0.0, 0.0, 0.0],
+                        [0.5, 0.5, 0.5]]
+
+        unit_cell = KMCUnitCell(cell_vectors, basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(3, 3, 3),
+                             periodic=(True, True, True))
+
+        # Check.
+        ref_position = (2, 2, 2, 1)
+        ret_position = lattice.indexToCell(53)
+        self.assertTupleEqual(ref_position, ret_position)
+
+        ref_position = (1, 1, 1, 0)
+        ret_position = lattice.indexToCell(26)
+        self.assertTupleEqual(ref_position, ret_position)
 
     def testScript(self):
         """ Check that we can generate a valid script. """

@@ -215,19 +215,63 @@ class KMCLattice(object):
         # Return the lattice map.
         return self.__lattice_map
 
-    def neighbourIndices(self, index, shell=1):
+    def neighbourIndices(self, index, distance=1.0):
         """
         Get the neighbouring indices of a given index.
 
         :param index: The index to query for.
         :type  index: int.
 
-        :param shell: The number of shells to include (in terms of primitive cells).
-        :type  shell: int.
+        :param distance: The distance including the returned indices.
+        :type  distance: float.
 
         :return: The list of indices of neighbours.
         """
-        return list(self._map().neighbourIndices(index, shell))
+        # Get the possible included indices.
+        shell = int(distance) + 1
+        candidate_indices =  list(self._map().neighbourIndices(index, shell))
+
+    def indexCoordinate(self, index):
+        """
+        Get coordinate of a given index.
+
+        :param index: The index to query for.
+        :type  index: int.
+
+        :return: The coordinate of the index.
+        """
+        # Get the cell position.
+        pass
+
+    def indexToCell(self, index):
+        """
+        Get indice on each axis(i, j, k, b) from a given global index.
+
+        :param index: The index to query for.
+        :type  index: int.
+
+        :return: The indices on axis X,Y,Z,basis.
+        """
+        # Get the structure of lattice.
+        m, n, k = self.__repetitions
+        b = len(self.__unit_cell.basis())
+
+        # Get i.
+        left = index
+        i = left/(n*k*b)
+
+        # Get j.
+        left = left % (n*k*b)
+        j = left/(k*b)
+
+        # Get k.
+        left = left % (k*b)
+        k = left/b
+
+        # Get b.
+        basis = left % b
+
+        return i, j, k, basis
 
     def _script(self, variable_name="lattice"):
         """

@@ -42,7 +42,9 @@ class KMCUnitCell(object):
         # Check that the basis points are given in fractional coordinates.
         for point in basis_points:
             if not all([b < 1.0 and b >= 0.0 for b in point]):
-                raise Error("All basis points must be given in fractional coordinates in the range 0.0 <= basis_point < 1.0.")
+                msg = ("All basis points must be given in fractional coordinates" +
+                       "in the range 0.0 <= basis_point < 1.0.")
+                raise Error(msg)
 
         self.__basis_points = basis_points
 
