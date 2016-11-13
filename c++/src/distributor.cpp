@@ -14,6 +14,7 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-10-24   1.4          Initial creation.
+ *  zjshao     2016-11-13   1.4          Add random seed setting.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -27,12 +28,15 @@
 #include "distributor.h"
 #include "configuration.h"
 #include "matcher.h"
+#include "random.h"
 
 
 // ----------------------------------------------------------------------------
 // TODO: OpenMp
 //
-std::vector<int> RandomDistributor::reDistribute(Configuration & configuration) const
+std::vector<int> RandomDistributor::reDistribute(Configuration & configuration,
+                                                 const bool time_seed,
+                                                 int seed) const
 {
     // {{{
 
@@ -64,7 +68,8 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration) 
     }
 
     // Initialize random number generator and distribution.
-    static std::default_random_engine generator(time(NULL));
+    seed = randomSeed(time_seed, seed);
+    static std::default_random_engine generator(seed);
 
     // Number of fast species.
     const int n_fast = fast_local_indices.size();
@@ -126,7 +131,9 @@ updateLocalFromSubConfig(Configuration & global_config,
 //
 std::vector<int> PartialRandomDistributor::reDistribute(Configuration & configuration,
                                                         const LatticeMap & lattice_map,
-                                                        int x, int y, int z) const
+                                                        int x, int y, int z,
+                                                        const bool time_seed,
+                                                        int seed) const
 {
     // {{{
 
@@ -138,7 +145,7 @@ std::vector<int> PartialRandomDistributor::reDistribute(Configuration & configur
     for (SubConfiguration & sub_config : sub_configs)
     {
         // Re-distribute sub-configuration.
-        std::vector<int> sub_fast_indices = reDistribute(sub_config);
+        std::vector<int> sub_fast_indices = reDistribute(sub_config, time_seed, seed);
         // Update local configuration.
         updateLocalFromSubConfig(configuration, sub_config);
         // Insert sub_fast_indices to total fast indices.
