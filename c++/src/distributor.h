@@ -14,7 +14,6 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-10-23   1.4          Initial creation.
- *  zjshao     2016-11-13   1.4          Add random seed setting.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -51,13 +50,8 @@ public:
      *         other derived classes.
      *  \param configuration : The reference of the configuration to be
      *                         redistributed.
-     *  \param time_seed : If true the random number generator will be seeded
-     *                     with the given seed value plus the present time.
-     *  \param seed : An integer to use as seed.
      */
-    virtual std::vector<int> reDistribute(Configuration & configuration,
-                                          const bool time_seed = false,
-                                          int seed = 0) const = 0;
+    virtual std::vector<int> reDistribute(Configuration & configuration) const = 0;
 
 protected:
 
@@ -85,15 +79,10 @@ public:
      *                         redistributed.
      *  \return affected_indices : The list of global indices affected by
      *                             redistribution.
-     *  \param time_seed : If true the random number generator will be seeded
-     *                     with the given seed value plus the present time.
-     *  \param seed : An integer to use as seed.
-     *
+     *                       
      *  NOTE: The configuration must be passed after classification.
      */
-    virtual std::vector<int> reDistribute(Configuration & configuration,
-                                          const bool time_seed = false,
-                                          int seed = 0) const;
+    virtual std::vector<int> reDistribute(Configuration & configuration) const;
 
 };
 
@@ -120,17 +109,12 @@ public:
      *         randomly.
      *  \param configuration : The reference of the configuration to be
      *                         redistributed.
-     *  \param time_seed : If true the random number generator will be seeded
-     *                     with the given seed value plus the present time.
-     *  \param seed : An integer to use as seed.
      *
      *  NOTE: The configuration must be passed after classification.
      */
     std::vector<int> reDistribute(Configuration & configuration,
                                   const LatticeMap & lattice_map,
-                                  int x, int y, int z,
-                                  const bool time_seed = false,
-                                  int seed = 0) const;
+                                  int x, int y, int z) const;
 
     /*! \brief Update local part of global Configuration using sub-configuration.
      *  \param global_config (in/out) : The global configuration object.
