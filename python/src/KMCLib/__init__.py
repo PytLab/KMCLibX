@@ -54,7 +54,7 @@ __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
 MPICommons.init()
 
 # Print the header when the module is loaded.
-printHeader()
+#printHeader()
 
 
 # Instantialize logger.
