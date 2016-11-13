@@ -1,6 +1,5 @@
 /*
   Copyright (c)  2012-2015  Mikael Leetmaa
-  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -73,7 +72,7 @@ bool setRngType(const RNG_TYPE rng_type)
 
 // -----------------------------------------------------------------------------
 //
-int randomSeed(const bool time_seed, int seed)
+void seedRandom(const bool time_seed, int seed)
 {
     // Seed with time.
     if (time_seed)
@@ -93,21 +92,6 @@ int randomSeed(const bool time_seed, int seed)
 
         // Set the seed, now equal on all processes.
         seed += time_seed;
-    }
-
-    return seed;
-
-}
-
-
-// -----------------------------------------------------------------------------
-//
-void seedRandom(const bool time_seed, int seed)
-{
-    // Seed with time.
-    if (time_seed)
-    {
-        seed = randomSeed(time_seed, seed);
     }
 
     // Seed.
