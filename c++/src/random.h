@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2015  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -21,6 +22,9 @@ enum RNG_TYPE {MT, MINSTD, RANLUX24, RANLUX48, DEVICE};
  *  \param rng_type : The type of random number generator to use.
  */
 bool setRngType(const RNG_TYPE rng_type);
+
+
+int randomSeed(const bool time_seed, int seed);
 
 
 /*! \brief Set the seed to the random number generator.
