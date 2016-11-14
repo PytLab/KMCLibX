@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -14,11 +15,13 @@
 
 #include <cmath>
 #include <unistd.h>
+#include <iostream>
 
 // -------------------------------------------------------------------------- //
 //
 void Test_Random::testSeedAndCall()
 {
+    // {{{
     // Seed the random number generator withouth using the time.
     seedRandom(false, 13);
 
@@ -102,8 +105,120 @@ void Test_Random::testSeedAndCall()
     // This should give another number.
     CPPUNIT_ASSERT( std::fabs(rnd01-rnd0) > 1.0e-10);
 
-    // DONE
+    // }}}
 
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Random::testShuffleIntVector()
+{
+
+    // Test default generator(MT).
+    {
+        // Vector to be shuffled.
+        std::vector<int> vector = {0, 1, 2, 3, 4, 5, 6};
+
+        // Shuffle it.
+        seedRandom(false, 13);
+        shuffleIntVector(vector);
+
+        const std::vector<int> ref_vector = {3, 2, 1, 0, 5, 4, 6};
+        for (size_t i = 0; i < vector.size(); ++i)
+        {
+            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector[i]);
+        }
+
+        sleep(2);
+
+        // Shuffle again.
+        std::vector<int> vector2 = {0, 1, 2, 3, 4, 5, 6};
+
+        seedRandom(false, 13);
+        shuffleIntVector(vector2);
+
+        for (size_t i = 0; i < vector2.size(); ++i)
+        {
+            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector2[i]);
+        }
+    }
+
+    // MT.
+    {
+        // Vector to be shuffled.
+        std::vector<int> vector = {0, 1, 2, 3, 4, 5, 6};
+
+        setRngType(MT);
+
+        // Shuffle it.
+        seedRandom(false, 13);
+        shuffleIntVector(vector);
+
+        const std::vector<int> ref_vector = {3, 2, 1, 0, 5, 4, 6};
+        for (size_t i = 0; i < vector.size(); ++i)
+        {
+            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector[i]);
+        }
+
+        sleep(2);
+
+        // Shuffle again.
+        std::vector<int> vector2 = {0, 1, 2, 3, 4, 5, 6};
+
+        seedRandom(false, 13);
+        shuffleIntVector(vector2);
+
+        for (size_t i = 0; i < vector2.size(); ++i)
+        {
+            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector2[i]);
+        }
+    }
+
+    // Run with time.
+    {
+        std::vector<int> vector = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                                   11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+        const std::vector<int> vector_copy = vector;
+
+        seedRandom(true, 13);
+
+        shuffleIntVector(vector);
+
+        bool different = false;
+        for (size_t i = 0; i < vector.size(); ++i)
+        {
+            if (vector_copy[i] != vector[i])
+            {
+                different = true;
+            }
+        }
+
+        // This could eventually fail by chanse, but that would be very unlikely.
+        CPPUNIT_ASSERT(different);
+
+        sleep(2);
+        
+        different = false;
+
+        // Shuffle again.
+        std::vector<int> vector2 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                                    11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+
+        seedRandom(false, 13);
+        shuffleIntVector(vector2);
+
+        for (size_t i = 0; i < vector2.size(); ++i)
+        {
+            if (vector_copy[i] != vector2[i])
+            {
+                different = true;
+            }
+        }
+
+        // This could eventually fail by chanse, but that would be very unlikely.
+        CPPUNIT_ASSERT(different);
+    }
 }
 
 
