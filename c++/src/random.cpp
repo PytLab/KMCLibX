@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2015  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -147,6 +148,41 @@ double randomDouble01()
 #ifdef __DEVICE__
     case DEVICE:
         return std::generate_canonical<double, 32>(rng_device__);
+#endif // __DEVICE__
+
+    default:
+        // This can never happen from previous checks.
+        throw std::runtime_error("Invalid random number generator.");
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void shuffleIntVector(std::vector<int> & v)
+{
+    switch (rng_type__)
+    {
+    case MT:
+        std::shuffle(v.begin(), v.end(), rng_mt__);
+        break;
+
+    case MINSTD:
+        std::shuffle(v.begin(), v.end(), rng_minstd__);
+        break;
+
+    case RANLUX24:
+        std::shuffle(v.begin(), v.end(), rng_ranlux24__);
+        break;
+
+    case RANLUX48:
+        std::shuffle(v.begin(), v.end(), rng_ranlux48__);
+        break;
+
+#ifdef __DEVICE__
+    case DEVICE:
+        std::shuffle(v.begin(), v.end(), rng_device__);
+        break;
 #endif // __DEVICE__
 
     default:

@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2012-2015  Mikael Leetmaa
+  Copyright (c)  2016-2019  Shao Zhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -12,6 +13,8 @@
 
 #ifndef __RANDOM__
 #define __RANDOM__
+
+#include <algorithm>
 
 /// The supported random number generator types.
 enum RNG_TYPE {MT, MINSTD, RANLUX24, RANLUX48, DEVICE};
@@ -37,6 +40,11 @@ void seedRandom(const bool time_seed, int seed);
  */
 double randomDouble01();
 
+
+/*! \brief Function to shuffle a integer vector.
+ *  \param v: The integer vector to be shuffled.
+ */
+void shuffleIntVector(std::vector<int> & v);
 
 #endif // __RANDOM__
 

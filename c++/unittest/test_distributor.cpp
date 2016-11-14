@@ -17,6 +17,7 @@
 #include "latticemap.h"
 #include "sitesmap.h"
 #include "matcher.h"
+#include "random.h"
 
 
 // ----------------------------------------------------------------------------

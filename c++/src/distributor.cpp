@@ -20,13 +20,10 @@
  */
 
 
-#include <ctime>
-#include <random>
-#include <algorithm>
-
 #include "distributor.h"
 #include "configuration.h"
 #include "matcher.h"
+#include "random.h"
 
 
 // ----------------------------------------------------------------------------
@@ -63,9 +60,6 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration) 
         }
     }
 
-    // Initialize random number generator and distribution.
-    static std::default_random_engine generator(time(NULL));
-
     // Number of fast species.
     const int n_fast = fast_local_indices.size();
 
@@ -77,7 +71,7 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration) 
     }
 
     // Shuffle the indices vector.
-    std::shuffle(shuffle_indices.begin(), shuffle_indices.end(), generator);
+    shuffleIntVector(shuffle_indices);
 
     for (int i = 0; i < n_fast; ++i)
     {
