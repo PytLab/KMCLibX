@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <stdexcept>
 
 #include "process.h"
 #include "random.h"
@@ -41,7 +42,8 @@ Process::Process(const Configuration & first,
                  const int process_number,
                  const std::vector<int> & site_types,
                  const bool fast,
-                 const bool redistribution) :
+                 const bool redistribution,
+                 const std::string & redist_species) :
     process_number_(process_number),
     range_(1),
     rate_(rate),
@@ -51,7 +53,8 @@ Process::Process(const Configuration & first,
     basis_sites_(basis_sites),
     id_moves_(0),
     fast_(fast),
-    redistribution_(redistribution)
+    redistribution_(redistribution),
+    redist_species_(redist_species)
 {
     // {{{
 
@@ -122,6 +125,13 @@ Process::Process(const Configuration & first,
         has_site_types_ = true;
     }
 
+    // Check the redist_species.
+    if ( redistribution_ && redist_species_.empty() )
+    {
+        std::string msg = "The redist_species is an empty string.";
+        throw std::invalid_argument(msg);
+    }
+
     // }}}
 }
 
@@ -132,9 +142,10 @@ Process::Process(const Configuration & first,
                  const double rate,
                  const std::vector<int> & basis_sites,
                  const bool fast,
-                 const bool redistribution) :
+                 const bool redistribution,
+                 const std::string & redist_species) :
     Process(first, second, rate, basis_sites, {}, {}, -1, {},
-            fast, redistribution)
+            fast, redistribution, redist_species)
 {
     // NOTHING HERE.
 }

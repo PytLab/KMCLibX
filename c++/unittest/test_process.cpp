@@ -16,6 +16,7 @@
 #include "random.h"
 
 #include <cmath>
+#include <stdexcept>
 
 // -------------------------------------------------------------------------- //
 //
@@ -79,11 +80,17 @@ void Test_Process::testConstruction()
 
     CPPUNIT_ASSERT( process2.fast() );
     CPPUNIT_ASSERT( !process2.redistribution() );
+    CPPUNIT_ASSERT( process2.redistSpecies().empty() );
 
     // Check another constuctor with fast being true.
-    Process process3(config1, config2, rate, basis_sites, true, true);
+    Process process3(config1, config2, rate, basis_sites, true, true, "C");
     CPPUNIT_ASSERT( process3.fast() );
     CPPUNIT_ASSERT( process3.redistribution() );
+
+    // Check exception throw.
+    CPPUNIT_ASSERT_THROW(Process process4(config1, config2, rate, basis_sites,
+                                          true, true),
+                         std::invalid_argument);
 
     // }}}
 }

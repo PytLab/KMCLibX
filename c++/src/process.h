@@ -75,6 +75,8 @@ public:
      *        it is converted to fast species.
      *
      *  \param redistribution: The flag for redistribution process.
+     *  \param redist_species: The corresponding species to be scattered in
+     *                         redistribution.
      *
      */
     Process(const Configuration & first,
@@ -86,7 +88,8 @@ public:
             const int process_number = -1,
             const std::vector<int> & site_types = {},
             const bool fast = false,
-            const bool redistribution = false);
+            const bool redistribution = false,
+            const std::string & redist_species = "");
 
     /*! \brief Constructor for the process with fast flag provided explicitly.
      *  \param first         : The first configuration, to match against the local
@@ -99,13 +102,16 @@ public:
      *  \param basis_sites   : The basis sites where this process is applicable.
      *  \param fast          : The flag for fast process or not.
      *  \param redistribution: The flag for redistribution process.
+     *  \param redist_species: The corresponding species to be scattered in
+     *                         redistribution.
      */
     Process(const Configuration & first,
             const Configuration & second,
             const double rate,
             const std::vector<int> & basis_sites,
             const bool fast,
-            const bool redistribution = false);
+            const bool redistribution = false,
+            const std::string & redist_species = "");
 
     /*! \brief Virtual destructor needed for use as base class.
      */
@@ -226,6 +232,11 @@ public:
      */
     bool redistribution() const { return redistribution_; }
 
+    /*! \brief Query for the corresponding species for redistribution.
+     *  \return : The corresponding species for redistribution.
+     */
+    const std::string & redistSpecies() const { return redist_species_; }
+
 protected:
 
     /// The process number.
@@ -265,6 +276,9 @@ protected:
 
     /// The flag for whether the process is used for redistribution.
     bool redistribution_;
+
+    /// The corresponding species name to be re-scattered.
+    std::string redist_species_;
 
 private:
 
