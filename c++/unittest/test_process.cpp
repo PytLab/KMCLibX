@@ -86,6 +86,7 @@ void Test_Process::testConstruction()
     Process process3(config1, config2, rate, basis_sites, true, true, "C");
     CPPUNIT_ASSERT( process3.fast() );
     CPPUNIT_ASSERT( process3.redistribution() );
+    CPPUNIT_ASSERT_EQUAL(process3.redistSpecies(), static_cast<std::string>("C"));
 
     // Check exception throw.
     CPPUNIT_ASSERT_THROW(Process process4(config1, config2, rate, basis_sites,
