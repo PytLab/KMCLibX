@@ -17,6 +17,7 @@
  *  zjshao     2016-06-26   1.3          Add picked index & process available
  *                                       sites.
  *  zjshao     2016-10-30   1.4          Add slow/fast process classification
+ *  zjshao     2016-11-21   1.4          Add redist process.
  *  ---------------------------------------------------------------------------
  * *****************************************************************************
  */
@@ -72,6 +73,12 @@ Interactions::Interactions(const std::vector<Process> & processes,
         if ( process_ptr->fast() )
         {
             fast_process_pointers_.push_back(process_ptr);
+
+            // Pointers for redistribution processes.
+            if ( process_ptr->redistribution() )
+            {
+                redist_process_pointers_.push_back(process_ptr);
+            }
         }
         else
         {

@@ -94,7 +94,7 @@ void Test_Interactions::testQuery()
         const double rate = 13.7;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, rate, std::vector<int>(1,0), true);
+        Process p(c1, c2, rate, std::vector<int>(1,0), true, true, "A");
         processes.push_back(p);
     }
 
@@ -107,11 +107,13 @@ void Test_Interactions::testQuery()
     // Query for the slow and fast processes.
     const std::vector<Process *> & queried_fast_processes = interactions.fastProcesses();
     const std::vector<Process *> & queried_slow_processes = interactions.slowProcesses();
+    const std::vector<Process *> & queried_redist_processes = interactions.redistProcesses();
 
     // Check the length of the list of processes.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_processes.size()), 3 );
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_fast_processes.size()), 1);
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_slow_processes.size()), 2);
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_redist_processes.size()), 1);
 
     // Get the types in the queried processes and check.
     CPPUNIT_ASSERT_EQUAL( queried_processes[0]->matchList()[0].match_type, 1 );

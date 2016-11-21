@@ -17,6 +17,7 @@
  *  zjshao     2016-06-26   1.3          Add picked index & process available
  *                                       sites.
  *  zjshao     2016-10-30   1.4          Add slow/fast process classification
+ *  zjshao     2016-11-21   1.4          Add redist process.
  *  ---------------------------------------------------------------------------
  * *****************************************************************************
  */
@@ -111,6 +112,12 @@ public:
     const std::vector<Process *> & slowProcesses() const
     { return slow_process_pointers_; }
 
+    /*! \brief Const query for the redistribute processes.
+     *  \return : The pointers of redistribute processes of the system.
+     */
+    const std::vector<Process *> & redistProcesses() const
+    { return redist_process_pointers_; }
+
     /*! \brief Const query for the rate calculator reference.
      *  \return : A handle to the rate calculator in use.
      */
@@ -185,6 +192,9 @@ private:
 
     /// Pointers to the fast processes.
     std::vector<Process *> fast_process_pointers_;
+
+    /// Pointers to the redistribution processes.
+    std::vector<Process *> redist_process_pointers_;
 
     /// The probability table.
     std::vector<std::pair<double,int> > probability_table_;
