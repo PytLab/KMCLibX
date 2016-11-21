@@ -1528,3 +1528,62 @@ void Test_Configuration::testExtractFastSpecies()
     // }}}
 }
 
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testFastIndices()
+{
+    // {{{
+
+    // Construct configuration.
+    int nI = 4, nJ = 4, nK = 4, nB = 2;
+    std::vector<double> basis_coords = {0.0, 0.5};
+    std::vector<std::string> basis_elem = {"A", "B"};
+    std::vector<std::string> elements;
+    std::vector<std::vector<double> > coords;
+    std::vector<double> coord(3, 0.0);
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    coord[0] = i + basis_coords[b];
+                    coord[1] = j + basis_coords[b];
+                    coord[2] = k + basis_coords[b];
+                    coords.push_back(coord);
+                    elements.push_back(basis_elem[b]);
+                }
+            }
+        }
+    }
+
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    Configuration config(coords, elements, possible_types);
+
+    // Update slow flags.
+    const std::vector<int> fast_indices = {0, 1, 2, 3, 4, 5, 6, 7, 9, 12};
+    for (int fast_index : fast_indices)
+    {
+        config.updateSlowFlag(fast_index, false);
+    }
+
+    // Check.
+    const std::vector<int> & ret_fast_indices = config.fastIndices();
+    for (size_t i = 0; i < ret_fast_indices.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ret_fast_indices[i], fast_indices[i]);
+    }
+
+    // }}}
+}
+

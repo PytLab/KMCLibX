@@ -213,6 +213,8 @@ public:
         extractFastSpecies(const std::vector<std::string> & fast_elements,
                            const std::string & replace_species);
 
+    const std::vector<int> fastIndices() const;
+
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
      *  \return : The string representation of the type integer.

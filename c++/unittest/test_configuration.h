@@ -37,6 +37,7 @@ public:
     CPPUNIT_TEST( testSubConfiguration );
     CPPUNIT_TEST( testSplit );
     CPPUNIT_TEST( testExtractFastSpecies );
+    CPPUNIT_TEST( testFastIndices );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -51,6 +52,7 @@ public:
     void testSubConfiguration();
     void testSplit();
     void testExtractFastSpecies();
+    void testFastIndices();
 
 };
 

@@ -606,6 +606,24 @@ std::vector<SubConfiguration> Configuration::split(const LatticeMap & lattice_ma
 }
 
 
+// -----------------------------------------------------------------------------
+//
+const std::vector<int> Configuration::fastIndices() const
+{
+    std::vector<int> fast_indices = {};
+
+    for (size_t i = 0; i < slow_flags_.size(); ++i)
+    {
+        if (!slow_flags_[i])
+        {
+            fast_indices.push_back(i);
+        }
+    }
+
+    return fast_indices;
+}
+
+
 // ----------------------------------------------------------------------------
 // Functions definitions for SubConfiguration class.
 // ----------------------------------------------------------------------------
