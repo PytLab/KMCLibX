@@ -500,6 +500,8 @@ Configuration::extractFastSpecies(const std::vector<std::string> & fast_elements
     else
     {
         const int replace_type = possible_types_[replace_species];
+
+        // Loop to extract all fast species from configuration.
         for (size_t i = 0; i < slow_flags_.size(); ++i)
         {
             if (!slow_flags_[i])
@@ -510,13 +512,15 @@ Configuration::extractFastSpecies(const std::vector<std::string> & fast_elements
                                     element);
                 if ( it != fast_elements.end() )
                 {
-                    // Change types and elements of configuration.
+                    // Collect fast species.
                     fast_species.push_back(element);
+                    // Change types and elements of configuration.
                     types_[i] = replace_type;
                     elements_[i] = replace_species;
                 }
             }
         }
+
         return fast_species;
     }
 
