@@ -482,6 +482,50 @@ void Configuration::resetSlowFlags(const std::vector<std::string> & fast_element
 
 // -----------------------------------------------------------------------------
 //
+// TODO: OpenMP
+//
+std::vector<std::string> \
+Configuration::extractFastSpecies(const std::vector<std::string> & fast_elements,
+                                  const std::string & replace_species)
+{
+    // {{{
+
+    // List to store all fast elements in configuration.
+    std::vector<std::string> fast_species = {};
+
+    if ( fast_elements.empty() )
+    {
+        return fast_species;
+    }
+    else
+    {
+        const int replace_type = possible_types_[replace_species];
+        for (size_t i = 0; i < slow_flags_.size(); ++i)
+        {
+            if (!slow_flags_[i])
+            {
+                const std::string & element = elements_[i];
+                auto it = std::find(fast_elements.begin(),
+                                    fast_elements.end(),
+                                    element);
+                if ( it != fast_elements.end() )
+                {
+                    // Change types and elements of configuration.
+                    fast_species.push_back(element);
+                    types_[i] = replace_type;
+                    elements_[i] = replace_species;
+                }
+            }
+        }
+        return fast_species;
+    }
+
+    // }}}
+}
+
+
+// -----------------------------------------------------------------------------
+//
 SubConfiguration Configuration::subConfiguration(const LatticeMap & lattice_map,
                                                  const SubLatticeMap & sub_lattice_map) const
 {

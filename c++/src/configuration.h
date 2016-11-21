@@ -198,11 +198,20 @@ public:
     void resetSlowFlags(const std::vector<std::string> & fast_elements = {});
 
     /*! \brief Update specific slow flag in configuration.
-     *  \param type: The index of flag in global struture.
-     *  \param type: The flag value.
+     *  \param index: The index of flag in global struture.
+     *  \param value: The flag value.
      */
     void updateSlowFlag(const int index, const bool value)
     { slow_flags_[index] = value; }
+
+    /*! \brief Extract fast species from configuration and replace the
+     *         corresponding types and elements with replace element.
+     *  \param fast_elements: All possible fast elements list.
+     *  \param replace_species: The element replacing the fast species.
+     */
+    std::vector<std::string> \
+        extractFastSpecies(const std::vector<std::string> & fast_elements,
+                           const std::string & replace_species);
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
