@@ -1461,3 +1461,70 @@ void Test_Configuration::testSplit()
     // }}}
 }
 
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testExtractFastSpecies()
+{
+    // {{{
+
+    // Construct configuration.
+    int nI = 4, nJ = 4, nK = 4, nB = 2;
+    std::vector<double> basis_coords = {0.0, 0.5};
+    std::vector<std::string> basis_elem = {"A", "B"};
+    std::vector<std::string> elements;
+    std::vector<std::vector<double> > coords;
+    std::vector<double> coord(3, 0.0);
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    coord[0] = i + basis_coords[b];
+                    coord[1] = j + basis_coords[b];
+                    coord[2] = k + basis_coords[b];
+                    coords.push_back(coord);
+                    elements.push_back(basis_elem[b]);
+                }
+            }
+        }
+    }
+
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    Configuration config(coords, elements, possible_types);
+
+    // Update slow flags.
+    config.updateSlowFlag(0, false);
+    config.updateSlowFlag(1, false);
+    config.updateSlowFlag(2, false);
+
+    std::string empty_element = "V";
+    std::vector<std::string> fast_elements = {"A", "B"};
+
+    std::vector<std::string> && fast_species = config.extractFastSpecies(fast_elements,
+                                                                         empty_element);
+
+    // Check.
+    const std::vector<std::string> ref_fast_species = {"A", "B", "A"};
+    for (int i = 0; i < 3; ++i)
+    {
+        // Check fast species collection.
+        CPPUNIT_ASSERT_EQUAL(ref_fast_species[i], fast_species[i]);
+        // Check types and elements update.
+        CPPUNIT_ASSERT_EQUAL(config.types()[i], 3);
+        CPPUNIT_ASSERT_EQUAL(config.elements()[i], static_cast<std::string>("V"));
+    }
+
+    // }}}
+}
+

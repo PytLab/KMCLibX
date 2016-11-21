@@ -36,6 +36,7 @@ public:
     CPPUNIT_TEST( testAtomIDElementsCoordinatesMovedIDs );
     CPPUNIT_TEST( testSubConfiguration );
     CPPUNIT_TEST( testSplit );
+    CPPUNIT_TEST( testExtractFastSpecies );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -49,6 +50,7 @@ public:
     void testTypeNameQuery();
     void testSubConfiguration();
     void testSplit();
+    void testExtractFastSpecies();
 
 };
 
