@@ -109,6 +109,8 @@ public:
      *         randomly.
      *  \param configuration : The reference of the configuration to be
      *                         redistributed.
+     *  \return affected_indices : The list of global indices affected by
+     *                             redistribution.
      *
      *  NOTE: The configuration must be passed after classification.
      */
