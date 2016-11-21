@@ -347,3 +347,24 @@ Process* Interactions::pickProcess()
     return slow_process_pointers_[index];
 }
 
+
+// -----------------------------------------------------------------------------
+//
+const std::vector<std::string> Interactions::redistSpecies() const
+{
+    std::vector<std::string> redist_species = {};
+
+    if ( redist_process_pointers_.empty() )
+    {
+        return redist_species;
+    }
+    else
+    {
+        for (const auto process_ptr : redist_process_pointers_)
+        {
+            redist_species.push_back(process_ptr->redistSpecies());
+        }
+        return redist_species;
+    }
+}
+

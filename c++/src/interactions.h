@@ -174,6 +174,8 @@ public:
      */
     const int & pickedIndex() const { return picked_index_; }
 
+    const std::vector<std::string> redistSpecies() const;
+
 protected:
 
 private:

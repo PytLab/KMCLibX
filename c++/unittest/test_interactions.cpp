@@ -101,6 +101,14 @@ void Test_Interactions::testQuery()
     // Setup the interactions object.
     Interactions interactions(processes, false);
 
+    // Check redist species query.
+    const std::vector<std::string> && ret_redist_species = interactions.redistSpecies();
+    const std::vector<std::string> ref_redist_species = {"A"};
+    for (size_t i = 0; i < ref_redist_species.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ret_redist_species[i], ref_redist_species[i]);
+    }
+
     // Query for the processes.
     const std::vector<Process*> & queried_processes = interactions.processes();
 
@@ -148,7 +156,6 @@ void Test_Interactions::testQuery()
     // Query for picked index.
     CPPUNIT_ASSERT_EQUAL(interactions.pickedIndex(), -1);
     // }}}
-
 }
 
 // -------------------------------------------------------------------------- //
