@@ -71,10 +71,19 @@ void Test_Process::testConstruction()
     // Check the fast process flag.
     CPPUNIT_ASSERT( !process1.fast() );
 
+    // Check the redistribution flag.
+    CPPUNIT_ASSERT( !process1.redistribution() );
+
     // Check another constuctor with fast being true.
     Process process2(config1, config2, rate, basis_sites, true);
 
     CPPUNIT_ASSERT( process2.fast() );
+    CPPUNIT_ASSERT( !process2.redistribution() );
+
+    // Check another constuctor with fast being true.
+    Process process3(config1, config2, rate, basis_sites, true, true);
+    CPPUNIT_ASSERT( process3.fast() );
+    CPPUNIT_ASSERT( process3.redistribution() );
 
     // }}}
 }

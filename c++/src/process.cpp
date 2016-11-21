@@ -17,6 +17,7 @@
  *  zjshao     2016-04-10   1.2          Modify match list presentation.
  *  zjshao     2016-04-10   1.3          Add site type.
  *  zjshao     2016-10-14   1.4          Add slow process flag.
+ *  zjshao     2016-11-21   1.4          Add redistribution process flag.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -39,7 +40,8 @@ Process::Process(const Configuration & first,
                  const std::vector<Coordinate> & move_vectors,
                  const int process_number,
                  const std::vector<int> & site_types,
-                 const bool fast) :
+                 const bool fast,
+                 const bool redistribution) :
     process_number_(process_number),
     range_(1),
     rate_(rate),
@@ -48,7 +50,8 @@ Process::Process(const Configuration & first,
     affected_indices_(0),
     basis_sites_(basis_sites),
     id_moves_(0),
-    fast_(fast)
+    fast_(fast),
+    redistribution_(redistribution)
 {
     // {{{
 
@@ -128,8 +131,10 @@ Process::Process(const Configuration & first,
                  const Configuration & second,
                  const double rate,
                  const std::vector<int> & basis_sites,
-                 const bool fast) :
-    Process(first, second, rate, basis_sites, {}, {}, -1, {}, fast)
+                 const bool fast,
+                 const bool redistribution) :
+    Process(first, second, rate, basis_sites, {}, {}, -1, {},
+            fast, redistribution)
 {
     // NOTHING HERE.
 }

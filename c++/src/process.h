@@ -16,6 +16,7 @@
  *  zjshao     2016-04-10   1.2          Modify match list presentation.
  *  zjshao     2016-04-10   1.3          Add site type.
  *  zjshao     2016-10-14   1.4          Add fast process flag.
+ *  zjshao     2016-11-21   1.4          Add redistribution process flag.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -73,6 +74,8 @@ public:
      *        by default, once the species is found participating in fast process
      *        it is converted to fast species.
      *
+     *  \param redistribution: The flag for redistribution process.
+     *
      */
     Process(const Configuration & first,
             const Configuration & second,
@@ -82,7 +85,8 @@ public:
             const std::vector<Coordinate> & move_vectors = {},
             const int process_number = -1,
             const std::vector<int> & site_types = {},
-            const bool fast = false);
+            const bool fast = false,
+            const bool redistribution = false);
 
     /*! \brief Constructor for the process with fast flag provided explicitly.
      *  \param first         : The first configuration, to match against the local
@@ -94,12 +98,14 @@ public:
      *  \param rate          : The rate in Hz associated with the process.
      *  \param basis_sites   : The basis sites where this process is applicable.
      *  \param fast          : The flag for fast process or not.
+     *  \param redistribution: The flag for redistribution process.
      */
     Process(const Configuration & first,
             const Configuration & second,
             const double rate,
             const std::vector<int> & basis_sites,
-            const bool fast);
+            const bool fast,
+            const bool redistribution = false);
 
     /*! \brief Virtual destructor needed for use as base class.
      */
@@ -215,6 +221,11 @@ public:
      */
     bool fast() const { return fast_; }
 
+    /*! \brief Query for the redistribution process flag.
+     *  \return : Whether the process is used for redistribution.
+     */
+    bool redistribution() const { return redistribution_; }
+
 protected:
 
     /// The process number.
@@ -251,6 +262,9 @@ protected:
 
     /// The flag whether process is fast process.
     bool fast_;
+
+    /// The flag for whether the process is used for redistribution.
+    bool redistribution_;
 
 private:
 
