@@ -221,3 +221,4 @@ int randomPickInt(const std::vector<int> & v)
         throw std::runtime_error("Invalid random number generator.");
     }
 }
+

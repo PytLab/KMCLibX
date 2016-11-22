@@ -14,6 +14,7 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-10-23   1.4          Initial creation.
+ *  zjshao     2016-11-22   1.4          Add new redistribute method.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -24,12 +25,15 @@
 #define __DISTRIBUTOR__
 
 #include <vector>
+#include <string>
 
 // Forward declarations.
 class Configuration;
 class SubConfiguration;
 class Matcher;
 class LatticeMap;
+class SitesMap;
+class Interactions;
 
 /*! \brief Class for configuration/geometries redistribution.
  *  NOTE: The class is a friend class of Configuration/SubConfiguration.
@@ -84,6 +88,12 @@ public:
      */
     virtual std::vector<int> reDistribute(Configuration & configuration) const;
 
+    virtual std::vector<int> reDistribute(Configuration & configuration,
+                                          Interactions & interactions,
+                                          const SitesMap & sitesmap,
+                                          const LatticeMap & latticemap,
+                                          const Matcher & matcher,
+                                          const std::string & replace_species) const;
 };
 
 

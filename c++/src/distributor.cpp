@@ -14,6 +14,7 @@
  *  <author>   <time>       <version>    <desc>
  *  ------------------------------------------------------------------
  *  zjshao     2016-10-24   1.4          Initial creation.
+ *  zjshao     2016-11-22   1.4          Add new redistribute method.
  *
  *  ------------------------------------------------------------------
  * ******************************************************************
@@ -24,6 +25,8 @@
 #include "configuration.h"
 #include "matcher.h"
 #include "random.h"
+#include "interactions.h"
+#include "latticemap.h"
 
 
 // ----------------------------------------------------------------------------
@@ -88,6 +91,85 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration) 
     }
 
     return fast_global_indices;
+
+    // }}}
+}
+
+// ----------------------------------------------------------------------------
+//
+std::vector<int> RandomDistributor::reDistribute(Configuration & configuration,
+                                                 Interactions & interactions,
+                                                 const SitesMap & sitesmap,
+                                                 const LatticeMap & latticemap,
+                                                 const Matcher & matcher,
+                                                 const std::string & replace_species) const
+{
+    // {{{
+
+    // Extract all fast species.
+    const std::vector<std::string> && redist_species = interactions.redistSpecies();
+    std::vector<std::string> extracted_species = {};
+    std::vector<int> extracted_indices = {};
+    configuration.extractFastSpecies(redist_species,
+                                     replace_species,
+                                     extracted_species,
+                                     extracted_indices);
+
+    // Run the rematching of the affected sites of extraction.
+    std::vector<int> && all_affected_indices = \
+        latticemap.supersetNeighbourIndices(extracted_indices,
+                                            interactions.maxRange());
+
+    matcher.calculateMatching(interactions,
+                              configuration,
+                              sitesmap,
+                              latticemap,
+                              all_affected_indices);
+
+    // Re-scatter the extracted species.
+    for (const std::string & sp : extracted_species)
+    {
+        // All indices of scattering space.
+        const std::vector<int> && space_indices = configuration.fastIndices();
+        // Pick a site in scattering space.
+        const int site_index = randomPickInt(space_indices);
+
+        // Loop over all redistribution process to check if it can happen here.
+        for ( const auto & process_ptr : interactions.redistProcesses() )
+        {
+            // Species and location matching.
+            if ( sp == process_ptr->redistSpecies() && \
+                    process_ptr->isListed(site_index) )
+            {
+                // Throw the species at the index.
+                configuration.performProcess(*process_ptr, site_index);
+                // Re-matching the affected indices.
+                const std::vector<int> && affected_indices = \
+                    latticemap.supersetNeighbourIndices(process_ptr->affectedIndices(),
+                                                        interactions.maxRange());
+                // Extend all affected indices.
+                all_affected_indices.insert(all_affected_indices.end(),
+                                            affected_indices.begin(),
+                                            affected_indices.end());
+
+                // Re-match the affected indices.
+                matcher.calculateMatching(interactions,
+                                          configuration,
+                                          sitesmap,
+                                          latticemap,
+                                          affected_indices);
+
+                // Re-classify configuration.
+                matcher.classifyConfiguration(interactions,
+                                              configuration,
+                                              sitesmap,
+                                              latticemap,
+                                              affected_indices);
+            }
+        }
+    }
+
+    return all_affected_indices;
 
     // }}}
 }
