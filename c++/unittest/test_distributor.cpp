@@ -32,7 +32,7 @@ void Test_Distributor::testConstruction()
 
 // ----------------------------------------------------------------------------
 //
-void Test_Distributor::testRandomReDistribution()
+void Test_Distributor::testRandomCompleteReDistribution()
 {
     // {{{
     // Construct a lattice with 27 cells with 2 basis sites in one cell.

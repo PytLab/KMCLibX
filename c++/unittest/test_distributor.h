@@ -22,14 +22,15 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_Distributor );
     CPPUNIT_TEST( testConstruction );
-    CPPUNIT_TEST( testRandomReDistribution );
+    CPPUNIT_TEST( testRandomCompleteReDistribution );
     CPPUNIT_TEST( testRandomSubConfigReDistribution );
     CPPUNIT_TEST( testPartialRandomReDistribute );
     CPPUNIT_TEST( testUpdateLocalFromSubConfig );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
-    void testRandomReDistribution();
+    void testRandomCompleteReDistribution();
+    void testRandomProcessReDistribution();
     void testRandomSubConfigReDistribution();
     void testUpdateLocalFromSubConfig();
     void testPartialRandomReDistribute();
