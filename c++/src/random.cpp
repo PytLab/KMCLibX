@@ -191,3 +191,33 @@ void shuffleIntVector(std::vector<int> & v)
     }
 }
 
+
+// -----------------------------------------------------------------------------
+//
+int randomPickInt(const std::vector<int> & v)
+{
+    switch (rng_type__)
+    {
+    case MT:
+        return *randomPick(v.begin(), v.end(), rng_mt__);
+
+    case MINSTD:
+        return *randomPick(v.begin(), v.end(), rng_minstd__);
+
+    case RANLUX24:
+        return *randomPick(v.begin(), v.end(), rng_ranlux24__);
+
+    case RANLUX48:
+        return *randomPick(v.begin(), v.end(), rng_ranlux48__);
+
+#ifdef __DEVICE__
+    case DEVICE:
+        return *randomPick(v.begin(), v.end(), rng_device__);
+
+#endif // __DEVICE__
+
+    default:
+        // This can never happen from previous checks.
+        throw std::runtime_error("Invalid random number generator.");
+    }
+}

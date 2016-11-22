@@ -7,8 +7,17 @@
 */
 
 
-/*! \file  random.h
- *  \brief File for the random number generator interface.
+/* ******************************************************************
+ *  file   : random.h
+ *  brief  : File for the random number generator interface.
+ *
+ *  history:
+ *  <author>   <time>       <version>    <desc>
+ *  ------------------------------------------------------------------
+ *  zjshao     2016-11-22   1.4          Add random select method.
+ *
+ *  ------------------------------------------------------------------
+ * ******************************************************************
  */
 
 #ifndef __RANDOM__
@@ -45,6 +54,23 @@ double randomDouble01();
  *  \param v: The integer vector to be shuffled.
  */
 void shuffleIntVector(std::vector<int> & v);
+
+
+/*! \brief Function template to pick an elements from container randomly.
+ */
+template<typename Iterator, typename RandomGenerator>
+Iterator randomPick(Iterator begin, Iterator end, RandomGenerator & g)
+{
+    std::uniform_int_distribution<> dis(0, std::distance(begin, end) - 1);
+    std::advance(begin, dis(g));
+    return begin;
+}
+
+
+/*! \brief Function to pick an integer from an integer vector.
+ *  \param v: The integer vector from which the integer is picked.
+ */
+int randomPickInt(const std::vector<int> & v);
 
 #endif // __RANDOM__
 
