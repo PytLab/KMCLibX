@@ -114,7 +114,7 @@ void Test_Random::testSeedAndCall()
 //
 void Test_Random::testShuffleIntVector()
 {
-
+    // {{{
     // Test default generator(MT).
     {
         // Vector to be shuffled.
@@ -219,6 +219,50 @@ void Test_Random::testShuffleIntVector()
         // This could eventually fail by chanse, but that would be very unlikely.
         CPPUNIT_ASSERT(different);
     }
+    // }}}
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Random::testRandomPickInt()
+{
+    // {{{
+    const std::vector<int> vector = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    // Seed random number for all generators.
+    int picked;
+
+    // Test default generator(MT).
+    {
+        // Pick one element randomly.
+        seedRandom(false, 13);
+        picked = randomPickInt(vector);
+        CPPUNIT_ASSERT_EQUAL(picked, 7);
+
+        sleep(2);
+
+        seedRandom(false, 13);
+        picked = randomPickInt(vector);
+        CPPUNIT_ASSERT_EQUAL(picked, 7);
+    }
+
+    // MT.
+    {
+        setRngType(MT);
+
+        // Pick one element randomly.
+        seedRandom(false, 13);
+        picked = randomPickInt(vector);
+        CPPUNIT_ASSERT_EQUAL(picked, 7);
+
+        sleep(2);
+
+        seedRandom(false, 13);
+        picked = randomPickInt(vector);
+        CPPUNIT_ASSERT_EQUAL(picked, 7);
+    }
+    // }}}
 }
 
 
@@ -226,6 +270,7 @@ void Test_Random::testShuffleIntVector()
 //
 void Test_Random::testCallMT()
 {
+    // {{{
     // Seed the random number generator withouth using the time.
     setRngType(MT);
     seedRandom(false, 13);
@@ -250,7 +295,7 @@ void Test_Random::testCallMT()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd2, ref_rnd2, 1.0e-10);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd3, ref_rnd3, 1.0e-10);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd4, ref_rnd4, 1.0e-10);
-
+    // }}}
 }
 
 
@@ -258,6 +303,7 @@ void Test_Random::testCallMT()
 //
 void Test_Random::testCallRANLUX24()
 {
+    // {{{
     // Seed the random number generator withouth using the time.
     setRngType(RANLUX24);
     seedRandom(false, 13);
@@ -285,6 +331,7 @@ void Test_Random::testCallRANLUX24()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd2, ref_rnd2, 1.0e-10);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd3, ref_rnd3, 1.0e-10);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd4, ref_rnd4, 1.0e-10);
+    // }}}
 
 }
 
@@ -293,6 +340,7 @@ void Test_Random::testCallRANLUX24()
 //
 void Test_Random::testCallRANLUX48()
 {
+    // {{{
     // Seed the random number generator withouth using the time.
     setRngType(RANLUX48);
     seedRandom(false, 13);
@@ -320,7 +368,7 @@ void Test_Random::testCallRANLUX48()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd2, ref_rnd2, 1.0e-10);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd3, ref_rnd3, 1.0e-10);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd4, ref_rnd4, 1.0e-10);
-
+    // }}}
 }
 
 
@@ -328,6 +376,7 @@ void Test_Random::testCallRANLUX48()
 //
 void Test_Random::testCallMINSTD()
 {
+    // {{{
     // Seed the random number generator withouth using the time.
     setRngType(MINSTD);
     seedRandom(false, 13);
@@ -355,5 +404,6 @@ void Test_Random::testCallMINSTD()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd2, ref_rnd2, 1.0e-10);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd3, ref_rnd3, 1.0e-10);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd4, ref_rnd4, 1.0e-10);
-
+    // }}}
 }
+

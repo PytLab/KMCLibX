@@ -26,6 +26,7 @@ public:
     CPPUNIT_TEST_SUITE( Test_Random );
     CPPUNIT_TEST( testSeedAndCall );
     CPPUNIT_TEST( testShuffleIntVector );
+    CPPUNIT_TEST( testRandomPickInt );
     CPPUNIT_TEST( testCallMT );
     CPPUNIT_TEST( testCallRANLUX24 );
     CPPUNIT_TEST( testCallRANLUX48 );
@@ -34,6 +35,7 @@ public:
 
     void testSeedAndCall();
     void testShuffleIntVector();
+    void testRandomPickInt();
     void testCallMT();
     void testCallRANLUX24();
     void testCallRANLUX48();
