@@ -28,6 +28,10 @@
 #include "interactions.h"
 #include "latticemap.h"
 
+//#ifdef DEBUG
+#include <cassert>
+//#endif  // DEBUG
+
 
 // ----------------------------------------------------------------------------
 // TODO: OpenMp
@@ -116,7 +120,7 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration,
                                      extracted_indices);
 
     // Run the rematching of the affected sites of extraction.
-    std::vector<int> && all_affected_indices = \
+    std::vector<int> && matching_indices = \
         latticemap.supersetNeighbourIndices(extracted_indices,
                                             interactions.maxRange());
 
@@ -124,7 +128,10 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration,
                               configuration,
                               sitesmap,
                               latticemap,
-                              all_affected_indices);
+                              matching_indices);
+
+    // The indices list to be extended.
+    std::vector<int> & all_affected_indices = extracted_indices;
 
     // Re-scatter the extracted species.
     for (const std::string & sp : extracted_species)
@@ -144,8 +151,10 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration,
                 // Throw the species at the index.
                 configuration.performProcess(*process_ptr, site_index);
                 // Re-matching the affected indices.
-                const std::vector<int> && affected_indices = \
-                    latticemap.supersetNeighbourIndices(process_ptr->affectedIndices(),
+                const std::vector<int> & affected_indices = process_ptr->affectedIndices();
+                assert(affected_indices.size() == 1 && affected_indices[0] == site_index);
+                const std::vector<int> && matching_indices = \
+                    latticemap.supersetNeighbourIndices(affected_indices,
                                                         interactions.maxRange());
                 // Extend all affected indices.
                 all_affected_indices.insert(all_affected_indices.end(),
@@ -157,14 +166,14 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration,
                                           configuration,
                                           sitesmap,
                                           latticemap,
-                                          affected_indices);
+                                          matching_indices);
 
                 // Re-classify configuration.
                 matcher.classifyConfiguration(interactions,
                                               configuration,
                                               sitesmap,
                                               latticemap,
-                                              affected_indices);
+                                              matching_indices);
             }
         }
     }
