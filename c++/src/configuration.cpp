@@ -484,18 +484,16 @@ void Configuration::resetSlowFlags(const std::vector<std::string> & fast_element
 //
 // TODO: OpenMP
 //
-std::vector<std::string> \
-Configuration::extractFastSpecies(const std::vector<std::string> & fast_elements,
-                                  const std::string & replace_species)
+void Configuration::extractFastSpecies(const std::vector<std::string> & fast_elements,
+                                       const std::string & replace_species,
+                                       std::vector<std::string> & fast_species,
+                                       std::vector<int> & fast_indices)
 {
     // {{{
 
-    // List to store all fast elements in configuration.
-    std::vector<std::string> fast_species = {};
-
     if ( fast_elements.empty() )
     {
-        return fast_species;
+        return;
     }
     else
     {
@@ -512,16 +510,16 @@ Configuration::extractFastSpecies(const std::vector<std::string> & fast_elements
                                     element);
                 if ( it != fast_elements.end() )
                 {
-                    // Collect fast species.
+                    // Collect fast species and indices.
                     fast_species.push_back(element);
+                    fast_indices.push_back(i);
+
                     // Change types and elements of configuration.
                     types_[i] = replace_type;
                     elements_[i] = replace_species;
                 }
             }
         }
-
-        return fast_species;
     }
 
     // }}}

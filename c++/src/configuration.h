@@ -206,12 +206,15 @@ public:
 
     /*! \brief Extract fast species from configuration and replace the
      *         corresponding types and elements with replace element.
-     *  \param fast_elements: All possible fast elements list.
-     *  \param replace_species: The element replacing the fast species.
+     *  \param fast_elements   (in): All possible fast elements list.
+     *  \param replace_species (in): The element replacing the fast species.
+     *  \param fast_species   (out): The list of all fast species.
+     *  \param fast_indices   (out): The global indices of all fast species.
      */
-    std::vector<std::string> \
-        extractFastSpecies(const std::vector<std::string> & fast_elements,
-                           const std::string & replace_species);
+    void extractFastSpecies(const std::vector<std::string> & fast_elements,
+                            const std::string & replace_species,
+                            std::vector<std::string> & fast_species,
+                            std::vector<int> & fast_indices);
 
     const std::vector<int> fastIndices() const;
 

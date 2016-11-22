@@ -1511,15 +1511,19 @@ void Test_Configuration::testExtractFastSpecies()
     std::string empty_element = "V";
     std::vector<std::string> fast_elements = {"A", "B"};
 
-    std::vector<std::string> && fast_species = config.extractFastSpecies(fast_elements,
-                                                                         empty_element);
+    // Extract all fast species.
+    std::vector<std::string> fast_species = {};
+    std::vector<int> fast_indices = {};
+    config.extractFastSpecies(fast_elements, empty_element, fast_species, fast_indices);
 
     // Check.
     const std::vector<std::string> ref_fast_species = {"A", "B", "A"};
+    const std::vector<int> ref_fast_indices = {0, 1, 2};
     for (int i = 0; i < 3; ++i)
     {
         // Check fast species collection.
         CPPUNIT_ASSERT_EQUAL(ref_fast_species[i], fast_species[i]);
+        CPPUNIT_ASSERT_EQUAL(ref_fast_indices[i], fast_indices[i]);
         // Check types and elements update.
         CPPUNIT_ASSERT_EQUAL(config.types()[i], 3);
         CPPUNIT_ASSERT_EQUAL(config.elements()[i], static_cast<std::string>("V"));
