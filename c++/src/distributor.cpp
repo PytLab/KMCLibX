@@ -28,9 +28,9 @@
 #include "interactions.h"
 #include "latticemap.h"
 
-//#ifdef DEBUG
+#ifdef DEBUG
 #include <cassert>
-//#endif  // DEBUG
+#endif  // DEBUG
 
 
 // ----------------------------------------------------------------------------
@@ -152,7 +152,9 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration,
                 configuration.performProcess(*process_ptr, site_index);
                 // Re-matching the affected indices.
                 const std::vector<int> & affected_indices = process_ptr->affectedIndices();
+#ifdef DEBUG
                 assert(affected_indices.size() == 1 && affected_indices[0] == site_index);
+#endif // DEBUG
                 const std::vector<int> && matching_indices = \
                     latticemap.supersetNeighbourIndices(affected_indices,
                                                         interactions.maxRange());
