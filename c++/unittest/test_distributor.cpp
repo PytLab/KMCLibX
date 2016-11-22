@@ -246,18 +246,10 @@ void Test_Distributor::testCompleteRandomReDistribution()
         }
     }
 
-    if ( !(element_changed && atom_id_changed && type_changed) )
-    {
-        CPPUNIT_ASSERT(!element_changed);
-        CPPUNIT_ASSERT(!atom_id_changed);
-        CPPUNIT_ASSERT(!type_changed);
-    }
-    else
-    {
-        CPPUNIT_ASSERT(element_changed);
-        CPPUNIT_ASSERT(atom_id_changed);
-        CPPUNIT_ASSERT(type_changed);
-    }
+    // This could eventually fail by chanse, but that would be very unlikely.
+    CPPUNIT_ASSERT(element_changed);
+    CPPUNIT_ASSERT(atom_id_changed);
+    CPPUNIT_ASSERT(type_changed);
 
     // Sort the redistributed vectors and compare them to the original ones.
     auto new_elements = config.elements();
