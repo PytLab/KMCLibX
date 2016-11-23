@@ -133,9 +133,56 @@ LatticeModel::redistribute(const std::vector<std::string> & fast_species,
 
     // Re-distribute the current configuration.
     const std::vector<int> affected_indices = \
-        distributor_.reDistribute(configuration_, lattice_map_, x, y, z);
+        distributor_.splitRedistribute(configuration_, lattice_map_, x, y, z);
 
     // Run the re-matching of the affected sites and their neighbours.
+    const std::vector<int> && indices = \
+        lattice_map_.supersetNeighbourIndices(affected_indices,
+                                              interactions_.maxRange());
+
+    matcher_.calculateMatching(interactions_,
+                               configuration_,
+                               sitesmap_,
+                               lattice_map_,
+                               indices);
+
+    // Update the interactions' probability table.
+    interactions_.updateProbabilityTable();
+
+    // Update the interactions' process available sites.
+    interactions_.updateProcessAvailableSites();
+
+    // Return the affected indices.
+    return affected_indices;
+}
+
+
+// ----------------------------------------------------------------------------
+//
+const std::vector<int> \
+LatticeModel::redistribute(const std::string & replace_elements,
+                           const std::vector<std::string> & fast_species,
+                           const std::vector<int> & slow_indices)
+{
+    // Classify species in current configuration.
+    matcher_.classifyConfiguration(interactions_,
+                                   configuration_,
+                                   sitesmap_,
+                                   lattice_map_,
+                                   configuration_.indices(),
+                                   fast_species,
+                                   slow_indices);
+
+    // Re-distribute the current configuration.
+    const std::vector<int> affected_indices = \
+        distributor_.processRedistribute(configuration_,
+                                         interactions_,
+                                         sitesmap_,
+                                         lattice_map_,
+                                         matcher_,
+                                         replace_elements);
+
+    // Run the re-matching of the affected sites and their neighbors.
     const std::vector<int> && indices = \
         lattice_map_.supersetNeighbourIndices(affected_indices,
                                               interactions_.maxRange());

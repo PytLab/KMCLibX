@@ -70,6 +70,10 @@ public:
                                         const std::vector<int> & slow_indices = {},
                                         int x = 1, int y = 1, int z = 1);
 
+    const std::vector<int> redistribute(const std::string & replace_elements,
+                                        const std::vector<std::string> & fast_species = {},
+                                        const std::vector<int> & slow_indices = {});
+
     /*! \brief Query for the interactions.
      *  \return : A handle to the interactions stored on the class.
      */
