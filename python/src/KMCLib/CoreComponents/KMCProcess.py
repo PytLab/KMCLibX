@@ -12,12 +12,7 @@ import numpy
 
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.CoordinateUtilities import sortCoordinatesDistance
-from KMCLib.Utilities.CheckUtilities import checkCoordinateList
-from KMCLib.Utilities.CheckUtilities import checkTypes
-from KMCLib.Utilities.CheckUtilities import checkSequence
-from KMCLib.Utilities.CheckUtilities import checkSequenceOfFloats
-from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
-from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
+from KMCLib.Utilities.CheckUtilities import *
 from KMCLib.Exceptions.Error import Error
 from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 
@@ -35,7 +30,9 @@ class KMCProcess(object):
                  basis_sites=None,
                  rate_constant=None,
                  site_types=None,
-                 fast=None):
+                 fast=None,
+                 redist=None,
+                 redist_species=None):
         """
         Constructor for the KMCProcess.
 
@@ -80,6 +77,13 @@ class KMCProcess(object):
         :param fast: The flag for type of the process, fast or slow.
         :type fast: bool
 
+        :param redist: The flag for type of the process,
+                       used for redistribution or not
+        :type redist: bool
+
+        :param redist_species: The species used to re-scatter on configuration.
+        :type redist_species: str
+
         """
         # Check the coordinates.
         coordinates = checkCoordinateList(coordinates)
@@ -97,14 +101,21 @@ class KMCProcess(object):
             site_types = checkTypes(site_types, len(coordinates))
 
         # Check fast.
-        if fast is not None:
-            if not isinstance(fast, bool):
-                msg = "Wrong type for fast parameter, it should be a bool not {}"
-                msg = msg.format(type(fast))
-                raise ValueError(msg)
-        else:
-            # Default value.
-            fast = False
+#        if fast is not None:
+#            if not isinstance(fast, bool):
+#                msg = "Wrong type for fast parameter, it should be a bool not {}"
+#                msg = msg.format(type(fast))
+#                raise ValueError(msg)
+#        else:
+#            # Default value.
+#            fast = False
+        self.__fast = checkBoolean(fast, False, "fast")
+
+        # Check redist flag.
+        self.__redist = checkBoolean(redist, False, "redist")
+
+        # Check redist_species.
+        self.__redist_species = self.__checkValidRedistSpecies(redist_species)
 
         # Check that the elements represents a valid move.
         self.__checkValidMoveElements(elements_before, elements_after)
@@ -113,7 +124,6 @@ class KMCProcess(object):
         self.__elements_before = elements_before
         self.__elements_after = elements_after
         self.__site_types = site_types
-        self.__fast = fast
 
         # Check that the move vectors are compatible with the elements.
         self.__move_vectors = self.__checkValidMoveVectors(move_vectors)
@@ -142,6 +152,22 @@ class KMCProcess(object):
         c1 = KMCLocalConfiguration(self.__coordinates, self.__elements_before, center)
         c2 = KMCLocalConfiguration(self.__coordinates, self.__elements_after,  center)
         self.__local_configurations = (c1, c2)
+
+    def __checkValidRedistSpecies(self, redist_species):
+        """
+        Private helper function to check if the redist_species is valid wrt the
+        redist flag.
+        :param redist_species: The name of redist_species.
+        """
+        if self.__redist and redist_species is None:
+            msg = "The redist_species must be given when the redist flag is True."
+            raise Error(msg)
+
+        if redist_species is not None and not isinstance(redist_species, str):
+            msg = "The redist_species must be a string."
+            raise Error(msg)
+
+        return redist_species
 
     def __checkValidMoveElements(self, elements_before, elements_after):
         """
@@ -478,6 +504,22 @@ class KMCProcess(object):
         :returns: The fast flag of the process.
         """
         return self.__fast
+
+    def redist(self):
+        """
+        Query for the redistribution flag.
+
+        :returns: The redistribution flag of the process.
+        """
+        return self.__redist
+
+    def redistSpecies(self):
+        """
+        Query for the redistribution species of this redist process.
+
+        :returns: The redistribution species name.
+        """
+        return self.__redist_species
 
     def _script(self, variable_name="process"):
         """
