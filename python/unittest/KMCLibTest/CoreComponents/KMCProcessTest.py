@@ -54,7 +54,7 @@ class KMCProcessTest(unittest.TestCase):
         self.assertIsNone(p._KMCProcess__site_types)
         self.assertFalse(p._KMCProcess__fast)
         self.assertFalse(p._KMCProcess__redist)
-        self.assertIsNone(p._KMCProcess__redist_species)
+        self.assertEqual(p._KMCProcess__redist_species, "")
         # }}}
 
     def testConstructionWithSiteTypes(self):

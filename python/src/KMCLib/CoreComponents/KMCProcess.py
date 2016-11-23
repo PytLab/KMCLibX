@@ -151,17 +151,20 @@ class KMCProcess(object):
         redist flag.
         :param redist_species: The name of redist_species.
         """
-        if self.__redist and redist_species is None:
-            msg = "The redist_species must be given when the redist flag is True."
-            raise Error(msg)
-
-        if not self.__redist and redist_species is not None:
-            msg = "The redist_species is redundant for a non-redist process."
-            raise Error(msg)
-
-        if redist_species is not None and not isinstance(redist_species, str):
-            msg = "The redist_species must be a string."
-            raise Error(msg)
+        if redist_species is None:
+            if self.__redist:
+                msg = "The redist_species must be given when the redist flag is True."
+                raise Error(msg)
+            else:
+                redist_species = ""
+        else:
+            if not self.__redist:
+                msg = "The redist_species is redundant for a non-redist process."
+                raise Error(msg)
+            else:
+                if not isinstance(redist_species, str):
+                    msg = "The redist_species must be a string."
+                    raise Error(msg)
 
         return redist_species
 
