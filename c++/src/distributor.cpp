@@ -185,7 +185,7 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
     // }}}
 }
 
-void PartialRandomDistributor:: \
+void SplitRandomDistributor:: \
 updateLocalFromSubConfig(Configuration & global_config,
                          const SubConfiguration & sub_config) const
 {
@@ -211,9 +211,9 @@ updateLocalFromSubConfig(Configuration & global_config,
 
 // ----------------------------------------------------------------------------
 //
-std::vector<int> PartialRandomDistributor::splitRedistribute(Configuration & configuration,
-                                                             const LatticeMap & lattice_map,
-                                                             int x, int y, int z) const
+std::vector<int> SplitRandomDistributor::splitRedistribute(Configuration & configuration,
+                                                           const LatticeMap & lattice_map,
+                                                           int x, int y, int z) const
 {
     // {{{
 

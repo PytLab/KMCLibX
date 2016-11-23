@@ -26,7 +26,7 @@ void Test_Distributor::testConstruction()
 {
     // Construction.
     RandomDistributor random_dis;
-    PartialRandomDistributor partial_random_dis;
+    SplitRandomDistributor partial_random_dis;
 }
 
 
@@ -971,7 +971,7 @@ void Test_Distributor::testUpdateLocalFromSubConfig()
                                                              sub_lattice);
 
     // Redistribute the sub-configuration.
-    PartialRandomDistributor distributor;
+    SplitRandomDistributor distributor;
     distributor.redistribute(sub_config);
 
     // Distribution in sub-configuration.
@@ -1011,7 +1011,7 @@ void Test_Distributor::testUpdateLocalFromSubConfig()
 
 // ----------------------------------------------------------------------------
 //
-void Test_Distributor::testPartialRandomReDistribute()
+void Test_Distributor::testSplitRandomReDistribute()
 {
     // {{{
     // Construct two global configurations.
@@ -1172,7 +1172,7 @@ void Test_Distributor::testPartialRandomReDistribute()
     auto ori_atom_id = config.atomID();
 
     // Create distributor.
-    PartialRandomDistributor distributor;
+    SplitRandomDistributor distributor;
 
     // Re-distribution.
     std::vector<int> && affected_indices = distributor.splitRedistribute(config,

@@ -97,19 +97,19 @@ public:
 };
 
 
-/*! \brief Distributor for a partial random distribution.
+/*! \brief Distributor for a splited random distribution.
 */
-class PartialRandomDistributor : public RandomDistributor {
+class SplitRandomDistributor : public RandomDistributor {
 
 public:
 
     /*! \brief Default constructor.
      */
-    PartialRandomDistributor() {}
+    SplitRandomDistributor() {}
 
     /*! \brief Destructor.
      */
-    virtual ~PartialRandomDistributor() {}
+    virtual ~SplitRandomDistributor() {}
 
     /*! \brief Re-distribute the configuration by spliting and redistributing
      *         randomly.
