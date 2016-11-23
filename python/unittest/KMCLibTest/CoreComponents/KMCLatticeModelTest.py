@@ -2446,7 +2446,65 @@ model = KMCLatticeModel(
                                basis_sites=basis_sites,
                                rate_constant=rate,
                                fast=False)
-        processes = [process_1, process_2, process_3, process_4, process_5, process_6]
+
+        # A adsorption on basis 0.
+        coordinates = [[0.0, 0.0, 0.0]]
+        elements_before = ["V"]
+        elements_after = ["A"]
+        basis_sites = [0]
+        process_7 = KMCProcess(coordinates=coordinates,
+                               elements_before=elements_before,
+                               elements_after=elements_after,
+                               basis_sites=basis_sites,
+                               rate_constant=rate,
+                               fast=True,
+                               redist=True,
+                               redist_species="A")
+
+        # A adsorption on basis 1.
+        coordinates = [[0.0, 0.0, 0.0]]
+        elements_before = ["V"]
+        elements_after = ["A"]
+        basis_sites = [1]
+        process_8 = KMCProcess(coordinates=coordinates,
+                               elements_before=elements_before,
+                               elements_after=elements_after,
+                               basis_sites=basis_sites,
+                               rate_constant=rate,
+                               fast=True,
+                               redist=True,
+                               redist_species="A")
+
+        # B adsorption on basis 0.
+        coordinates = [[0.0, 0.0, 0.0]]
+        elements_before = ["V"]
+        elements_after = ["B"]
+        basis_sites = [0]
+        process_9 = KMCProcess(coordinates=coordinates,
+                               elements_before=elements_before,
+                               elements_after=elements_after,
+                               basis_sites=basis_sites,
+                               rate_constant=rate,
+                               fast=True,
+                               redist=True,
+                               redist_species="B")
+
+        # B adsorption on basis 1.
+        coordinates = [[0.0, 0.0, 0.0]]
+        elements_before = ["V"]
+        elements_after = ["B"]
+        basis_sites = [1]
+        process_10 = KMCProcess(coordinates=coordinates,
+                                elements_before=elements_before,
+                                elements_after=elements_after,
+                                basis_sites=basis_sites,
+                                rate_constant=rate,
+                                fast=True,
+                                redist=True,
+                                redist_species="B")
+
+        processes = [process_1, process_2, process_3, process_4, process_5,
+                     process_6, process_7, process_8, process_9, process_10]
         interactions = KMCInteractions(processes, implicit_wildcards=True)
 
         # Setup the model.
@@ -2458,17 +2516,26 @@ model = KMCLatticeModel(
         trajectory_filename = str(os.path.join(name, "run_redistribution_traj.py"))
         self.__files_to_remove.append(trajectory_filename)
 
-        # Setup control parameters.
-        control_parameters = KMCControlParameters(number_of_steps=10,
-                                                  dump_interval=1,
-                                                  do_redistribution=True,
-                                                  redistribution_interval=2,
-                                                  fast_species=["V"],
-                                                  nsplits=(2, 2, 2))
-
-        model.run(control_parameters=control_parameters,
+        # Setup control parameters using SplitRandomRedistributor.
+        split_control_parameters = KMCControlParameters(number_of_steps=10,
+                                                        dump_interval=1,
+                                                        do_redistribution=True,
+                                                        redistribution_interval=2,
+                                                        fast_species=["V"],
+                                                        nsplits=(2, 2, 2))
+        model.run(control_parameters=split_control_parameters,
                   trajectory_filename=trajectory_filename)
 
+        # Setup control parameters using ProcessRandomRedistributor.
+        distributor_type = "ProcessRandomDistributor"
+        process_control_parameters = KMCControlParameters(number_of_steps=10,
+                                                          dump_interval=1,
+                                                          do_redistribution=True,
+                                                          redistribution_interval=2,
+                                                          distributor_type=distributor_type,
+                                                          empty_element="V")
+        model.run(control_parameters=process_control_parameters,
+                  trajectory_filename=trajectory_filename)
         # }}}
 
 if __name__ == '__main__':
