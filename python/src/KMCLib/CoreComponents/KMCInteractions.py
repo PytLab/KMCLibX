@@ -246,8 +246,10 @@ class KMCInteractions(object):
                 else:
                     cpp_site_types = Backend.StdVectorInt()
 
-                # Setup fast flag.
+                # Setup fast process related flag.
                 fast = process.fast()
+                redist = process.redist()
+                redist_species = process.redistSpecies()
 
                 # Construct and store the C++ process.
                 if self.__rate_calculator is not None:
@@ -273,7 +275,9 @@ class KMCInteractions(object):
                                                             cpp_move_vectors,
                                                             process_number,
                                                             cpp_site_types,
-                                                            fast))
+                                                            fast,
+                                                            redist,
+                                                            redist_species))
 
             # Construct the C++ interactions object.
             if self.__rate_calculator is not None:
