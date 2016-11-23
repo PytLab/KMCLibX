@@ -256,6 +256,8 @@ class KMCLatticeModel(object):
             fast_species = control_parameters.fastSpecies()
             nsplits = control_parameters.nsplits()
             redist_dump_interval = control_parameters.redistDumpInterval()
+            distributor_type = control_parameters.distributorType()
+            empty_element = control_parameters.emptyElement()
 
         # Check validity of analysis number.
         if type(analysis_interv) in (list, tuple):
@@ -357,8 +359,14 @@ class KMCLatticeModel(object):
                         redistribution_counter % redistribution_interval == 0):
                     # Reset counter.
                     redistribution_counter = 0
-                    # Re-distribute the configuration.
-                    affected_indices = cpp_model.redistribute(fast_species, [], *nsplits)
+
+                    # Re-distribute the configuration with different algorithms.
+                    if "SplitRandomDistributor" == distributor_type:
+                        affected_indices = cpp_model.redistribute(fast_species, [], *nsplits)
+
+                    elif "ProcessRandomDistributor" == distributor_type:
+                        affected_indices = cpp_model.redistribute(empty_element, fast_species, [])
+
                     # Time increase.
                     current_time = self.__cpp_timer.simulationTime()
 
