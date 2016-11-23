@@ -53,6 +53,8 @@ class KMCProcessTest(unittest.TestCase):
         self.assertListEqual(p._KMCProcess__move_vectors, move_vectors)
         self.assertIsNone(p._KMCProcess__site_types)
         self.assertFalse(p._KMCProcess__fast)
+        self.assertFalse(p._KMCProcess__redist)
+        self.assertIsNone(p._KMCProcess__redist_species)
         # }}}
 
     def testConstructionWithSiteTypes(self):
@@ -1002,6 +1004,37 @@ class KMCProcessTest(unittest.TestCase):
 
         # }}}
 
+    def testConstructionFailRedistSpecies(self):
+        " Test that the construction fails when redist process has no redist_species. "
+        # {{{
+        coordinates = [[0.0, 0.0, 0.0]]
+        elements_before = ["V"]
+        elements_after = ["A"]
+        basis_sites = [1]
+        fast = True
+        redist = True
+
+        # No redist_species for redist process.
+        self.assertRaises(Error, KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          rate_constant=1.0,
+                          fast=True,
+                          redist=True)
+
+        # Wrong type for redist_species.
+        self.assertRaises(Error, KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          rate_constant=1.0,
+                          fast=True,
+                          redist=True,
+                          redist_species=1)
+        # }}}
 
     def testScript(self):
         """ Test that the process can generate its own valid script. """
