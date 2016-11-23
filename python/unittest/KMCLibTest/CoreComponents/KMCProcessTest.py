@@ -1041,6 +1041,17 @@ class KMCProcessTest(unittest.TestCase):
                           rate_constant=1.0,
                           fast=True,
                           redist_species="A")
+
+        # Conflict between fast & redist flag.
+        self.assertRaises(Error, KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          rate_constant=1.0,
+                          fast=False,
+                          redist=True,
+                          redist_species="A")
         # }}}
 
     def testScript(self):

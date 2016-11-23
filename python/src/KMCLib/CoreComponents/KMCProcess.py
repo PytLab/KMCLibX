@@ -106,6 +106,12 @@ class KMCProcess(object):
         # Check redist flag.
         self.__redist = checkBoolean(redist, False, "redist")
 
+        # Check redist and fast flags consistency.
+        if self.__redist and not self.__fast:
+            msg = "Conflict between redist flag({}) and fast flag ({})"
+            msg = msg.format(self.__redist, self.__fast)
+            raise Error(msg)
+
         # Check redist_species.
         self.__redist_species = self.__checkValidRedistSpecies(redist_species)
 
