@@ -203,7 +203,7 @@ void Test_Distributor::testCompleteRandomReDistribution()
     auto ori_types = config.types();
     auto ori_atom_id = config.atomID();
 
-    std::vector<int> && affected_indices = distributor.reDistribute(config);
+    std::vector<int> && affected_indices = distributor.redistribute(config);
 
     // Check affected indices.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(affected_indices.size()), 52);
@@ -488,8 +488,8 @@ void Test_Distributor::testProcessRandomReDistribution()
     auto ori_types = config.types();
 
     const std::string replace_elements = "V";
-    distributor.reDistribute(config, interactions, sitesmap, lattice_map,
-                             matcher, replace_elements);
+    distributor.processRedistribute(config, interactions, sitesmap, lattice_map,
+                                    matcher, replace_elements);
 
     // Check configuration after redistribution.
     // There should be no changes on the 0th and 1st elements.
@@ -714,8 +714,8 @@ void Test_Distributor::testRandomSubConfigReDistribution()
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(ori_elements.size()), 16);
 
     // Redistribute the sub-configuraiton.
-    distributor.reDistribute(sub_config);
-    distributor.reDistribute(sub_config_copy);
+    distributor.redistribute(sub_config);
+    distributor.redistribute(sub_config_copy);
 
     // The new distributions of two sub-configuration should be different.
     bool elements_different = false;
@@ -972,7 +972,7 @@ void Test_Distributor::testUpdateLocalFromSubConfig()
 
     // Redistribute the sub-configuration.
     PartialRandomDistributor distributor;
-    distributor.reDistribute(sub_config);
+    distributor.redistribute(sub_config);
 
     // Distribution in sub-configuration.
     const auto & sub_types = sub_config.types();
@@ -1175,9 +1175,9 @@ void Test_Distributor::testPartialRandomReDistribute()
     PartialRandomDistributor distributor;
 
     // Re-distribution.
-    std::vector<int> && affected_indices = distributor.reDistribute(config,
-                                                                    global_lattice,
-                                                                    2, 2, 2);
+    std::vector<int> && affected_indices = distributor.splitRedistribute(config,
+                                                                         global_lattice,
+                                                                         2, 2, 2);
 
     // Check affected indices.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(affected_indices.size()), 4*4*4*2-2);

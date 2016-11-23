@@ -36,7 +36,7 @@
 // ----------------------------------------------------------------------------
 // TODO: OpenMp
 //
-std::vector<int> RandomDistributor::reDistribute(Configuration & configuration) const
+std::vector<int> RandomDistributor::redistribute(Configuration & configuration) const
 {
     // {{{
 
@@ -101,12 +101,12 @@ std::vector<int> RandomDistributor::reDistribute(Configuration & configuration) 
 
 // ----------------------------------------------------------------------------
 //
-std::vector<int> RandomDistributor::reDistribute(Configuration & configuration,
-                                                 Interactions & interactions,
-                                                 const SitesMap & sitesmap,
-                                                 const LatticeMap & latticemap,
-                                                 const Matcher & matcher,
-                                                 const std::string & replace_species) const
+std::vector<int> RandomDistributor::processRedistribute(Configuration & configuration,
+                                                        Interactions & interactions,
+                                                        const SitesMap & sitesmap,
+                                                        const LatticeMap & latticemap,
+                                                        const Matcher & matcher,
+                                                        const std::string & replace_species) const
 {
     // {{{
 
@@ -211,9 +211,9 @@ updateLocalFromSubConfig(Configuration & global_config,
 
 // ----------------------------------------------------------------------------
 //
-std::vector<int> PartialRandomDistributor::reDistribute(Configuration & configuration,
-                                                        const LatticeMap & lattice_map,
-                                                        int x, int y, int z) const
+std::vector<int> PartialRandomDistributor::splitRedistribute(Configuration & configuration,
+                                                             const LatticeMap & lattice_map,
+                                                             int x, int y, int z) const
 {
     // {{{
 
@@ -225,7 +225,7 @@ std::vector<int> PartialRandomDistributor::reDistribute(Configuration & configur
     for (SubConfiguration & sub_config : sub_configs)
     {
         // Re-distribute sub-configuration.
-        std::vector<int> sub_fast_indices = reDistribute(sub_config);
+        std::vector<int> sub_fast_indices = redistribute(sub_config);
         // Update local configuration.
         updateLocalFromSubConfig(configuration, sub_config);
         // Insert sub_fast_indices to total fast indices.

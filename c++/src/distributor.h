@@ -55,7 +55,7 @@ public:
      *  \param configuration : The reference of the configuration to be
      *                         redistributed.
      */
-    virtual std::vector<int> reDistribute(Configuration & configuration) const = 0;
+    virtual std::vector<int> redistribute(Configuration & configuration) const = 0;
 
 protected:
 
@@ -86,14 +86,14 @@ public:
      *                       
      *  NOTE: The configuration must be passed after classification.
      */
-    virtual std::vector<int> reDistribute(Configuration & configuration) const;
+    virtual std::vector<int> redistribute(Configuration & configuration) const;
 
-    virtual std::vector<int> reDistribute(Configuration & configuration,
-                                          Interactions & interactions,
-                                          const SitesMap & sitesmap,
-                                          const LatticeMap & latticemap,
-                                          const Matcher & matcher,
-                                          const std::string & replace_species) const;
+    virtual std::vector<int> processRedistribute(Configuration & configuration,
+                                                 Interactions & interactions,
+                                                 const SitesMap & sitesmap,
+                                                 const LatticeMap & latticemap,
+                                                 const Matcher & matcher,
+                                                 const std::string & replace_species) const;
 };
 
 
@@ -111,10 +111,6 @@ public:
      */
     virtual ~PartialRandomDistributor() {}
 
-    /*! \brief Re-distribution method from father class.
-     */
-    using RandomDistributor::reDistribute;
-
     /*! \brief Re-distribute the configuration by spliting and redistributing
      *         randomly.
      *  \param configuration : The reference of the configuration to be
@@ -124,9 +120,9 @@ public:
      *
      *  NOTE: The configuration must be passed after classification.
      */
-    std::vector<int> reDistribute(Configuration & configuration,
-                                  const LatticeMap & lattice_map,
-                                  int x, int y, int z) const;
+    std::vector<int> splitRedistribute(Configuration & configuration,
+                                       const LatticeMap & lattice_map,
+                                       int x, int y, int z) const;
 
     /*! \brief Update local part of global Configuration using sub-configuration.
      *  \param global_config (in/out) : The global configuration object.
