@@ -101,14 +101,6 @@ class KMCProcess(object):
             site_types = checkTypes(site_types, len(coordinates))
 
         # Check fast.
-#        if fast is not None:
-#            if not isinstance(fast, bool):
-#                msg = "Wrong type for fast parameter, it should be a bool not {}"
-#                msg = msg.format(type(fast))
-#                raise ValueError(msg)
-#        else:
-#            # Default value.
-#            fast = False
         self.__fast = checkBoolean(fast, False, "fast")
 
         # Check redist flag.
@@ -197,6 +189,7 @@ class KMCProcess(object):
         :param move_vectors: The move vectors to check.
         :returns: The validated move vectors.
         """
+        # {{{
         # Check the move vector format, and reconstruct if
         # possible.
         move_vectors = self.__checkMoveVectorsFormat(move_vectors)
@@ -238,6 +231,7 @@ class KMCProcess(object):
                         "does not generate the elements_after list.")
 
         return move_vectors
+        # }}}
 
     def __checkMoveVectorsFormat(self, move_vectors):
         """
@@ -248,6 +242,7 @@ class KMCProcess(object):
         :returns: The validated move vectors, or None if None was given
                   and a reconstruction was not possible.
         """
+        # {{{
         if move_vectors is None:
             # Try to reconstruct the move vectors from the before and after
             # elements information.
@@ -278,6 +273,7 @@ class KMCProcess(object):
                 raise Error(msg)
         # Passed all tests.
         return move_vectors
+        # }}}
 
     def __reconstructMoveVectors(self):
         """
@@ -288,6 +284,7 @@ class KMCProcess(object):
         :returns: The reconstructed move vectors or None if no reconstruction
                   was possible.
         """
+        # {{{
         # Find the differing elements.
         pairs = []
         for i, (e1, e2) in enumerate(zip(self.__elements_before, self.__elements_after)):
@@ -313,22 +310,27 @@ class KMCProcess(object):
         vector_1 = numpy.array(start-end)
 
         return [(index_0, vector_0), (index_1, vector_1)]
+        # }}}
 
     def __sortCoordinatesElementsAndMoveVectors(self):
         """
         Private helper to sort the validated coordinate input,
         and update the element order and move_vector indexing accordingly.
         """
+        # {{{
         # Set up the original indexing.
         original_indexing = range(len(self.__coordinates))
 
         # Sort, and co-sort coordinates and indices.
-        (sorted_coords, dummy_distances, sorted_types_before, sorted_types_after, new_to_old_index) = \
-            sortCoordinatesDistance(coordinates=self.__coordinates,
-                                    center=0,
-                                    types1=self.__elements_before,
-                                    types2=self.__elements_after,
-                                    co_sort=original_indexing)
+        (sorted_coords,
+         dummy_distances,
+         sorted_types_before,
+         sorted_types_after,
+         new_to_old_index) = sortCoordinatesDistance(coordinates=self.__coordinates,
+                                                     center=0,
+                                                     types1=self.__elements_before,
+                                                     types2=self.__elements_after,
+                                                     co_sort=original_indexing)
 
         # Offer old index, get new index.
         old_to_new_index = []
@@ -371,9 +373,11 @@ class KMCProcess(object):
         self.__coordinates = sorted_coords
         self.__elements_before = sorted_types_before
         self.__elements_after = sorted_types_after
+        # }}}
 
     def __eq__(self, other):
         """ Implements the equal oprator. """
+        # {{{
         # Check the length of the basis sites.
         if len(other.basisSites()) != len(self.basisSites()):
             return False
@@ -438,6 +442,7 @@ class KMCProcess(object):
 
         # Passed all tests, return true.
         return True
+        # }}}
 
     def localConfigurations(self):
         """
