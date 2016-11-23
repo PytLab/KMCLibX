@@ -108,6 +108,7 @@ class KMCControlParametersTest(unittest.TestCase):
 
     def testStartTime(self):
         """ Make sure we can set start time correctly. """
+        # {{{
         control_params = KMCControlParameters()
         self.assertEqual(control_params.startTime(), 0.0)
 
@@ -119,9 +120,11 @@ class KMCControlParametersTest(unittest.TestCase):
 
         # Wrong type.
         self.assertRaises(Error, KMCControlParameters, start_time=(1, 1))
+        # }}}
 
     def testExtraTraj(self):
         " Make sure we can set extra trajectory setting parameter correctly. "
+        # {{{
         control_params = KMCControlParameters()
         self.assertEqual(control_params.extraTraj(), None)
 
@@ -139,9 +142,11 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertRaises(Error, KMCControlParameters, extra_traj=1.0)
         self.assertRaises(Error, KMCControlParameters, extra_traj=(1.0, 100.0, 1.0))
         self.assertRaises(Error, KMCControlParameters, extra_traj=('a', 'as'))
+        # }}}
 
     def testDoRedistribution(self):
         " Make sure the redistribution flag can be set correctly. "
+        # {{{
         control_params = KMCControlParameters()
         self.assertFalse(control_params.doRedistribution())
 
@@ -150,9 +155,11 @@ class KMCControlParametersTest(unittest.TestCase):
 
         # Wrong type.
         self.assertRaises(Error, KMCControlParameters, do_redistribution=1)
+        # }}}
 
     def testRedistributionInterval(self):
         " Make sure the redistribution_interval can be set correctly. "
+        # {{{
         control_params = KMCControlParameters(do_redistribution=True)
         self.assertEqual(control_params.redistributionInterval(), 10)
 
@@ -171,9 +178,11 @@ class KMCControlParametersTest(unittest.TestCase):
 
         control_params = KMCControlParameters(redistribution_interval=100)
         self.assertRaises(AttributeError, control_params.redistributionInterval)
+        # }}}
 
     def testFastSpecies(self):
         " Make sure the default fast species can be set properly. "
+        # {{{
         control_params = KMCControlParameters(do_redistribution=True)
         self.assertListEqual(control_params.fastSpecies(), [])
 
@@ -192,9 +201,11 @@ class KMCControlParametersTest(unittest.TestCase):
 
         control_params = KMCControlParameters(fast_species=["V"])
         self.assertRaises(AttributeError, control_params.fastSpecies)
+        # }}}
 
     def testNsplits(self):
         " Make sure the nsplits can be set correctly. "
+        # {{{
         control_params = KMCControlParameters(do_redistribution=True)
         self.assertTupleEqual(control_params.nsplits(), (1, 1, 1))
 
@@ -218,9 +229,11 @@ class KMCControlParametersTest(unittest.TestCase):
 
         control_params = KMCControlParameters(nsplits=(2, 2, 2))
         self.assertRaises(AttributeError, control_params.nsplits)
+        # }}}
 
     def testRedisDumpInterval(self):
         " Make sure the redist_dump_interval can be set correctly. "
+        # {{{
         control_params = KMCControlParameters(do_redistribution=True)
         # The default interval should be equal to the dump interval.
         self.assertEqual(control_params.redistDumpInterval(), 1)
@@ -241,9 +254,11 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertRaises(Error, KMCControlParameters,
                           do_redistribution=True,
                           redist_dump_interval="asf")
+        # }}}
 
     def testSlowFlagsFunc(self):
         " Make sure we can get the correct function to return slow indices. "
+        # {{{
         control_params = KMCControlParameters(do_redistribution=True)
         # The default interval should be equal to the dump interval.
         self.assertListEqual(control_params.slowIndicesFunc()(), [])
@@ -251,9 +266,38 @@ class KMCControlParametersTest(unittest.TestCase):
         control_params = KMCControlParameters(do_redistribution=True,
                                               slow_indices_func=lambda *args: [1, 2, 3])
         self.assertListEqual(control_params.slowIndicesFunc()(), [1, 2, 3])
+        # }}}
+
+    def testDistributorTypeAndEmptyElement(self):
+        " Make sure the distributor type can be set correctly. "
+        # {{{
+        control_params = KMCControlParameters(do_redistribution=True)
+        self.assertEqual(control_params.distributorType(), "SplitRandomDistributor")
+
+        control_params = KMCControlParameters(do_redistribution=True,
+                                              distributor="ProcessRandomDistributor",
+                                              empty_element="V")
+        self.assertEqual(control_params.distributorType(), "ProcessRandomDistributor")
+        self.assertEqual(control_params.emptyElement(), "V")
+
+        # Wrong type.
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          distributor=1)
+
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          empty_element=1)
+
+        # No empty element for ProcessRandomDistributor.
+        self.assertRaises(Error, KMCControlParameters,
+                          do_redistribution=True,
+                          distributor="ProcessRandomDistributor")
+        # }}}
 
     def testConstructionFail(self):
         """ Make sure we can not give invalid paramtes on construction. """
+        # {{{
         # Negative values.
         self.assertRaises( Error,
                            lambda : KMCControlParameters(number_of_steps=-1,
@@ -281,7 +325,7 @@ class KMCControlParametersTest(unittest.TestCase):
                            lambda : KMCControlParameters(number_of_steps=1,
                                                          dump_interval=1,
                                                          analysis_interval="1") )
-
+        # }}}
 
 if __name__ == '__main__':
     unittest.main()
