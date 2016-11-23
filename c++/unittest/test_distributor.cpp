@@ -1205,6 +1205,9 @@ void Test_Distributor::testSplitRandomReDistribute()
     bool types_changed = false;
     bool atom_id_changed = false;
 
+    // Counters for species.
+    int n_A = 0, n_B = 0, n_V = 0;
+
     for (size_t i = 2; i < ori_elements.size(); ++i)
     {
         if (new_elements[i] != ori_elements[i])
@@ -1221,11 +1224,34 @@ void Test_Distributor::testSplitRandomReDistribute()
         {
             atom_id_changed = true;
         }
+
+        // Collect species number.
+        if ("A" == new_elements[i])
+        {
+            n_A++;
+        }
+        else if ("B" == new_elements[i])
+        {
+            n_B++;
+        }
+        else if ("V" == new_elements[i])
+        {
+            n_V++;
+        }
+        else
+        {
+            throw "Unknown elements in configuration.";
+        }
     }
 
     CPPUNIT_ASSERT(elements_changed);
     CPPUNIT_ASSERT(types_changed);
     CPPUNIT_ASSERT(atom_id_changed);
+
+    // Check species number.
+    CPPUNIT_ASSERT_EQUAL(n_A, 1);
+    CPPUNIT_ASSERT_EQUAL(n_B, 2);
+    CPPUNIT_ASSERT_EQUAL(n_V, 4*4*4*2-5);
 
     // Sort all data.
     std::sort(ori_elements.begin(), ori_elements.end());
