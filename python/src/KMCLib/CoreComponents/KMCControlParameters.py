@@ -99,12 +99,18 @@ class KMCControlParameters(object):
                                   in the configuration.
         :type slow_indices_func: A callable object.
 
-        :param nsplits: The split number on axis x, y and z, tuple of int.
+        :param nsplits: The split number on axis x, y and z.
                         Default value is (1, 1, 1) means no splits.
         :type nsplits: list/tuple of int
 
         :param redist_dump_interval: The dump interval of redistributed configuration.
         :type int: int
+
+        :param distributor: The name of distributor for configuration redistribution.
+        :type distributor: str.
+
+        :param empty_element: The name of element for an empty site.
+        :type empty_element: str.
         """
         # {{{
         # Set logger.
@@ -175,6 +181,14 @@ class KMCControlParameters(object):
             self.__redist_dump_interval = checkPositiveInteger(redist_dump_interval,
                                                                self.__dump_interval,
                                                                "redist_dump_interval")
+
+            # Check type of redistributor.
+            distributor = kwargs.pop("distributor", None)
+            self.__distributor = self.__checkDistributorType(distributor)
+
+            # Check the emtpy element name.
+            empty_element = kwargs.pop("empty_element", None)
+            self.__empty_element = self.__checkEmtpyElement(empty_element)
 
         # Check if there are redundant arguments passed in.
         if kwargs and MPICommons.isMaster():
@@ -288,6 +302,9 @@ class KMCControlParameters(object):
         return fast_species
 
     def __checkNsplits(self, nsplits, default):
+        """
+        Private helper function to check number of axis split.
+        """
         if nsplits is None:
             return default
 
@@ -298,6 +315,36 @@ class KMCControlParameters(object):
             raise Error(msg)
 
         return nsplits
+
+    def __checkDistributorType(self, distributor):
+        """
+        Private helper function to check name of distributor.
+        """
+        if distributor is None:
+            return "SplitRandomDistributor"
+
+        if not isinstance(distributor, str):
+            msg = "Name of distributor must be a string."
+            raise Error(msg)
+
+        return distributor
+
+    def __checkEmtpyElement(self, empty_element):
+        """
+        Private helper function ot check the emtpy element name."
+        """
+        if empty_element is None:
+            if self.__distributor == "ProcessRandomDistributor":
+                msg = "The empty element must be provided for ProcessRandomDistributor"
+                raise Error(msg)
+            else:
+                return None
+
+        if not isinstance(empty_element, str):
+            msg = "The emtpy element must be a string."
+            raise Error(msg)
+
+        return empty_element
 
     def timeLimit(self):
         """
@@ -400,4 +447,16 @@ class KMCControlParameters(object):
         Query function for slow indices function.
         """
         return self.__slow_indices_func
+
+    def distributorType(self):
+        """
+        Query function for type of distributor.
+        """
+        return self.__distributor
+
+    def emptyElement(self):
+        """
+        Query function for name of empty element.
+        """
+        return self.__empty_element
 
