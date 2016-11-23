@@ -106,8 +106,8 @@ class KMCControlParameters(object):
         :param redist_dump_interval: The dump interval of redistributed configuration.
         :type int: int
 
-        :param distributor: The name of distributor for configuration redistribution.
-        :type distributor: str.
+        :param distributor_type: The name of distributor for configuration redistribution.
+        :type distributor_type: str.
 
         :param empty_element: The name of element for an empty site.
         :type empty_element: str.
@@ -183,8 +183,8 @@ class KMCControlParameters(object):
                                                                "redist_dump_interval")
 
             # Check type of redistributor.
-            distributor = kwargs.pop("distributor", None)
-            self.__distributor = self.__checkDistributorType(distributor)
+            distributor_type = kwargs.pop("distributor_type", None)
+            self.__distributor_type = self.__checkDistributorType(distributor_type)
 
             # Check the emtpy element name.
             empty_element = kwargs.pop("empty_element", None)
@@ -316,25 +316,25 @@ class KMCControlParameters(object):
 
         return nsplits
 
-    def __checkDistributorType(self, distributor):
+    def __checkDistributorType(self, distributor_type):
         """
         Private helper function to check name of distributor.
         """
-        if distributor is None:
+        if distributor_type is None:
             return "SplitRandomDistributor"
 
-        if not isinstance(distributor, str):
+        if not isinstance(distributor_type, str):
             msg = "Name of distributor must be a string."
             raise Error(msg)
 
-        return distributor
+        return distributor_type
 
     def __checkEmtpyElement(self, empty_element):
         """
         Private helper function ot check the emtpy element name."
         """
         if empty_element is None:
-            if self.__distributor == "ProcessRandomDistributor":
+            if self.__distributor_type == "ProcessRandomDistributor":
                 msg = "The empty element must be provided for ProcessRandomDistributor"
                 raise Error(msg)
             else:
@@ -452,7 +452,7 @@ class KMCControlParameters(object):
         """
         Query function for type of distributor.
         """
-        return self.__distributor
+        return self.__distributor_type
 
     def emptyElement(self):
         """

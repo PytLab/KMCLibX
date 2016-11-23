@@ -275,7 +275,7 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertEqual(control_params.distributorType(), "SplitRandomDistributor")
 
         control_params = KMCControlParameters(do_redistribution=True,
-                                              distributor="ProcessRandomDistributor",
+                                              distributor_type="ProcessRandomDistributor",
                                               empty_element="V")
         self.assertEqual(control_params.distributorType(), "ProcessRandomDistributor")
         self.assertEqual(control_params.emptyElement(), "V")
@@ -283,7 +283,7 @@ class KMCControlParametersTest(unittest.TestCase):
         # Wrong type.
         self.assertRaises(Error, KMCControlParameters,
                           do_redistribution=True,
-                          distributor=1)
+                          distributor_type=1)
 
         self.assertRaises(Error, KMCControlParameters,
                           do_redistribution=True,
@@ -292,7 +292,7 @@ class KMCControlParametersTest(unittest.TestCase):
         # No empty element for ProcessRandomDistributor.
         self.assertRaises(Error, KMCControlParameters,
                           do_redistribution=True,
-                          distributor="ProcessRandomDistributor")
+                          distributor_type="ProcessRandomDistributor")
         # }}}
 
     def testConstructionFail(self):
