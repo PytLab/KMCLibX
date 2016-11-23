@@ -1011,8 +1011,6 @@ class KMCProcessTest(unittest.TestCase):
         elements_before = ["V"]
         elements_after = ["A"]
         basis_sites = [1]
-        fast = True
-        redist = True
 
         # No redist_species for redist process.
         self.assertRaises(Error, KMCProcess,
@@ -1034,6 +1032,15 @@ class KMCProcessTest(unittest.TestCase):
                           fast=True,
                           redist=True,
                           redist_species=1)
+
+        self.assertRaises(Error, KMCProcess,
+                          coordinates=coordinates,
+                          elements_before=elements_before,
+                          elements_after=elements_after,
+                          basis_sites=basis_sites,
+                          rate_constant=1.0,
+                          fast=True,
+                          redist_species="A")
         # }}}
 
     def testScript(self):
