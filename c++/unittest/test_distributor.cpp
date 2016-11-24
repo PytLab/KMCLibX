@@ -502,6 +502,9 @@ void Test_Distributor::testProcessRandomReDistribution()
     bool element_changed = false;
     bool type_changed = false;
 
+    // Counters for species.
+    int n_A = 0, n_B = 0, n_V = 0;
+
     for (size_t i = 2; i < ori_elements.size(); ++i)
     {
         if (config.elements()[i] != ori_elements[i])
@@ -513,11 +516,34 @@ void Test_Distributor::testProcessRandomReDistribution()
         {
             type_changed = true;
         }
+
+        // Collect species number.
+        if ("A" == config.elements()[i])
+        {
+            n_A++;
+        }
+        else if ("B" == config.elements()[i])
+        {
+            n_B++;
+        }
+        else if ("V" == config.elements()[i])
+        {
+            n_V++;
+        }
+        else
+        {
+            throw "Unknown elements in configuration.";
+        }
     }
 
     // This could eventually fail by chanse, but that would be very unlikely.
     CPPUNIT_ASSERT(element_changed);
     CPPUNIT_ASSERT(type_changed);
+
+    // Check species number.
+    CPPUNIT_ASSERT_EQUAL(n_A, 2);
+    CPPUNIT_ASSERT_EQUAL(n_B, 2);
+    CPPUNIT_ASSERT_EQUAL(n_V, 3*3*3*2-6);
     // }}}
 }
 
