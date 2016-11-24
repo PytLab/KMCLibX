@@ -110,6 +110,9 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
 {
     // {{{
 
+    // Get all global indices of slow species which are fixed in redistribution.
+    const std::vector<int> && slow_indices = configuration.slowIndices();
+
     // Extract all fast species.
     const std::vector<std::string> && redist_species = interactions.redistSpecies();
     std::vector<std::string> extracted_species = {};
@@ -138,44 +141,57 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
     {
         // All indices of scattering space.
         const std::vector<int> && space_indices = configuration.fastIndices();
-        // Pick a site in scattering space.
-        const int site_index = randomPickInt(space_indices);
 
-        // Loop over all redistribution process to check if it can happen here.
-        for ( const auto & process_ptr : interactions.redistProcesses() )
+        // Scatter this species.
+        bool scatter_success = false; // Flag of successfule scattering
+
+        while (!scatter_success)
         {
-            // Species and location matching.
-            if ( sp == process_ptr->redistSpecies() && \
-                    process_ptr->isListed(site_index) )
+            // Pick a site in scattering space.
+            const int site_index = randomPickInt(space_indices);
+
+            // Loop over all redistribution process to check if it can happen here.
+            for ( const auto & process_ptr : interactions.redistProcesses() )
             {
-                // Throw the species at the index.
-                configuration.performProcess(*process_ptr, site_index);
-                // Re-matching the affected indices.
-                const std::vector<int> & affected_indices = process_ptr->affectedIndices();
+                // Species and location matching.
+                if ( sp == process_ptr->redistSpecies() && \
+                        process_ptr->isListed(site_index) )
+                {
+                    // Throw the species at the index.
+                    configuration.performProcess(*process_ptr, site_index);
+                    // Re-matching the affected indices.
+                    const std::vector<int> & affected_indices = process_ptr->affectedIndices();
 #ifdef DEBUG
-                assert(affected_indices.size() == 1 && affected_indices[0] == site_index);
+                    assert(affected_indices.size() == 1 && affected_indices[0] == site_index);
 #endif // DEBUG
-                const std::vector<int> && matching_indices = \
-                    latticemap.supersetNeighbourIndices(affected_indices,
-                                                        interactions.maxRange());
-                // Extend all affected indices.
-                all_affected_indices.insert(all_affected_indices.end(),
-                                            affected_indices.begin(),
-                                            affected_indices.end());
+                    const std::vector<int> && matching_indices = \
+                        latticemap.supersetNeighbourIndices(affected_indices,
+                                                            interactions.maxRange());
+                    // Extend all affected indices.
+                    all_affected_indices.insert(all_affected_indices.end(),
+                                                affected_indices.begin(),
+                                                affected_indices.end());
 
-                // Re-match the affected indices.
-                matcher.calculateMatching(interactions,
-                                          configuration,
-                                          sitesmap,
-                                          latticemap,
-                                          matching_indices);
-
-                // Re-classify configuration.
-                matcher.classifyConfiguration(interactions,
+                    // Re-match the affected indices.
+                    matcher.calculateMatching(interactions,
                                               configuration,
                                               sitesmap,
                                               latticemap,
                                               matching_indices);
+
+                    // Re-classify configuration.
+                    matcher.classifyConfiguration(interactions,
+                                                  configuration,
+                                                  sitesmap,
+                                                  latticemap,
+                                                  matching_indices,
+                                                  {},
+                                                  slow_indices);
+
+                    // Complete scattering, switch to anthor species.
+                    scatter_success = true;
+                    break;
+                }
             }
         }
     }
