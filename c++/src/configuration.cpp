@@ -608,7 +608,7 @@ std::vector<SubConfiguration> Configuration::split(const LatticeMap & lattice_ma
 //
 // TODO: OpenMP
 //
-const std::vector<int> Configuration::fastIndices() const
+std::vector<int> Configuration::fastIndices() const
 {
     std::vector<int> fast_indices = {};
 
@@ -626,7 +626,7 @@ const std::vector<int> Configuration::fastIndices() const
 
 // ----------------------------------------------------------------------------
 //
-const std::vector<int> Configuration::slowIndices() const
+std::vector<int> Configuration::slowIndices() const
 {
     std::vector<int> slow_indices = {};
 

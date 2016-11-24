@@ -140,15 +140,21 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
     for (const std::string & sp : extracted_species)
     {
         // All indices of scattering space.
-        const std::vector<int> && space_indices = configuration.fastIndices();
+        std::vector<int> && space_indices = configuration.fastIndices();
 
-        // Scatter this species.
-        bool scatter_success = false; // Flag of successfule scattering
+        // Pick a site in scattering space.
+        //const int site_index = randomPickInt(space_indices);
+        // Shuffle the space indices.
+        shuffleIntVector(space_indices);
 
-        while (!scatter_success)
+        // Flag for successful species scattering.
+        bool scatter_success = false;
+        for (const int site_index : space_indices)
         {
-            // Pick a site in scattering space.
-            const int site_index = randomPickInt(space_indices);
+            if (scatter_success)
+            {
+                break;
+            }
 
             // Loop over all redistribution process to check if it can happen here.
             for ( const auto & process_ptr : interactions.redistProcesses() )
@@ -187,8 +193,7 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
                                                   matching_indices,
                                                   {},
                                                   slow_indices);
-
-                    // Complete scattering, switch to anthor species.
+                    // Set flag and jump out.
                     scatter_success = true;
                     break;
                 }
