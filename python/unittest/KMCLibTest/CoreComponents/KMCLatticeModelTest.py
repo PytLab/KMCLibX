@@ -2126,7 +2126,11 @@ model = KMCLatticeModel(
         self.assertListEqual(ori_types[: 2], new_types[: 2])
 
         # Others should be different.
+        # NOTE: this would fail by chance, but that is very unlikely.
         self.assertNotEqual(ori_types[2:], new_types[2:])
+
+        self.assertEqual(ori_types[2:].count("A"), 1)
+        self.assertEqual(ori_types[2:].count("B"), 2)
 
         # Check the fast species before redistribution.
         self.assertEqual(4*4*4*2-2, len(affected_indices))
@@ -2329,6 +2333,9 @@ model = KMCLatticeModel(
         # Others should be different.
         # NOTE: this would fail by chance, but that is very unlikely.
         self.assertNotEqual(ori_types[2:], new_types[2:])
+
+        self.assertEqual(ori_types[2:].count("A"), 1)
+        self.assertEqual(ori_types[2:].count("B"), 2)
 
         # }}}
 
@@ -2540,3 +2547,4 @@ model = KMCLatticeModel(
 
 if __name__ == '__main__':
     unittest.main()
+
