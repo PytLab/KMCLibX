@@ -625,6 +625,24 @@ const std::vector<int> Configuration::fastIndices() const
 
 
 // ----------------------------------------------------------------------------
+//
+const std::vector<int> Configuration::slowIndices() const
+{
+    std::vector<int> slow_indices = {};
+
+    for (size_t i = 0; i < slow_flags_.size(); ++i)
+    {
+        if (slow_flags_[i])
+        {
+            slow_indices.push_back(i);
+        }
+    }
+
+    return slow_indices;
+}
+
+
+// ----------------------------------------------------------------------------
 // Functions definitions for SubConfiguration class.
 // ----------------------------------------------------------------------------
 

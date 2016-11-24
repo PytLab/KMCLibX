@@ -220,6 +220,10 @@ public:
      */
     const std::vector<int> fastIndices() const;
 
+    /*! \brief Get the indices of slow species in current configuration.
+     */
+    const std::vector<int> slowIndices() const;
+
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
      *  \return : The string representation of the type integer.
