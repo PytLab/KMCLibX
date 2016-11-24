@@ -142,8 +142,6 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
         // All indices of scattering space.
         std::vector<int> && space_indices = configuration.fastIndices();
 
-        // Pick a site in scattering space.
-        //const int site_index = randomPickInt(space_indices);
         // Shuffle the space indices.
         shuffleIntVector(space_indices);
 
@@ -156,8 +154,12 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
                 break;
             }
 
+            // Get all redistribution process and shuffle them.
+            std::vector<Process *> redist_process_ptrs = interactions.redistProcesses();
+            shuffleProcessPtrVector(redist_process_ptrs);
+
             // Loop over all redistribution process to check if it can happen here.
-            for ( const auto & process_ptr : interactions.redistProcesses() )
+            for ( const auto & process_ptr : redist_process_ptrs )
             {
                 // Species and location matching.
                 if ( sp == process_ptr->redistSpecies() && \
