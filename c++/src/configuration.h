@@ -216,6 +216,8 @@ public:
                             std::vector<std::string> & fast_species,
                             std::vector<int> & fast_indices);
 
+    /*! \brief Get the indices of fast species in current configuration.
+     */
     const std::vector<int> fastIndices() const;
 
     /*! \brief Query for the type name.
