@@ -25,6 +25,9 @@
 
 #include <algorithm>
 
+// Forward declarations.
+class Process;
+
 /// The supported random number generator types.
 enum RNG_TYPE {MT, MINSTD, RANLUX24, RANLUX48, DEVICE};
 
@@ -54,6 +57,11 @@ double randomDouble01();
  *  \param v: The integer vector to be shuffled.
  */
 void shuffleIntVector(std::vector<int> & v);
+
+/*! \brief Function to shuffle a Process pointer vector.
+ *  \param v: The Process pointer vector to be shuffled.
+ */
+void shuffleProcessPtrVector(std::vector<Process *> & v);
 
 
 /*! \brief Function template to pick an elements from container randomly.

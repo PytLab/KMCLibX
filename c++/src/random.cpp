@@ -66,7 +66,6 @@ bool setRngType(const RNG_TYPE rng_type)
 #endif // __DEVICE__
     }
 
-
     return true;
 }
 
@@ -159,7 +158,8 @@ double randomDouble01()
 
 // -----------------------------------------------------------------------------
 //
-void shuffleIntVector(std::vector<int> & v)
+template<typename VectorType>
+void shuffleVector(VectorType & v)
 {
     switch (rng_type__)
     {
@@ -189,6 +189,22 @@ void shuffleIntVector(std::vector<int> & v)
         // This can never happen from previous checks.
         throw std::runtime_error("Invalid random number generator.");
     }
+}
+
+
+// ----------------------------------------------------------------------------
+//
+void shuffleIntVector(std::vector<int> & v)
+{
+    shuffleVector(v);
+}
+
+
+// ----------------------------------------------------------------------------
+//
+void shuffleProcessPtrVector(std::vector<Process *> & v)
+{
+    shuffleVector(v);
 }
 
 
