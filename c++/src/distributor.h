@@ -121,8 +121,7 @@ public:
                                             Interactions & interactions,
                                             const SitesMap & sitesmap,
                                             const LatticeMap & latticemap,
-                                            const Matcher & matcher,
-                                            const std::vector<int> & slow_indices) const;
+                                            const Matcher & matcher) const;
 };
 
 

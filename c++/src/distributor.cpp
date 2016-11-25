@@ -110,9 +110,6 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
 {
     // {{{
 
-    // Get all global indices of slow species which are fixed in redistribution.
-    const std::vector<int> && slow_indices = configuration.slowIndices();
-
     // Extract all fast species.
     const std::vector<std::string> && redist_species = interactions.redistSpecies();
     std::vector<std::string> extracted_species = {};
@@ -145,8 +142,7 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
                                                           interactions,
                                                           sitesmap,
                                                           latticemap,
-                                                          matcher,
-                                                          slow_indices);
+                                                          matcher);
 
     // Merge all affected indices.
     all_affected_indices.insert(all_affected_indices.end(),
@@ -166,8 +162,7 @@ std::vector<int> RandomDistributor::scatterSpecies(std::vector<std::string> & sp
                                                    Interactions & interactions,
                                                    const SitesMap & sitesmap,
                                                    const LatticeMap & latticemap,
-                                                   const Matcher & matcher,
-                                                   const std::vector<int> & slow_indices) const
+                                                   const Matcher & matcher) const
 {
     // {{{
 
@@ -225,13 +220,14 @@ std::vector<int> RandomDistributor::scatterSpecies(std::vector<std::string> & sp
                                               matching_indices);
 
                     // Re-classify configuration.
-                    matcher.classifyConfiguration(interactions,
-                                                  configuration,
-                                                  sitesmap,
-                                                  latticemap,
-                                                  matching_indices,
-                                                  {},
-                                                  slow_indices);
+                    //matcher.classifyConfiguration(interactions,
+                    //                              configuration,
+                    //                              sitesmap,
+                    //                              latticemap,
+                    //                              matching_indices,
+                    //                              {},
+                    //                              slow_indices);
+
                     // Set flag and jump out.
                     scatter_success = true;
                     break;
