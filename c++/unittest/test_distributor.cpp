@@ -1350,6 +1350,7 @@ void Test_Distributor::testConstrainedProcessRandomReDistribute()
 
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
+    Configuration config2(coords, elements, possible_types);
 
     // Construct the sitesmap.
     SitesMap sitesmap(coords, site_types, possible_site_types);
@@ -1476,12 +1477,15 @@ void Test_Distributor::testConstrainedProcessRandomReDistribute()
     // ------------------------------------------------------------------
     // Create an interaction object.
     Interactions interactions(processes, true);
+    Interactions interactions2(processes, true);
 
     // Initialize configuration & sitemap match lists.
     config.initMatchLists(lattice_map, interactions.maxRange());
+    config2.initMatchLists(lattice_map, interactions.maxRange());
     sitesmap.initMatchLists(lattice_map, interactions.maxRange());
 
     interactions.updateProcessMatchLists(config, lattice_map);
+    interactions2.updateProcessMatchLists(config, lattice_map);
 
     // Match all centers.
     std::vector<int> indices;
@@ -1493,10 +1497,16 @@ void Test_Distributor::testConstrainedProcessRandomReDistribute()
     Matcher matcher;
     matcher.calculateMatching(interactions, config, sitesmap,
                               lattice_map, indices);
-
+    matcher.calculateMatching(interactions2, config2, sitesmap,
+                              lattice_map, indices);
     // Classify configuration.
     matcher.classifyConfiguration(interactions,
                                   config,
+                                  sitesmap,
+                                  lattice_map,
+                                  indices);
+    matcher.classifyConfiguration(interactions2,
+                                  config2,
                                   sitesmap,
                                   lattice_map,
                                   indices);
@@ -1601,6 +1611,71 @@ void Test_Distributor::testConstrainedProcessRandomReDistribute()
     CPPUNIT_ASSERT_EQUAL(n_A, 2);
     CPPUNIT_ASSERT_EQUAL(n_B, 3);
     CPPUNIT_ASSERT_EQUAL(n_V, 2*2*2*2-5);
+
+    // Check split with 1, 1, 1.
+    auto ori_elements2 = config2.elements();
+    auto ori_types2 = config2.types();
+
+    distributor.constrainedProcessRedistribute(config2, interactions2,
+                                               sitesmap, lattice_map,
+                                               matcher, replace_elements,
+                                               1, 1, 1);
+
+    // Check configuration after redistribution.
+    // There should be no changes on the 0th and 1st elements.
+    CPPUNIT_ASSERT_EQUAL(config.elements()[0], static_cast<std::string>("A"));
+    CPPUNIT_ASSERT_EQUAL(config.elements()[1], static_cast<std::string>("B"));
+    CPPUNIT_ASSERT_EQUAL(config.types()[0], 1);
+    CPPUNIT_ASSERT_EQUAL(config.types()[1], 2);
+
+    // Check other elements
+    element_changed = false;
+    type_changed = false;
+
+    // Counters for species.
+    n_A = 0;
+    n_B = 0;
+    n_V = 0;
+
+    for (size_t i = 2; i < ori_elements2.size(); ++i)
+    {
+        if (config2.elements()[i] != ori_elements2[i])
+        {
+            element_changed = true;
+        }
+
+        if (config2.types()[i] != ori_types2[i])
+        {
+            type_changed = true;
+        }
+
+        // Collect species number.
+        if ("A" == config2.elements()[i])
+        {
+            n_A++;
+        }
+        else if ("B" == config2.elements()[i])
+        {
+            n_B++;
+        }
+        else if ("V" == config2.elements()[i])
+        {
+            n_V++;
+        }
+        else
+        {
+            throw "Unknown elements in configuration.";
+        }
+    }
+
+    // This could eventually fail by chanse, but that would be very unlikely.
+    CPPUNIT_ASSERT(element_changed);
+    CPPUNIT_ASSERT(type_changed);
+
+    // Check species number.
+    CPPUNIT_ASSERT_EQUAL(n_A, 1);
+    CPPUNIT_ASSERT_EQUAL(n_B, 2);
+    CPPUNIT_ASSERT_EQUAL(n_V, 4*4*4*2-5);
 
     // }}}
 }
