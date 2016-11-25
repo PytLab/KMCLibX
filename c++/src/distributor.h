@@ -88,12 +88,41 @@ public:
      */
     virtual std::vector<int> redistribute(Configuration & configuration) const;
 
+    /*! \brief Re-distribute the configuration with process performing.
+     *  \param configuration  : The configuration which the list of indices refers to.
+     *  \param interactions   : The interactions object holding info on possible processes.
+     *  \param sitesmap       : The sites map which the list of inidices refers to.
+     *  \param lattice_map    : The lattice map describing the configuration.
+     *  \param matcher        : The matcher to use for calculating matches and
+     *                          update the process lists.
+     *  \param replace_species: The species to replace after species extraction.
+     */
     virtual std::vector<int> processRedistribute(Configuration & configuration,
                                                  Interactions & interactions,
                                                  const SitesMap & sitesmap,
                                                  const LatticeMap & latticemap,
                                                  const Matcher & matcher,
                                                  const std::string & replace_species) const;
+
+    /*! \brief Scatter species to a specific space.
+     *  \param species        : The list of species to be scattered.
+     *  \param space_indices  : The global indices of space where the species
+     *                          will be scattered.
+     *  \param configuration  : The configuration which the list of indices refers to.
+     *  \param interactions   : The interactions object holding info on possible processes.
+     *  \param sitesmap       : The sites map which the list of inidices refers to.
+     *  \param lattice_map    : The lattice map describing the configuration.
+     *  \param matcher        : The matcher to use for calculating matches and
+     *                          update the process lists.
+     */
+    virtual std::vector<int> scatterSpecies(std::vector<std::string> & species,
+                                            const std::vector<int> & space_indices,
+                                            Configuration & configuration,
+                                            Interactions & interactions,
+                                            const SitesMap & sitesmap,
+                                            const LatticeMap & latticemap,
+                                            const Matcher & matcher,
+                                            const std::vector<int> & slow_indices) const;
 };
 
 
@@ -123,6 +152,17 @@ public:
     std::vector<int> splitRedistribute(Configuration & configuration,
                                        const LatticeMap & lattice_map,
                                        int x, int y, int z) const;
+
+    /*! \brief Re-distribute the configuration by spliting and use process to
+     *         re-scatter species.
+     */
+    std::vector<int> splitProcessRedistribute(Configuration & configuration,
+                                              Interactions & interactions,
+                                              const SitesMap & sitesmap,
+                                              const LatticeMap & latticemap,
+                                              const Matcher & matcher,
+                                              const std::string & replace_species,
+                                              int x, int y, int z) const;
 
     /*! \brief Update local part of global Configuration using sub-configuration.
      *  \param global_config (in/out) : The global configuration object.

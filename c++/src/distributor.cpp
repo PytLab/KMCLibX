@@ -136,18 +136,55 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
     // The indices list to be extended.
     std::vector<int> & all_affected_indices = extracted_indices;
 
-    // Re-scatter the extracted species.
-    for (const std::string & sp : extracted_species)
-    {
-        // All indices of scattering space.
-        std::vector<int> && space_indices = configuration.fastIndices();
+    // Scatter the extracted species.
+    const std::vector<int> && space_indices = configuration.fastIndices();
 
+    std::vector<int> && affected_indices = scatterSpecies(extracted_species,
+                                                          space_indices,
+                                                          configuration,
+                                                          interactions,
+                                                          sitesmap,
+                                                          latticemap,
+                                                          matcher,
+                                                          slow_indices);
+
+    // Merge all affected indices.
+    all_affected_indices.insert(all_affected_indices.end(),
+                                affected_indices.begin(),
+                                affected_indices.end());
+
+    return all_affected_indices;
+    // }}}
+}
+
+
+// ----------------------------------------------------------------------------
+//
+std::vector<int> RandomDistributor::scatterSpecies(std::vector<std::string> & species,
+                                                   const std::vector<int> & space_indices,
+                                                   Configuration & configuration,
+                                                   Interactions & interactions,
+                                                   const SitesMap & sitesmap,
+                                                   const LatticeMap & latticemap,
+                                                   const Matcher & matcher,
+                                                   const std::vector<int> & slow_indices) const
+{
+    // {{{
+
+    // List to collect all affected indices.
+    std::vector<int> all_affected_indices = {};
+    std::vector<int> shuffle_space_indices;
+
+    // Re-scatter the extracted species.
+    for (const std::string & sp : species)
+    {
         // Shuffle the space indices.
-        shuffleIntVector(space_indices);
+        std::vector<int> shuffle_space_indices = space_indices;
+        shuffleIntVector(shuffle_space_indices);
 
         // Flag for successful species scattering.
         bool scatter_success = false;
-        for (const int site_index : space_indices)
+        for (const int site_index : shuffle_space_indices)
         {
             if (scatter_success)
             {
@@ -204,10 +241,12 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
     }
 
     return all_affected_indices;
-
     // }}}
 }
 
+
+// ----------------------------------------------------------------------------
+//
 void SplitRandomDistributor:: \
 updateLocalFromSubConfig(Configuration & global_config,
                          const SubConfiguration & sub_config) const
