@@ -298,3 +298,88 @@ constrainedRedistribute(Configuration & configuration,
     // }}}
 }
 
+
+// ----------------------------------------------------------------------------
+//
+std::vector<int> ConstrainedRandomDistributor:: \
+    constrainedProcessRedistribute(Configuration & configuration,
+                                   Interactions & interactions,
+                                   const SitesMap & sitesmap,
+                                   const LatticeMap & latticemap,
+                                   const Matcher & matcher,
+                                   const std::string & replace_species,
+                                   int x, int y, int z) const
+{
+    // {{{
+
+    std::vector<SubConfiguration> && sub_configs = configuration.split(latticemap,
+                                                                       x, y, z);
+
+    const std::vector<std::string> && redist_species = interactions.redistSpecies();
+
+    // Loop over all sub-configurations to collect essential info.
+    std::vector<std::vector<std::string> > all_extracted_species = {};
+    std::vector<int> extracted_global_indices = {};
+
+    for (SubConfiguration & sub_config : sub_configs)
+    {
+        // Extract fast species from sub-configuration.
+        std::vector<std::string> extracted_species = {};
+        std::vector<int> extracted_local_indices = {};
+        sub_config.extractFastSpecies(redist_species,
+                                      replace_species,
+                                      extracted_species,
+                                      extracted_local_indices);
+
+        // Collect fast species.
+        all_extracted_species.push_back(extracted_species);
+
+        // Update the global configuration.
+        updateLocalFromSubConfig(configuration, sub_config);
+
+        // Collect global affected indices.
+        for ( const int & local_index : extracted_local_indices)
+        {
+            int global_index = sub_config.globalIndices()[local_index];
+            extracted_global_indices.push_back(global_index);
+        }
+    }
+
+    // Run the rematching of the affected sites of extraction.
+    std::vector<int> && matching_indices = \
+        latticemap.supersetNeighbourIndices(extracted_global_indices,
+                                            interactions.maxRange());
+
+    matcher.calculateMatching(interactions,
+                              configuration,
+                              sitesmap,
+                              latticemap,
+                              matching_indices);
+
+    // The indices list to be extended.
+    std::vector<int> & all_affected_indices = extracted_global_indices;
+
+    for (size_t i = 0; i < sub_configs.size(); ++i)
+    {
+        std::vector<std::string> extracted_local_species = all_extracted_species[i];
+        const std::vector<int> & local_space_indices = sub_configs[i].globalIndices();
+
+        // Scatter in the local part of configuration.
+        std::vector<int> && affected_indices = scatterSpecies(extracted_local_species,
+                                                              local_space_indices,
+                                                              configuration,
+                                                              interactions,
+                                                              sitesmap,
+                                                              latticemap,
+                                                              matcher);
+        // Collect affected indices.
+        all_affected_indices.insert(all_affected_indices.end(),
+                                    affected_indices.begin(),
+                                    affected_indices.end());
+    }
+
+    return all_affected_indices;
+
+    // }}}
+}
+
