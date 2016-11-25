@@ -127,17 +127,17 @@ public:
 
 /*! \brief Distributor for a splited random distribution.
 */
-class SplitRandomDistributor : public RandomDistributor {
+class ConstrainedRandomDistributor : public RandomDistributor {
 
 public:
 
     /*! \brief Default constructor.
      */
-    SplitRandomDistributor() {}
+    ConstrainedRandomDistributor() {}
 
     /*! \brief Destructor.
      */
-    virtual ~SplitRandomDistributor() {}
+    virtual ~ConstrainedRandomDistributor() {}
 
     /*! \brief Re-distribute the configuration by spliting and redistributing
      *         randomly.
@@ -148,20 +148,20 @@ public:
      *
      *  NOTE: The configuration must be passed after classification.
      */
-    std::vector<int> splitRedistribute(Configuration & configuration,
-                                       const LatticeMap & lattice_map,
-                                       int x, int y, int z) const;
+    std::vector<int> constrainedRedistribute(Configuration & configuration,
+                                             const LatticeMap & lattice_map,
+                                             int x, int y, int z) const;
 
     /*! \brief Re-distribute the configuration by spliting and use process to
      *         re-scatter species.
      */
-    std::vector<int> splitProcessRedistribute(Configuration & configuration,
-                                              Interactions & interactions,
-                                              const SitesMap & sitesmap,
-                                              const LatticeMap & latticemap,
-                                              const Matcher & matcher,
-                                              const std::string & replace_species,
-                                              int x, int y, int z) const;
+    std::vector<int> constrainedProcessRedistribute(Configuration & configuration,
+                                                    Interactions & interactions,
+                                                    const SitesMap & sitesmap,
+                                                    const LatticeMap & latticemap,
+                                                    const Matcher & matcher,
+                                                    const std::string & replace_species,
+                                                    int x, int y, int z) const;
 
     /*! \brief Update local part of global Configuration using sub-configuration.
      *  \param global_config (in/out) : The global configuration object.

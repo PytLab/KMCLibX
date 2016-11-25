@@ -26,7 +26,7 @@ void Test_Distributor::testConstruction()
 {
     // Construction.
     RandomDistributor random_dis;
-    SplitRandomDistributor partial_random_dis;
+    ConstrainedRandomDistributor partial_random_dis;
 }
 
 
@@ -997,7 +997,7 @@ void Test_Distributor::testUpdateLocalFromSubConfig()
                                                              sub_lattice);
 
     // Redistribute the sub-configuration.
-    SplitRandomDistributor distributor;
+    ConstrainedRandomDistributor distributor;
     distributor.redistribute(sub_config);
 
     // Distribution in sub-configuration.
@@ -1037,7 +1037,7 @@ void Test_Distributor::testUpdateLocalFromSubConfig()
 
 // ----------------------------------------------------------------------------
 //
-void Test_Distributor::testSplitRandomReDistribute()
+void Test_Distributor::testConstrainedRandomReDistribute()
 {
     // {{{
     // Construct two global configurations.
@@ -1198,12 +1198,12 @@ void Test_Distributor::testSplitRandomReDistribute()
     auto ori_atom_id = config.atomID();
 
     // Create distributor.
-    SplitRandomDistributor distributor;
+    ConstrainedRandomDistributor distributor;
 
     // Re-distribution.
-    std::vector<int> && affected_indices = distributor.splitRedistribute(config,
-                                                                         global_lattice,
-                                                                         2, 2, 2);
+    std::vector<int> && affected_indices = distributor.constrainedRedistribute(config,
+                                                                               global_lattice,
+                                                                               2, 2, 2);
 
     // Check affected indices.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(affected_indices.size()), 4*4*4*2-2);

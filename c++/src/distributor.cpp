@@ -243,7 +243,7 @@ std::vector<int> RandomDistributor::scatterSpecies(std::vector<std::string> & sp
 
 // ----------------------------------------------------------------------------
 //
-void SplitRandomDistributor:: \
+void ConstrainedRandomDistributor:: \
 updateLocalFromSubConfig(Configuration & global_config,
                          const SubConfiguration & sub_config) const
 {
@@ -269,9 +269,10 @@ updateLocalFromSubConfig(Configuration & global_config,
 
 // ----------------------------------------------------------------------------
 //
-std::vector<int> SplitRandomDistributor::splitRedistribute(Configuration & configuration,
-                                                           const LatticeMap & lattice_map,
-                                                           int x, int y, int z) const
+std::vector<int> ConstrainedRandomDistributor:: \
+constrainedRedistribute(Configuration & configuration,
+                        const LatticeMap & lattice_map,
+                        int x, int y, int z) const
 {
     // {{{
 

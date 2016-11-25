@@ -51,7 +51,7 @@ public:
     /*! \brief Declare friend classes.
      */
     friend class RandomDistributor;
-    friend class SplitRandomDistributor;
+    friend class ConstrainedRandomDistributor;
 
     /*! \brief Constructor for setting up the configuration.
      *  \param coordinates   : The coordinates of the configuration.

@@ -361,7 +361,7 @@ class KMCLatticeModel(object):
                     redistribution_counter = 0
 
                     # Re-distribute the configuration with different algorithms.
-                    if "SplitRandomDistributor" == distributor_type:
+                    if "ConstrainedRandomDistributor" == distributor_type:
                         affected_indices = cpp_model.redistribute(fast_species, [], *nsplits)
 
                     elif "ProcessRandomDistributor" == distributor_type:

@@ -272,7 +272,7 @@ class KMCControlParametersTest(unittest.TestCase):
         " Make sure the distributor type can be set correctly. "
         # {{{
         control_params = KMCControlParameters(do_redistribution=True)
-        self.assertEqual(control_params.distributorType(), "SplitRandomDistributor")
+        self.assertEqual(control_params.distributorType(), "ConstrainedRandomDistributor")
 
         control_params = KMCControlParameters(do_redistribution=True,
                                               distributor_type="ProcessRandomDistributor",

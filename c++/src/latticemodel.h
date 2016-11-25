@@ -122,7 +122,7 @@ private:
     Matcher matcher_;
 
     /// The random Distributor for re-distributing configuration.
-    SplitRandomDistributor distributor_;
+    ConstrainedRandomDistributor distributor_;
 };
 
 

@@ -133,7 +133,7 @@ LatticeModel::redistribute(const std::vector<std::string> & fast_species,
 
     // Re-distribute the current configuration.
     const std::vector<int> affected_indices = \
-        distributor_.splitRedistribute(configuration_, lattice_map_, x, y, z);
+        distributor_.constrainedRedistribute(configuration_, lattice_map_, x, y, z);
 
     // Run the re-matching of the affected sites and their neighbours.
     const std::vector<int> && indices = \
