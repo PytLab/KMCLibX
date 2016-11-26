@@ -162,7 +162,8 @@ LatticeModel::redistribute(const std::vector<std::string> & fast_species,
 const std::vector<int> \
 LatticeModel::redistribute(const std::string & replace_elements,
                            const std::vector<std::string> & fast_species,
-                           const std::vector<int> & slow_indices)
+                           const std::vector<int> & slow_indices,
+                           int x, int y, int z)
 {
     // Classify species in current configuration.
     matcher_.classifyConfiguration(interactions_,
@@ -175,12 +176,13 @@ LatticeModel::redistribute(const std::string & replace_elements,
 
     // Re-distribute the current configuration.
     const std::vector<int> affected_indices = \
-        distributor_.processRedistribute(configuration_,
-                                         interactions_,
-                                         sitesmap_,
-                                         lattice_map_,
-                                         matcher_,
-                                         replace_elements);
+        distributor_.constrainedProcessRedistribute(configuration_,
+                                                    interactions_,
+                                                    sitesmap_,
+                                                    lattice_map_,
+                                                    matcher_,
+                                                    replace_elements,
+                                                    x, y, z);
 
     // Run the re-matching of the affected sites and their neighbors.
     const std::vector<int> && indices = \
