@@ -370,7 +370,7 @@ class KMCLatticeModel(object):
                         affected_indices = cpp_model.redistribute(empty_element,
                                                                   fast_species,
                                                                   [],
-                                                                  *nsplit)
+                                                                  *nsplits)
 
                     # Time increase.
                     current_time = self.__cpp_timer.simulationTime()
