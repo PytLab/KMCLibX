@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2013  Mikael Leetmaa
+  Copyright (c)  2016-2019 ShaoZhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -33,7 +34,7 @@ std::vector< std::pair<int,int> > determineChunks(const int mpi_size,
  *  \param comm : The communicator to use.
  */
 void distributeToAll(int & data,
-                     const MPI_Comm & comm=MPI_COMM_WORLD);
+                     const MPI::Intracomm & comm=MPI::COMM_WORLD);
 
 
 /*! \brief Sum the data over all processors.
@@ -41,7 +42,7 @@ void distributeToAll(int & data,
  *  \param comm : The communicator to use.
  */
 void sumOverProcesses(int & data,
-                      const MPI_Comm & comm=MPI_COMM_WORLD);
+                      const MPI::Intracomm & comm=MPI::COMM_WORLD);
 
 
 /*! \brief Sum the data over all processors.
@@ -49,7 +50,7 @@ void sumOverProcesses(int & data,
  *  \param comm : The communicator to use.
  */
 void sumOverProcesses(std::vector<int> & data,
-                      const MPI_Comm & comm=MPI_COMM_WORLD);
+                      const MPI::Intracomm & comm=MPI::COMM_WORLD);
 
 
 /*! \brief Sum the data over all processors.
@@ -57,7 +58,7 @@ void sumOverProcesses(std::vector<int> & data,
  *  \param comm : The communicator to use.
  */
 void sumOverProcesses(std::vector<double> & data,
-                      const MPI_Comm & comm=MPI_COMM_WORLD);
+                      const MPI::Intracomm & comm=MPI::COMM_WORLD);
 
 
 /*! \brief Split the global vector over the processes.
@@ -67,7 +68,7 @@ void sumOverProcesses(std::vector<double> & data,
  */
 template <class T_vector>
 T_vector splitOverProcesses(const T_vector & global,
-                            const MPI_Comm & comm=MPI_COMM_WORLD);
+                            const MPI::Intracomm & comm=MPI::COMM_WORLD);
 
 /*! \brief Join the local vectors to form a global.
  *  \param local  : The data vector to join.
@@ -76,7 +77,7 @@ T_vector splitOverProcesses(const T_vector & global,
  */
 template <class T_vector>
 T_vector joinOverProcesses(const T_vector & local,
-                           const MPI_Comm & comm=MPI_COMM_WORLD);
+                           const MPI::Intracomm & comm=MPI::COMM_WORLD);
 
 
 
@@ -89,13 +90,13 @@ T_vector joinOverProcesses(const T_vector & local,
 //
 template <class T_vector>
 T_vector splitOverProcesses(const T_vector & global,
-                            const MPI_Comm & comm)
+                            const MPI::Intracomm & comm)
 {
     // Get the dimensions.
 #if RUNMPI == true
     int rank, size;
-    MPI_Comm_rank( comm, &rank );
-    MPI_Comm_size( comm, &size );
+    rank = comm.Get_rank();
+    size = comm.Get_size();
 #else
     int rank = 0;
     int size = 1;
@@ -126,15 +127,15 @@ T_vector splitOverProcesses(const T_vector & global,
 // -------------------------------------------------------------------------- //
 //
 template <class T_vector>
-T_vector joinOverProcesses(const T_vector & local, const MPI_Comm & comm)
+T_vector joinOverProcesses(const T_vector & local, const MPI::Intracomm & comm)
 {
     // PERFORMME: Prototyping. Chunks does not need to be this involved.
 
     // Get the dimensions.
 #if RUNMPI == true
     int rank, size;
-    MPI_Comm_rank( comm, &rank );
-    MPI_Comm_size( comm, &size );
+    rank = comm.Get_rank();
+    size = comm.Get_size();
 #else
     int rank = 0;
     int size = 1;

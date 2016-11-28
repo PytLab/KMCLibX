@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2013  Mikael Leetmaa
+  Copyright (c)  2016-2019 ShaoZhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -17,7 +18,7 @@
 // -------------------------------------------------------------------------- //
 //
 void distributeToAll(int & data,
-                     const MPI_Comm & comm)
+                     const MPI::Intracomm & comm)
 {
 #if RUNMPI == true
 
@@ -28,11 +29,10 @@ void distributeToAll(int & data,
     const int root = 0;
 
     // Send and recieve.
-    MPI_Bcast(&data,         // The send and recieve buffer.
-              size,          // The number of elements to communicate.
-              MPI_INT,       // The type of data.
-              root,          // The sender (master).
-              comm);         // The communicator we use.
+    comm.Bcast(&data,         // The send and recieve buffer.
+               size,          // The number of elements to communicate.
+               MPI_INT,       // The type of data.
+               root);         // The sender (master).
 
     // Done.
 #endif
@@ -42,7 +42,7 @@ void distributeToAll(int & data,
 // -------------------------------------------------------------------------- //
 //
 void sumOverProcesses(int & data,
-                      const MPI_Comm & comm)
+                      const MPI::Intracomm & comm)
 {
 #if RUNMPI == true
     const int size = 1;
@@ -50,12 +50,11 @@ void sumOverProcesses(int & data,
     // Copy the data over to the send buffer.
     int send = data;
 
-    MPI_Allreduce(&send,       // Send buffer.
-                  &data,       // Recieve buffer (overwrite)
-                  size,        // Size of the buffers.
-                  MPI_INT,     // Data type.
-                  MPI_SUM,     // Operation to perform.
-                  comm);       // The communicator.
+    comm.Allreduce(&send,       // Send buffer.
+                   &data,       // Recieve buffer (overwrite)
+                   size,        // Size of the buffers.
+                   MPI_INT,     // Data type.
+                   MPI_SUM);    // Operation to perform.
     // Done.
 #endif
 }
@@ -63,7 +62,7 @@ void sumOverProcesses(int & data,
 // -------------------------------------------------------------------------- //
 //
 void sumOverProcesses(std::vector<int> & data,
-                      const MPI_Comm & comm)
+                      const MPI::Intracomm & comm)
 {
 #if RUNMPI == true
     const int size = data.size();
@@ -71,12 +70,11 @@ void sumOverProcesses(std::vector<int> & data,
     // Copy the data over to the send buffer.
     std::vector<int> send(data);
 
-    MPI_Allreduce(&send[0],    // Send buffer.
-                  &data[0],    // Recieve buffer (overwrite)
-                  size,        // Size of the buffers.
-                  MPI_INT,     // Data type.
-                  MPI_SUM,     // Operation to perform.
-                  comm);       // The communicator.
+    comm.Allreduce(&send[0],    // Send buffer.
+                   &data[0],    // Recieve buffer (overwrite)
+                   size,        // Size of the buffers.
+                   MPI_INT,     // Data type.
+                   MPI_SUM);    // Operation to perform.
     // Done.
 #endif
 }
@@ -85,7 +83,7 @@ void sumOverProcesses(std::vector<int> & data,
 // -------------------------------------------------------------------------- //
 //
 void sumOverProcesses(std::vector<double> & data,
-                      const MPI_Comm & comm)
+                      const MPI::Intracomm & comm)
 {
 #if RUNMPI == true
     const int size = data.size();
@@ -93,12 +91,11 @@ void sumOverProcesses(std::vector<double> & data,
     // Copy the data over to the send buffer.
     std::vector<double> send(data);
 
-    MPI_Allreduce(&send[0],    // Send buffer.
-                  &data[0],    // Recieve buffer (overwrite)
-                  size,        // Size of the buffers.
-                  MPI_DOUBLE,  // Data type.
-                  MPI_SUM,     // Operation to perform.
-                  comm);       // The communicator.
+    comm.Allreduce(&send[0],    // Send buffer.
+                   &data[0],    // Recieve buffer (overwrite)
+                   size,        // Size of the buffers.
+                   MPI_DOUBLE,  // Data type.
+                   MPI_SUM);     // Operation to perform.
     // Done.
 #endif
 }
