@@ -496,8 +496,12 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
         indexProcessToMatch(fast_process_ptrs, configuration, sitesmap,
                             lattice_map, indices);
 
+    // Setup local variables for running in parallel.
+    std::vector<std::pair<int, int> > && local_index_process_to_match = \
+        splitOverProcesses(index_process_to_match);
+
     // Loop over all indices and processes.
-    for (const auto & idx_proc : index_process_to_match)
+    for (const auto & idx_proc : local_index_process_to_match)
     {
         const int conf_idx = idx_proc.first;
         const int proc_idx = idx_proc.second;
