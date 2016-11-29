@@ -216,7 +216,7 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
     // {{{
 
     // Setup local variables for running in parallel.
-    std::vector< std::pair<int,int> > local_index_process_to_match = \
+    std::vector< std::pair<int,int> > && local_index_process_to_match = \
         splitOverProcesses(index_process_to_match);
 
     // These are the local task types to fill with matching restults.
