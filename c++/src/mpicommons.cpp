@@ -17,7 +17,6 @@
 bool inited__    = false;
 bool finalized__ = false;
 
-
 // -----------------------------------------------------------------------------
 //
 void MPICommons::init()

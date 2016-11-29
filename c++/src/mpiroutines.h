@@ -19,7 +19,6 @@
 #include <vector>
 #include "mpih.h"
 
-
 /*! \brief Calculate the chunks for all processes. Convenient for testing.
  *  \param mpi_size    : This number of processes.
  *  \param vector_size : The length of the vector to split.

@@ -101,7 +101,7 @@ void Test_MPIRoutines::testDistributeToAll()
 {
 #if RUNMPI == true
     int rank;
-    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
+    rank = MPI::COMM_WORLD.Get_rank();
 #else
     const int rank = 0;
 #endif
@@ -117,7 +117,7 @@ void Test_MPIRoutines::testDistributeToAll()
     }
 
     // Send to all other nodes.
-    distributeToAll(data, MPI_COMM_WORLD);
+    distributeToAll(data, MPI::COMM_WORLD);
 
     // Check.
     CPPUNIT_ASSERT_EQUAL( data, reference );
@@ -131,8 +131,8 @@ void Test_MPIRoutines::testSumOverProcessesInt()
 {
 #if RUNMPI == true
     int rank, size;
-    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-    MPI_Comm_size( MPI_COMM_WORLD, &size );
+    rank = MPI::COMM_WORLD.Get_rank();
+    size = MPI::COMM_WORLD.Get_size();
 #else
     const int rank = 0;
     const int size = 1;
@@ -141,7 +141,7 @@ void Test_MPIRoutines::testSumOverProcessesInt()
     int sum_value = rank*rank + 3;
 
     // Sum.
-    sumOverProcesses(sum_value, MPI_COMM_WORLD);
+    sumOverProcesses(sum_value, MPI::COMM_WORLD);
 
     // Calculate the reference.
     int ref_sum = 0;
@@ -162,8 +162,8 @@ void Test_MPIRoutines::testSumOverProcessesVectorInt()
 {
 #if RUNMPI == true
     int rank, size;
-    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-    MPI_Comm_size( MPI_COMM_WORLD, &size );
+    rank = MPI::COMM_WORLD.Get_rank();
+    size = MPI::COMM_WORLD.Get_size();
 #else
     const int rank = 0;
     const int size = 1;
@@ -173,7 +173,7 @@ void Test_MPIRoutines::testSumOverProcessesVectorInt()
     data[rank] = 0;
 
     // Sum.
-    sumOverProcesses(data, MPI_COMM_WORLD);
+    sumOverProcesses(data, MPI::COMM_WORLD);
 
     // Calculate the reference.
     std::vector<int> ref_data(size, 0);
@@ -202,8 +202,8 @@ void Test_MPIRoutines::testSumOverProcessesVectorDouble()
 {
 #if RUNMPI == true
     int rank, size;
-    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-    MPI_Comm_size( MPI_COMM_WORLD, &size );
+    rank = MPI::COMM_WORLD.Get_rank();
+    size = MPI::COMM_WORLD.Get_size();
 #else
     const int rank = 0;
     const int size = 1;
@@ -213,7 +213,7 @@ void Test_MPIRoutines::testSumOverProcessesVectorDouble()
     data[rank] = 0.0;
 
     // Sum.
-    sumOverProcesses(data, MPI_COMM_WORLD);
+    sumOverProcesses(data, MPI::COMM_WORLD);
 
     // Calculate the reference.
     std::vector<double> ref_data(size, 0.0);
@@ -242,8 +242,8 @@ void Test_MPIRoutines::testSplitOverProcesses()
 {
 #if RUNMPI == true
     int rank, size;
-    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-    MPI_Comm_size( MPI_COMM_WORLD, &size );
+    rank = MPI::COMM_WORLD.Get_rank();
+    size = MPI::COMM_WORLD.Get_size();
 #else
     const int rank = 0;
     const int size = 1;
@@ -258,7 +258,7 @@ void Test_MPIRoutines::testSplitOverProcesses()
     }
 
     // Split.
-    std::vector<int> local_data = splitOverProcesses(global_data, MPI_COMM_WORLD);
+    std::vector<int> local_data = splitOverProcesses(global_data, MPI::COMM_WORLD);
 
     // Check.
     if (rank == size - 1)
@@ -286,8 +286,8 @@ void Test_MPIRoutines::testJoinOverProcesses()
 {
 #if RUNMPI == true
     int rank, size;
-    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-    MPI_Comm_size( MPI_COMM_WORLD, &size );
+    rank = MPI::COMM_WORLD.Get_rank();
+    size = MPI::COMM_WORLD.Get_size();
 #else
     const int rank = 0;
     const int size = 1;
@@ -302,7 +302,7 @@ void Test_MPIRoutines::testJoinOverProcesses()
     }
 
     // Split.
-    std::vector<int> local_data = splitOverProcesses(global_data, MPI_COMM_WORLD);
+    std::vector<int> local_data = splitOverProcesses(global_data, MPI::COMM_WORLD);
 
     // Multiply the local data with the rank.
     for (size_t i = 0; i < local_data.size(); ++i)
@@ -311,7 +311,7 @@ void Test_MPIRoutines::testJoinOverProcesses()
     }
 
     // Join.
-    std::vector<int> new_global = joinOverProcesses(local_data, MPI_COMM_WORLD);
+    std::vector<int> new_global = joinOverProcesses(local_data, MPI::COMM_WORLD);
 
     // Create a reference new global.
     std::vector<int> new_global_ref(global_data);

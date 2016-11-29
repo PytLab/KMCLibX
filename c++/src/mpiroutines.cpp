@@ -14,7 +14,6 @@
 
 #include "mpiroutines.h"
 
-
 // -------------------------------------------------------------------------- //
 //
 void distributeToAll(int & data,
