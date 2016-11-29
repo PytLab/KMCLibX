@@ -59,7 +59,7 @@ void MPICommons::finalize()
 
 // -----------------------------------------------------------------------------
 //
-int MPICommons::myRank(const MPI::Intracomm comm)
+int MPICommons::myRank(const MPI::Intracomm & comm)
 {
 #if RUNMPI == true
     int rank;
@@ -74,7 +74,7 @@ int MPICommons::myRank(const MPI::Intracomm comm)
 
 // -----------------------------------------------------------------------------
 //
-int MPICommons::size(const MPI::Intracomm comm)
+int MPICommons::size(const MPI::Intracomm & comm)
 {
 #if RUNMPI == true
     int size;
@@ -89,7 +89,7 @@ int MPICommons::size(const MPI::Intracomm comm)
 
 // -----------------------------------------------------------------------------
 //
-void MPICommons::barrier(const MPI::Intracomm comm)
+void MPICommons::barrier(const MPI::Intracomm & comm)
 {
 #if RUNMPI == true
     MPI_Barrier(comm);
