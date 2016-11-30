@@ -473,7 +473,6 @@ double Matcher::updateSingleRate(const int index,
 
 // -----------------------------------------------------------------------------
 //
-// TODO: MPI
 void Matcher::classifyConfiguration(const Interactions & interactions,
                                     Configuration      & configuration,
                                     const SitesMap     & sitesmap,
@@ -505,8 +504,11 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
     // NOTE: Use array not std::vector<bool> here for data address obtaining
     //       because std::vector<bool> is a specialized version in which
     //       each value is stored in a single bit.
+
     int nflags = configuration.slowFlags().size();
     bool * flags = new bool [nflags];
+
+    // Copy current configuration slow flags to array.
     for (int i = 0; i < nflags; ++i)
     {
         *(flags + i) = configuration.slowFlags()[i];
@@ -559,6 +561,9 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
             }
         }
     }
+
+    // Reduce data over all parallel processors.
+    sumOverProcesses(flags, nflags);
 
     // Update slow flags in configuration.
     for (int i = 0; i < nflags; ++i)
