@@ -13,6 +13,7 @@
 
 
 #include "mpiroutines.h"
+#include <algorithm>
 
 // -------------------------------------------------------------------------- //
 //
@@ -86,10 +87,7 @@ void sumOverProcesses(bool * data,
 {
 #if RUNMPI == true
     bool * send = new bool[size];
-    for (int i = 0; i < size; ++i)
-    {
-        *(send + i) = *(data + i);
-    }
+    std::copy(data, data+size, send);
 
     comm.Allreduce(send,        // Send buffer.
                    data,        // Recieve buffer (overwrite).
