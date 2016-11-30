@@ -29,6 +29,7 @@ public:
     CPPUNIT_TEST( testSumOverProcessesInt );
     CPPUNIT_TEST( testSumOverProcessesVectorInt );
     CPPUNIT_TEST( testSumOverProcessesVectorDouble );
+    CPPUNIT_TEST( testSumOverProcessesBoolArray );
     CPPUNIT_TEST( testSplitOverProcesses );
     CPPUNIT_TEST( testJoinOverProcesses );
     CPPUNIT_TEST_SUITE_END();
@@ -38,6 +39,7 @@ public:
     void testSumOverProcessesInt();
     void testSumOverProcessesVectorInt();
     void testSumOverProcessesVectorDouble();
+    void testSumOverProcessesBoolArray();
     void testSplitOverProcesses();
     void testJoinOverProcesses();
 

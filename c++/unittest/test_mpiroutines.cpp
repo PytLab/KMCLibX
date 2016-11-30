@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2013  Mikael Leetmaa
+  Copyright (c)  2016-2019 ShaoZhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -18,6 +19,7 @@
 //
 void Test_MPIRoutines::testDetermineChunks()
 {
+    // {{{
     {
         // 9 elements and 1 processes makes 9 elments per process.
         std::vector< std::pair<int,int> > chunks = determineChunks(1,9);
@@ -92,6 +94,7 @@ void Test_MPIRoutines::testDetermineChunks()
         CPPUNIT_ASSERT_EQUAL( chunks[1].first, 7 );
         CPPUNIT_ASSERT_EQUAL( chunks[1].second, 6 );
     }
+    // }}}
 }
 
 
@@ -99,6 +102,7 @@ void Test_MPIRoutines::testDetermineChunks()
 //
 void Test_MPIRoutines::testDistributeToAll()
 {
+    // {{{
 #if RUNMPI == true
     int rank;
     rank = MPI::COMM_WORLD.Get_rank();
@@ -121,6 +125,7 @@ void Test_MPIRoutines::testDistributeToAll()
 
     // Check.
     CPPUNIT_ASSERT_EQUAL( data, reference );
+    // }}}
 
 }
 
@@ -129,6 +134,7 @@ void Test_MPIRoutines::testDistributeToAll()
 //
 void Test_MPIRoutines::testSumOverProcessesInt()
 {
+    // {{{
 #if RUNMPI == true
     int rank, size;
     rank = MPI::COMM_WORLD.Get_rank();
@@ -152,7 +158,7 @@ void Test_MPIRoutines::testSumOverProcessesInt()
 
     // Check.
     CPPUNIT_ASSERT_EQUAL( ref_sum, sum_value );
-
+    // }}}
 }
 
 
@@ -160,6 +166,7 @@ void Test_MPIRoutines::testSumOverProcessesInt()
 //
 void Test_MPIRoutines::testSumOverProcessesVectorInt()
 {
+    // {{{
 #if RUNMPI == true
     int rank, size;
     rank = MPI::COMM_WORLD.Get_rank();
@@ -193,6 +200,7 @@ void Test_MPIRoutines::testSumOverProcessesVectorInt()
     {
         CPPUNIT_ASSERT_EQUAL( ref_data[i], data[i] );
     }
+    // }}}
 }
 
 
@@ -200,6 +208,7 @@ void Test_MPIRoutines::testSumOverProcessesVectorInt()
 //
 void Test_MPIRoutines::testSumOverProcessesVectorDouble()
 {
+    // {{{
 #if RUNMPI == true
     int rank, size;
     rank = MPI::COMM_WORLD.Get_rank();
@@ -233,6 +242,49 @@ void Test_MPIRoutines::testSumOverProcessesVectorDouble()
     {
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_data[i], data[i], 1.0e-12 );
     }
+    // }}}
+}
+
+
+// -------------------------------------------------------------------------  //
+//
+void Test_MPIRoutines::testSumOverProcessesBoolArray()
+{
+    // {{{
+
+#if RUNMPI == true
+    int rank = MPI::COMM_WORLD.Get_rank();
+    int size = MPI::COMM_WORLD.Get_size();
+#else
+    const int rank = 0;
+    const int size = 1;
+#endif
+
+    // Initialize data for all processors.
+    bool * data = new bool[size*3];
+    for (int i = 0; i < size*3; ++i)
+    {
+        *(data + i) = (i == rank*3) ? true : false;
+    }
+
+    // Calculate reference.
+    bool * ref_data = new bool[size*3];
+    for (int i = 0; i < size*3; ++i)
+    {
+        *(ref_data + i) = (i % 3 == 0) ? true : false;
+    }
+
+    sumOverProcesses(data, size*3, MPI::COMM_WORLD);
+
+    // Check.
+    for (int i = 0; i < size*3; ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(ref_data[i], data[i]);
+    }
+
+    delete [] data;
+    delete [] ref_data;
+    // }}}
 }
 
 
@@ -240,6 +292,7 @@ void Test_MPIRoutines::testSumOverProcessesVectorDouble()
 //
 void Test_MPIRoutines::testSplitOverProcesses()
 {
+    // {{{
 #if RUNMPI == true
     int rank, size;
     rank = MPI::COMM_WORLD.Get_rank();
@@ -277,6 +330,7 @@ void Test_MPIRoutines::testSplitOverProcesses()
         CPPUNIT_ASSERT_EQUAL( local_data[1], global_data[my_start + 1] );
         CPPUNIT_ASSERT_EQUAL( local_data[2], global_data[my_start + 2] );
     }
+    // }}}
 }
 
 
@@ -284,6 +338,7 @@ void Test_MPIRoutines::testSplitOverProcesses()
 //
 void Test_MPIRoutines::testJoinOverProcesses()
 {
+    // {{{
 #if RUNMPI == true
     int rank, size;
     rank = MPI::COMM_WORLD.Get_rank();
@@ -338,5 +393,6 @@ void Test_MPIRoutines::testJoinOverProcesses()
     {
         CPPUNIT_ASSERT_DOUBLES_EQUAL( new_global_ref[i], new_global[i], 1.0e-12 );
     }
+    // }}}
 }
 
