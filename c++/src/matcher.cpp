@@ -25,6 +25,7 @@
 
 #include <cstdio>
 #include <algorithm>
+#include <memory>
 
 #ifdef DEBUG
 #include <iostream>
@@ -500,6 +501,17 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
     std::vector<std::pair<int, int> > && local_index_process_to_match = \
         splitOverProcesses(index_process_to_match);
 
+    // Array to store slow flags in configuration.
+    // NOTE: Use array not std::vector<bool> here for data address obtaining
+    //       because std::vector<bool> is a specialized version in which
+    //       each value is stored in a single bit.
+    int nflags = configuration.slowFlags().size();
+    bool * flags = new bool [nflags];
+    for (int i = 0; i < nflags; ++i)
+    {
+        *(flags + i) = configuration.slowFlags()[i];
+    }
+
     // Loop over all indices and processes.
     for (const auto & idx_proc : local_index_process_to_match)
     {
@@ -542,10 +554,20 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
             // Get the affected index.
             if (match_type != update_type)
             {
-                configuration.updateSlowFlag(index, false);
+                //configuration.updateSlowFlag(index, false);
+                flags[index] = false;
             }
         }
     }
+
+    // Update slow flags in configuration.
+    for (int i = 0; i < nflags; ++i)
+    {
+        configuration.updateSlowFlag(i, flags[i]);
+    }
+
+    // Free memories.
+    delete [] flags;
 
     // Reset the custom slow flags.
     if ( !slow_indices.empty() )
