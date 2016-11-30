@@ -264,14 +264,14 @@ void Test_MPIRoutines::testSumOverProcessesBoolArray()
     bool * data = new bool[size*3];
     for (int i = 0; i < size*3; ++i)
     {
-        *(data + i) = (i == rank*3) ? true : false;
+        *(data + i) = (i == rank*3) ? false : true;
     }
 
     // Calculate reference.
     bool * ref_data = new bool[size*3];
     for (int i = 0; i < size*3; ++i)
     {
-        *(ref_data + i) = (i % 3 == 0) ? true : false;
+        *(ref_data + i) = (i % 3 == 0) ? false : true;
     }
 
     sumOverProcesses(data, size*3, MPI::COMM_WORLD);

@@ -93,7 +93,7 @@ void sumOverProcesses(bool * data,
                    data,        // Recieve buffer (overwrite).
                    size,        // Size of the buffers.
                    MPI::BOOL,   // Data type.
-                   MPI::LOR);   // Operation to perform.
+                   MPI::LAND);   // Operation to perform.
 
     delete [] send;
 #endif
