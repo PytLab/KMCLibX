@@ -78,6 +78,28 @@ void sumOverProcesses(std::vector<int> & data,
 #endif
 }
 
+// -------------------------------------------------------------------------- //
+//
+void sumOverProcesses(bool * data,
+                      const int size,
+                      const MPI::Intracomm & comm)
+{
+#if RUNMPI == true
+    bool * send = new bool[size];
+    for (int i = 0; i < size; ++i)
+    {
+        *(send + i) = *(data + i);
+    }
+
+    comm.Allreduce(send,        // Send buffer.
+                   data,        // Recieve buffer (overwrite).
+                   size,        // Size of the buffers.
+                   MPI::BOOL,   // Data type.
+                   MPI::LOR);   // Operation to perform.
+
+    delete [] send;
+#endif
+}
 
 // -------------------------------------------------------------------------- //
 //

@@ -59,6 +59,14 @@ void sumOverProcesses(std::vector<int> & data,
 void sumOverProcesses(std::vector<double> & data,
                       const MPI::Intracomm & comm=MPI::COMM_WORLD);
 
+/*! \brief Reduce all boolean data over all processors.
+ *  \param data : The address of data.
+ *  \param size : The size of data.
+ *  \param comm : The communicator to use.
+ */
+void sumOverProcesses(bool * data,
+                      const int size,
+                      const MPI::Intracomm & comm = MPI::COMM_WORLD);
 
 /*! \brief Split the global vector over the processes.
  *  \param global : The data vector to split.
