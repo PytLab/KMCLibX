@@ -25,6 +25,7 @@
 
 #include <cstdio>
 #include <algorithm>
+#include <memory>
 
 #ifdef DEBUG
 #include <iostream>
@@ -216,7 +217,7 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
     // {{{
 
     // Setup local variables for running in parallel.
-    std::vector< std::pair<int,int> > local_index_process_to_match = \
+    std::vector< std::pair<int,int> > && local_index_process_to_match = \
         splitOverProcesses(index_process_to_match);
 
     // These are the local task types to fill with matching restults.
@@ -472,7 +473,6 @@ double Matcher::updateSingleRate(const int index,
 
 // -----------------------------------------------------------------------------
 //
-// TODO: MPI
 void Matcher::classifyConfiguration(const Interactions & interactions,
                                     Configuration      & configuration,
                                     const SitesMap     & sitesmap,
@@ -496,8 +496,26 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
         indexProcessToMatch(fast_process_ptrs, configuration, sitesmap,
                             lattice_map, indices);
 
+    // Setup local variables for running in parallel.
+    std::vector<std::pair<int, int> > && local_index_process_to_match = \
+        splitOverProcesses(index_process_to_match);
+
+    // Array to store slow flags in configuration.
+    // NOTE: Use array not std::vector<bool> here for data address obtaining
+    //       because std::vector<bool> is a specialized version in which
+    //       each value is stored in a single bit.
+
+    int nflags = configuration.slowFlags().size();
+    bool * flags = new bool [nflags];
+
+    // Copy current configuration slow flags to array.
+    for (int i = 0; i < nflags; ++i)
+    {
+        *(flags + i) = configuration.slowFlags()[i];
+    }
+
     // Loop over all indices and processes.
-    for (const auto & idx_proc : index_process_to_match)
+    for (const auto & idx_proc : local_index_process_to_match)
     {
         const int conf_idx = idx_proc.first;
         const int proc_idx = idx_proc.second;
@@ -538,10 +556,23 @@ void Matcher::classifyConfiguration(const Interactions & interactions,
             // Get the affected index.
             if (match_type != update_type)
             {
-                configuration.updateSlowFlag(index, false);
+                //configuration.updateSlowFlag(index, false);
+                flags[index] = false;
             }
         }
     }
+
+    // Reduce data over all parallel processors.
+    sumOverProcesses(flags, nflags);
+
+    // Update slow flags in configuration.
+    for (int i = 0; i < nflags; ++i)
+    {
+        configuration.updateSlowFlag(i, flags[i]);
+    }
+
+    // Free memories.
+    delete [] flags;
 
     // Reset the custom slow flags.
     if ( !slow_indices.empty() )

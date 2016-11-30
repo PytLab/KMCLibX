@@ -1,5 +1,6 @@
 /*
   Copyright (c)  2013  Mikael Leetmaa
+  Copyright (c)  2016-2019 ShaoZhengjiang
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -22,7 +23,7 @@ void Test_MPICommons::testSize()
     // Get the reference size.
 #if RUNMPI == true
     int ref_size;
-    MPI_Comm_size( MPI_COMM_WORLD, &ref_size );
+    ref_size = MPI::COMM_WORLD.Get_size();
 #else
     const int ref_size = 1;
 #endif
@@ -42,7 +43,7 @@ void Test_MPICommons::testRank()
     // Get the reference rank.
 #if RUNMPI == true
     int ref_rank;
-    MPI_Comm_rank( MPI_COMM_WORLD, &ref_rank );
+    ref_rank = MPI::COMM_WORLD.Get_rank();
 #else
     const int ref_rank = 0;
 #endif
@@ -62,7 +63,7 @@ void Test_MPICommons::testIsMaster()
     // Get the reference rank.
 #if RUNMPI == true
     int ref_rank;
-    MPI_Comm_rank( MPI_COMM_WORLD, &ref_rank );
+    ref_rank = MPI::COMM_WORLD.Get_rank();
 #else
     const int ref_rank = 0;
 #endif
@@ -88,8 +89,8 @@ void Test_MPICommons::testBarrier()
 // Only if run in parallel.
 #if RUNMPI == true
     int rank, size;
-    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-    MPI_Comm_size( MPI_COMM_WORLD, &size );
+    rank = MPI::COMM_WORLD.Get_rank();
+    size = MPI::COMM_WORLD.Get_size();
 
     time_t seconds;
 
@@ -120,28 +121,25 @@ void Test_MPICommons::testBarrier()
 
     // Communicate the timing results.
     std::vector<int> send1(time_before_sleep);
-    MPI_Allreduce(&send1[0],
-                  &time_before_sleep[0],
-                  size,
-                  MPI_INT,
-                  MPI_SUM,
-                  MPI_COMM_WORLD);
+    MPI::COMM_WORLD.Allreduce(&send1[0],
+                              &time_before_sleep[0],
+                              size,
+                              MPI_INT,
+                              MPI_SUM);
 
     std::vector<int> send2(time_after_sleep);
-    MPI_Allreduce(&send2[0],
-                  &time_after_sleep[0],
-                  size,
-                  MPI_INT,
-                  MPI_SUM,
-                  MPI_COMM_WORLD);
+    MPI::COMM_WORLD.Allreduce(&send2[0],
+                              &time_after_sleep[0],
+                              size,
+                              MPI_INT,
+                              MPI_SUM);
 
     std::vector<int> send3(time_after_barrier);
-    MPI_Allreduce(&send3[0],
-                  &time_after_barrier[0],
-                  size,
-                  MPI_INT,
-                  MPI_SUM,
-                  MPI_COMM_WORLD);
+    MPI::COMM_WORLD.Allreduce(&send3[0],
+                              &time_after_barrier[0],
+                              size,
+                              MPI_INT,
+                              MPI_SUM);
 
     // Check that the results.
 
