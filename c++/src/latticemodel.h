@@ -58,7 +58,8 @@ public:
      */
     void singleStep();
 
-    /*! \brief Function for redistributing configuration in KMC iteration.
+    /*! \brief Function for redistributing configuration completely randomly
+     *                  in KMC iteration.
      *  \param fast_species : The list of default fast species.
      *  \param slow_indices : The indices on which the species is slow.
      *  \param x : The split number on x axis.
@@ -70,10 +71,21 @@ public:
                                         const std::vector<int> & slow_indices = {},
                                         int x = 1, int y = 1, int z = 1);
 
-    const std::vector<int> redistribute(const std::string & replace_elements,
-                                        const std::vector<std::string> & fast_species = {},
-                                        const std::vector<int> & slow_indices = {},
-                                        int x = 1, int y = 1, int z = 1);
+    /*! \brief Function for redistributing configuration using process matching
+     *                  in KMC iteration.
+     *  \param replace_elements : The name of substitution element for the removed
+     *                            elements(it is usually an emtpy type).
+     *  \param fast_species : The list of default fast species.
+     *  \param slow_indices : The indices on which the species is slow.
+     *  \param x : The split number on x axis.
+     *  \param y : The split number on y axis.
+     *  \param z : The split number on z axis.
+     *  \return  : The affected indices/the fast indices before the redistribution.
+     */
+    const std::vector<int> processRedistribute(const std::string & replace_elements,
+                                               const std::vector<std::string> & fast_species = {},
+                                               const std::vector<int> & slow_indices = {},
+                                               int x = 1, int y = 1, int z = 1);
 
     /*! \brief Query for the interactions.
      *  \return : A handle to the interactions stored on the class.

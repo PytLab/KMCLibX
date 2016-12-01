@@ -160,10 +160,10 @@ LatticeModel::redistribute(const std::vector<std::string> & fast_species,
 // ----------------------------------------------------------------------------
 //
 const std::vector<int> \
-LatticeModel::redistribute(const std::string & replace_elements,
-                           const std::vector<std::string> & fast_species,
-                           const std::vector<int> & slow_indices,
-                           int x, int y, int z)
+LatticeModel::processRedistribute(const std::string & replace_elements,
+                                  const std::vector<std::string> & fast_species,
+                                  const std::vector<int> & slow_indices,
+                                  int x, int y, int z)
 {
     // Classify species in current configuration.
     matcher_.classifyConfiguration(interactions_,
