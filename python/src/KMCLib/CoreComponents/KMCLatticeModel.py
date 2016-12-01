@@ -362,15 +362,15 @@ class KMCLatticeModel(object):
 
                     # Re-distribute the configuration with different algorithms.
                     if "RandomDistributor" == distributor_type:
-                        affected_indices = cpp_model.redistribute(fast_species,
-                                                                  [],
-                                                                  *nsplits)
+                        affected_indices = cpp_model.redistribute(fast_species, # fast species
+                                                                  [],           # slow indices
+                                                                  *nsplits)     # x, y, z
 
                     elif "ProcessRandomDistributor" == distributor_type:
-                        affected_indices = cpp_model.redistribute(empty_element,
-                                                                  fast_species,
-                                                                  [],
-                                                                  *nsplits)
+                        affected_indices = cpp_model.processRedistribute(empty_element,
+                                                                         fast_species,
+                                                                         [], # slow indices
+                                                                         *nsplits)
 
                     # Time increase.
                     current_time = self.__cpp_timer.simulationTime()
