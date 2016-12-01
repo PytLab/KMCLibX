@@ -321,7 +321,7 @@ class KMCControlParameters(object):
         Private helper function to check name of distributor.
         """
         if distributor_type is None:
-            return "ConstrainedRandomDistributor"
+            return "RandomDistributor"
 
         if not isinstance(distributor_type, str):
             msg = "Name of distributor must be a string."
