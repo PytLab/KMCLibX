@@ -76,7 +76,7 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
     message( STATUS "Using g++ via ${MPI}" )
     # Workaround for known mpich c++ bug.
     add_definitions( -DMPICH_IGNORE_CXX_SEEK )
-    add_definitions( -DMPICH_SKIP_MPICXX )
+    #add_definitions( -DMPICH_SKIP_MPICXX )
     add_definitions( -Wno-long-long )
   endif()
 

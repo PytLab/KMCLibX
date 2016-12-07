@@ -2322,7 +2322,7 @@ model = KMCLatticeModel(
 
         # Setup the model.
         cpp_model = model._backend(start_time=0.0)
-        affected_indices = cpp_model.redistribute("V", [], [])
+        affected_indices = cpp_model.processRedistribute("V", [], [])
         new_types = deepcopy(model._KMCLatticeModel__configuration.types())
 
         # Check.

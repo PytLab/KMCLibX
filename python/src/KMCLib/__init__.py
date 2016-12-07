@@ -19,8 +19,10 @@ try:
     import mpi4py.MPI as MPI
     mpi_comm = MPI.COMM_WORLD
     mpi_rank = mpi_comm.Get_rank()
+    mpi_size = mpi_comm.Get_size()
 except ImportError:
     mpi_rank = 0
+    mpi_size = 1
 
 mpi_master = (mpi_rank == 0)
 
