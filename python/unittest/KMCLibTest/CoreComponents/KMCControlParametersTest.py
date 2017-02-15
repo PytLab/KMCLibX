@@ -32,7 +32,7 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertEqual(control_params.numberOfSteps(), 0)
         self.assertEqual(control_params.dumpInterval(), 1)
         self.assertEqual(control_params.seed(), 1)
-        self.assertTrue(control_params.timeSeed())
+        self.assertFalse(control_params.timeSeed())
         self.assertEqual(control_params.rngType(), Backend.MT)
 
         # Non-default construction.
