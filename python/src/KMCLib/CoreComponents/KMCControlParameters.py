@@ -54,6 +54,10 @@ class KMCControlParameters(object):
                      seeded based on the wall-clock time.
         :type seed: int
 
+        :param time_seed: If the random generator is seeded with seed plus
+                          present time, False by default.
+        :type time_seed: bool
+
         :param rng_type: The type of pseudo random number generator to use.  The random
                          number generators are the once in the standard C++ library and
                          the supported types maps directly to the given C++ construction
@@ -133,9 +137,10 @@ class KMCControlParameters(object):
         analysis_interval = kwargs.pop("analysis_interval", None)
         self.__analysis_interval = self.__checkAnalysisInterval(analysis_interval)
 
+        # Check the random seed settings.
         seed = kwargs.pop("seed", None)
-        self.__time_seed = (seed is None)
         self.__seed = checkPositiveInteger(seed, 1, "seed")
+        self.__time_seed = kwargs.pop('time_seed', False)
 
         # Check and set the random number generator type.
         rng_type = kwargs.pop("rng_type", None)
