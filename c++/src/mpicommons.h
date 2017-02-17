@@ -51,8 +51,6 @@ struct MPICommons {
     static bool isMaster(const MPI::Intracomm & comm=MPI::COMM_WORLD)
     { return (myRank(comm) == 0); }
 
-
-
 };
 
 

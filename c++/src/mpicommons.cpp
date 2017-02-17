@@ -21,22 +21,15 @@ bool finalized__ = false;
 //
 void MPICommons::init()
 {
-   if (inited__)
+   if (MPI::Is_initialized())
     {
         return;
     }
 
     // Switch for using MPI.
 #if RUNMPI == true
-    // Dummy args.
-    int argc = 0;
-    char** argv;
-
     // Make the init call.
-    MPI::Init(argc, argv);
-
-    // Set the flag to prevent further calls.
-    inited__ = true;
+    MPI::Init();
 #endif
 }
 
@@ -45,14 +38,13 @@ void MPICommons::init()
 //
 void MPICommons::finalize()
 {
-    if (finalized__)
+    if (MPI::Is_finalized())
     {
         return;
     }
 
 #if RUNMPI == true
     MPI::Finalize();
-    finalized__ = true;
 #endif
 }
 
