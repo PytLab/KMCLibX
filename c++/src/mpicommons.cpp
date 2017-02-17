@@ -34,10 +34,10 @@ void MPICommons::init()
 
 // -----------------------------------------------------------------------------
 //
-bool MPICommons::initialized()
+bool MPICommons::finalized()
 {
 #if RUNMPI == true
-    return MPI::Is_initialized();
+    return MPI::Is_finalized();
 #endif
     return false;
 }
@@ -45,10 +45,10 @@ bool MPICommons::initialized()
 
 // -----------------------------------------------------------------------------
 //
-bool MPICommons::finalized()
+bool MPICommons::initialized()
 {
 #if RUNMPI == true
-    return MPI::Is_finalized();
+    return MPI::Is_initialized();
 #endif
     return false;
 }
@@ -75,7 +75,6 @@ int MPICommons::myRank(const MPI::Intracomm & comm)
 {
 #if RUNMPI == true
     int rank;
-    //MPI_Comm_rank( comm, &rank );
     rank = comm.Get_rank();
     return rank;
 #else
@@ -90,7 +89,6 @@ int MPICommons::size(const MPI::Intracomm & comm)
 {
 #if RUNMPI == true
     int size;
-    //MPI_Comm_size( comm, &size );
     size = comm.Get_size();
     return size;
 #else
