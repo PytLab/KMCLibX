@@ -14,14 +14,12 @@
 
 #include "mpicommons.h"
 
-bool inited__    = false;
-bool finalized__ = false;
 
 // -----------------------------------------------------------------------------
 //
 void MPICommons::init()
 {
-   if (MPI::Is_initialized())
+   if (initialized())
     {
         return;
     }
@@ -36,9 +34,31 @@ void MPICommons::init()
 
 // -----------------------------------------------------------------------------
 //
+bool MPICommons::initialized()
+{
+#if RUNMPI == true
+    return MPI::Is_initialized();
+#endif
+    return false;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+bool MPICommons::finalized()
+{
+#if RUNMPI == true
+    return MPI::Is_finalized();
+#endif
+    return false;
+}
+
+
+// -----------------------------------------------------------------------------
+//
 void MPICommons::finalize()
 {
-    if (MPI::Is_finalized())
+    if (finalized())
     {
         return;
     }

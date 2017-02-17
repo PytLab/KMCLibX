@@ -25,9 +25,17 @@ struct MPICommons {
      */
     static void init();
 
+    /*! \brief Wrap MPI::Is_initialized
+     */
+    static bool initialized();
+
     /*! \brief Wrapps MPI_FINALIZE
      */
     static void finalize();
+
+    /*! \brief Wrap MPI::Is_finialized
+     */
+    static bool finalized();
 
     /*! \brief Wrapps MPI_COMM_RANK
      *  \param comm: The communicator to use.
