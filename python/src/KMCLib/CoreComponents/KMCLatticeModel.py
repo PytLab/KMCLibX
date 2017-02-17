@@ -11,7 +11,6 @@
 
 import logging
 
-from KMCLib import mpi_master
 from KMCLib.Backend import Backend
 from KMCLib.Backend.Backend import MPICommons
 from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
@@ -167,7 +166,7 @@ class KMCLatticeModel(object):
             use_trajectory = False
             msg = "No trajectory filename given -> no trajectory will be saved."
             #prettyPrint(msg)
-            if mpi_master:
+            if MPICommons.isMaster():
                 self.__logger.warning(msg)
 
         elif not (isinstance(trajectory_filename, str) or
@@ -202,7 +201,7 @@ class KMCLatticeModel(object):
 
         # Construct the C++ lattice model.
         #prettyPrint(" KMCLib: setting up the backend C++ object.")
-        if mpi_master:
+        if MPICommons.isMaster():
             self.__logger.info("")
             self.__logger.info("setting up the backend C++ object.")
 
@@ -272,7 +271,7 @@ class KMCLatticeModel(object):
 
         #prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n" %
         #            (n_steps, self.__cpp_timer.simulationTime()))
-        if mpi_master:
+        if MPICommons.isMaster():
             msg = "Runing for {:,d} steps, starting from time: {:f}\n"
             self.__logger.info(msg.format(n_steps, self.__cpp_timer.simulationTime()))
 
@@ -302,7 +301,7 @@ class KMCLatticeModel(object):
                 if (step % n_dump == 0):
                     #prettyPrint(" KMCLib: %i steps executed. time: %20.10e " %
                     #           (step, self.__cpp_timer.simulationTime()))
-                    if mpi_master:
+                    if MPICommons.isMaster():
                         msg = ("[{:>3d}%] [{:>6.2f}%] {:,d} steps executed. " +
                                "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e}) delta: {:<10.5e}")
                         step_percent = int(float(step)/n_steps*100)
@@ -346,12 +345,12 @@ class KMCLatticeModel(object):
 
                 # Check loop conditions.
                 if step >= n_steps:
-                    if mpi_master:
+                    if MPICommons.isMaster():
                         self.__logger.info("Max kMC step reached, kMC iteration finish.")
                     break
 
                 if current_time > end_time:
-                    if mpi_master:
+                    if MPICommons.isMaster():
                         self.__logger.info("Time limit reached, kMC iteration finish.")
                     break
 
@@ -376,7 +375,7 @@ class KMCLatticeModel(object):
                     # Time increase.
                     current_time = self.__cpp_timer.simulationTime()
 
-                    if mpi_master and step % redist_dump_interval == 0:
+                    if MPICommons.isMaster() and step % redist_dump_interval == 0:
                         msg = ("[{:>3d}%] [{:>6.2f}%] {} fast species are redistributed. " +
                                "time: {:0>2d}:{:0>2d}:{:0>2d} ({:<.2e})")
                         step_percent = int(float(step)/n_steps*100)
@@ -445,7 +444,7 @@ class KMCLatticeModel(object):
 
         #prettyPrint("")
         #prettyPrint(" Matching Information: ")
-        if mpi_master:
+        if MPICommons.isMaster():
             self.__logger.info("")
             self.__logger.info("Matching Informations: ")
         for i, p in enumerate(cpp_processes):
