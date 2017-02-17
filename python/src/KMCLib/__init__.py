@@ -53,7 +53,7 @@ __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'TimeStepDistribution', 'MPICommons']
 
 # Trick to initialize and finalize MPI only once.
-MPICommons.init()
+#MPICommons.init()
 
 # Print the header when the module is loaded.
 #printHeader()
