@@ -24,6 +24,7 @@
 #define __RANDOM__
 
 #include <algorithm>
+#include <vector>
 
 // Forward declarations.
 class Process;
