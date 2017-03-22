@@ -22,7 +22,7 @@
 #include "sitesmap.h"
 
 
-static const double epsilon__ = 1e-10;
+//static const double epsilon__ = 1e-10;
 
 
 // -------------------------------------------------------------------------- //
