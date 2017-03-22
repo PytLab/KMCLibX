@@ -1,4 +1,5 @@
 # Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2016-2019  Shao Zhengjiang
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -17,6 +18,7 @@ find_package(PythonLibs REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories( ${KMCLib_SOURCE_DIR}/src )
+
 # Include Python header file.
 if (PYINCLUDE)
   message( STATUS "Customized Python include path detected")
@@ -99,3 +101,4 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 else()#${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   swig_link_libraries( Backend src )
 endif()
+
