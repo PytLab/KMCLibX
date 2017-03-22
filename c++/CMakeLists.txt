@@ -107,7 +107,6 @@ endif()
 # Includsion from the source.
 include_directories( ${KMCLib_SOURCE_DIR}/src )
 include_directories( ${KMCLib_SOURCE_DIR}/externals/include )
-include_directories( /home/zjshao/.pyenv/versions/2.7.12/include/python2.7)
 
 
 # -----------------------------------------------------------------------------

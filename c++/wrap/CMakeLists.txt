@@ -12,8 +12,18 @@
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
+# Make sure the Python include files and libraries are loaded.
+find_package(PythonLibs REQUIRED)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories( ${KMCLib_SOURCE_DIR}/src )
+# Include Python header file.
+if (PYINCLUDE)
+  message( STATUS "Customized Python include path detected")
+  set(PYTHON_INCLUDE_PATH ${PYINCLUDE})
+endif()
+include_directories(${PYTHON_INCLUDE_PATH})
+message( STATUS "Using Python header files in: ${PYTHON_INCLUDE_PATH}")
 
 # Set the flags.
 set(CMAKE_SWIG_FLAGS "")
@@ -75,9 +85,15 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     message( STATUS "Looking for libraries in ${CMAKE_LIBRARY_PATH}" )
   endif()
 
-  find_library( PYTHON_LIB python )
-  message( STATUS "Using python library ${PYTHON_LIB}")
-  swig_link_libraries( Backend ${PYTHON_LIB} src )
+  # To force a Python Libraries path, use with -DPYLIB=<your_python_lib_path>
+  if (PYLIB)
+    message( STATUS "Customized Python library path detected")
+    set(PYTHON_LIBRARY ${PYLIB})
+  endif()
+
+  message( STATUS "Using python library in ${PYTHON_LIBRARY}")
+
+  swig_link_libraries( Backend ${PYTHON_LIBRARY} src )
 
 # For Linux (Ubuntu 12.04 LTS)
 else()#${CMAKE_SYSTEM_NAME} MATCHES "Linux")
