@@ -176,6 +176,7 @@ public:
 
     /* \brief overloaded match function.
      */
+    using MinimalMatchListEntry::match;
     bool match(const ProcessMatchListEntry & pe) const;
 
 };
