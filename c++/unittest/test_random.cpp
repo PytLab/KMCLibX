@@ -118,60 +118,50 @@ void Test_Random::testShuffleIntVector()
     // Test default generator(MT).
     {
         // Vector to be shuffled.
-        std::vector<int> vector = {0, 1, 2, 3, 4, 5, 6};
+        std::vector<int> ref_vector = {0, 1, 2, 3, 4, 5, 6};
 
         // Shuffle it.
         seedRandom(false, 13);
-        shuffleIntVector(vector);
-
-        const std::vector<int> ref_vector = {3, 2, 1, 0, 5, 4, 6};
-        for (size_t i = 0; i < vector.size(); ++i)
-        {
-            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector[i]);
-        }
+        shuffleIntVector(ref_vector);
 
         sleep(2);
 
         // Shuffle again.
-        std::vector<int> vector2 = {0, 1, 2, 3, 4, 5, 6};
+        std::vector<int> vector = {0, 1, 2, 3, 4, 5, 6};
 
         seedRandom(false, 13);
-        shuffleIntVector(vector2);
+        shuffleIntVector(vector);
 
-        for (size_t i = 0; i < vector2.size(); ++i)
+        // Test if the shuffled vector is still the same.
+        for (size_t i = 0; i < vector.size(); ++i)
         {
-            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector2[i]);
+            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector[i]);
         }
     }
 
     // MT.
     {
         // Vector to be shuffled.
-        std::vector<int> vector = {0, 1, 2, 3, 4, 5, 6};
+        std::vector<int> ref_vector = {0, 1, 2, 3, 4, 5, 6};
 
         setRngType(MT);
 
         // Shuffle it.
         seedRandom(false, 13);
-        shuffleIntVector(vector);
-
-        const std::vector<int> ref_vector = {3, 2, 1, 0, 5, 4, 6};
-        for (size_t i = 0; i < vector.size(); ++i)
-        {
-            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector[i]);
-        }
+        shuffleIntVector(ref_vector);
 
         sleep(2);
 
         // Shuffle again.
-        std::vector<int> vector2 = {0, 1, 2, 3, 4, 5, 6};
+        std::vector<int> vector = {0, 1, 2, 3, 4, 5, 6};
 
         seedRandom(false, 13);
-        shuffleIntVector(vector2);
+        shuffleIntVector(vector);
 
-        for (size_t i = 0; i < vector2.size(); ++i)
+        // Test if the shuffled vector is still the same.
+        for (size_t i = 0; i < vector.size(); ++i)
         {
-            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector2[i]);
+            CPPUNIT_ASSERT_EQUAL(ref_vector[i], vector[i]);
         }
     }
 
@@ -230,21 +220,17 @@ void Test_Random::testRandomPickInt()
     // {{{
     const std::vector<int> vector = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-    // Seed random number for all generators.
-    int picked;
-
     // Test default generator(MT).
     {
         // Pick one element randomly.
         seedRandom(false, 13);
-        picked = randomPickInt(vector);
-        CPPUNIT_ASSERT_EQUAL(picked, 7);
+        int ref_picked = randomPickInt(vector);
 
         sleep(2);
 
         seedRandom(false, 13);
-        picked = randomPickInt(vector);
-        CPPUNIT_ASSERT_EQUAL(picked, 7);
+        int picked = randomPickInt(vector);
+        CPPUNIT_ASSERT_EQUAL(picked, ref_picked);
     }
 
     // MT.
@@ -253,14 +239,13 @@ void Test_Random::testRandomPickInt()
 
         // Pick one element randomly.
         seedRandom(false, 13);
-        picked = randomPickInt(vector);
-        CPPUNIT_ASSERT_EQUAL(picked, 7);
+        int ref_picked = randomPickInt(vector);
 
         sleep(2);
 
         seedRandom(false, 13);
-        picked = randomPickInt(vector);
-        CPPUNIT_ASSERT_EQUAL(picked, 7);
+        int picked = randomPickInt(vector);
+        CPPUNIT_ASSERT_EQUAL(picked, ref_picked);
     }
     // }}}
 }
