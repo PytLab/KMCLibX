@@ -279,13 +279,13 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
     // Test recent_moved_vectors_
     for (int i = 0; i < 12; ++i)
     {
-//        assert ( (configuration.recentMoveVectors()[i].x() - 0.0) < 1.0e-12);
-//        assert ( (configuration.recentMoveVectors()[i].y() - 0.0) < 1.0e-12);
-//        assert ( (configuration.recentMoveVectors()[i].z() - 0.0) < 1.0e-12);
-        const Coordinate & coord = configuration.recentMoveVectors()[i];
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.x(), 0.0, 1.0e-12);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), 0.0, 1.0e-12);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), 0.0, 1.0e-12);
+        CPPUNIT_ASSERT( (configuration.recentMoveVectors()[i].x() - 0.0) < 1.0e-12 );
+        CPPUNIT_ASSERT( (configuration.recentMoveVectors()[i].y() - 0.0) < 1.0e-12 );
+        CPPUNIT_ASSERT( (configuration.recentMoveVectors()[i].z() - 0.0) < 1.0e-12 );
+//        const Coordinate & coord = configuration.recentMoveVectors()[i];
+//        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.x(), 0.0, 1.0e-12);
+//        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), 0.0, 1.0e-12);
+//        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), 0.0, 1.0e-12);
     }
 
     // }}}
@@ -1378,7 +1378,7 @@ void Test_Configuration::testSubConfiguration()
         CPPUNIT_ASSERT_EQUAL(ref_coords[i], ret_coords[i]);
         CPPUNIT_ASSERT_EQUAL(ref_elements[i], ret_elements[i]);
         CPPUNIT_ASSERT_EQUAL(ref_atom_id[i], ret_atom_id[i]);
-        CPPUNIT_ASSERT_EQUAL(ret_slow_flags[i], true);
+        CPPUNIT_ASSERT(ret_slow_flags[i]);
         CPPUNIT_ASSERT_EQUAL(ref_global_indices[i], ret_global_indices[i]);
     }
 
