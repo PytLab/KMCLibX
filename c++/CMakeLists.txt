@@ -83,7 +83,7 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
 elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
   message( STATUS "Using compiler ${CMAKE_CXX_COMPILER_ID}")
 
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic -stdlib=libc++ -std=c++11 -static-libstdc++")
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic -stdlib=libc++ -std=c++11")
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg " )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "" )
