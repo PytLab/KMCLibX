@@ -9,8 +9,14 @@
 #
 
 import unittest
-import StringIO
 import sys
+
+from KMCLib import PY2
+
+if PY2:
+    import StringIO
+else:
+    from io import StringIO
 
 from KMCLib.Backend.Backend import MPICommons
 

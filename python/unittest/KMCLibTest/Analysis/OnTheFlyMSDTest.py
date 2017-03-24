@@ -10,7 +10,13 @@
 
 import unittest
 import numpy
-import StringIO
+
+from KMCLib import PY2
+
+if PY2:
+    import StringIO
+else:
+    from io import StringIO
 
 # Import from the module we test.
 from KMCLib.Analysis.OnTheFlyMSD import OnTheFlyMSD
