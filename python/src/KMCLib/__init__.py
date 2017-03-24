@@ -8,6 +8,13 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
+import sys
+
+if sys.version > "3":
+    PY2 = False
+else:
+    PY2 = True
+
 __author__ = "Shao Zhengjiang"
 __copyright__ = "Copyright (C)  2016-2019  Shao Zhengjiang"
 __version__ = "2.0.0"
@@ -15,25 +22,23 @@ __license__ = "GPLv3.0"
 __maintainer__ = __author__
 __email__ = "shaozhengjiang@gmail.com"
 
-
-from CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
-from CoreComponents.KMCInteractions import KMCInteractions
-from CoreComponents.KMCProcess import KMCProcess
-from CoreComponents.KMCConfiguration import KMCConfiguration
-from CoreComponents.KMCSitesMap import KMCSitesMap
-from CoreComponents.KMCLattice import KMCLattice
-from CoreComponents.KMCLatticeModel import KMCLatticeModel
-from CoreComponents.KMCUnitCell import KMCUnitCell
-from CoreComponents.KMCControlParameters import KMCControlParameters
-from Analysis.OnTheFlyMSD import OnTheFlyMSD
-from Analysis.TimeStepDistribution import TimeStepDistribution
-from Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
-from Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
-from PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
-from PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
-from Backend.Backend import MPICommons
-from Utilities.PrintUtilities import printHeader
-
+from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
+from KMCLib.CoreComponents.KMCProcess import KMCProcess
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCSitesMap import KMCSitesMap
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
+from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
+from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
+from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
+from KMCLib.Analysis.OnTheFlyMSD import OnTheFlyMSD
+from KMCLib.Analysis.TimeStepDistribution import TimeStepDistribution
+from KMCLib.Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
+from KMCLib.Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
+from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
+from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.Backend.Backend import MPICommons
+from KMCLib.Utilities.PrintUtilities import printHeader
 
 __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell', 'KMCSitesMap',

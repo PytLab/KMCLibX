@@ -448,5 +448,5 @@ class KMCLatticeModel(object):
             self.__logger.info("")
             self.__logger.info("Matching Informations: ")
         for i, p in enumerate(cpp_processes):
-            print i, p.sites()
+            self.__logger("{}, {}".format(i, p.sites()))
 
