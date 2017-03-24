@@ -51,7 +51,7 @@ class TimeStepDistribution(KMCAnalysisPlugin):
 
         # Make sure we have place for the bin.
         while len(self.__histogram) <= b:
-            new_len = len(self.__histogram) + len(self.__histogram)/10
+            new_len = len(self.__histogram) + len(self.__histogram)//10
             self.__histogram.resize(new_len)
 
         # Increment the value at this bin.

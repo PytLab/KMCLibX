@@ -9,6 +9,8 @@
 #
 
 
+from __future__ import division
+
 import numpy
 
 from KMCLib.Backend import Backend
@@ -252,15 +254,15 @@ class KMCLattice(object):
 
         # Get i.
         left = index
-        i = left/(n*k*b)
+        i = left//(n*k*b)
 
         # Get j.
         left = left % (n*k*b)
-        j = left/(k*b)
+        j = left//(k*b)
 
         # Get k.
         left = left % (k*b)
-        k = left/b
+        k = left//b
 
         # Get b.
         basis = left % b

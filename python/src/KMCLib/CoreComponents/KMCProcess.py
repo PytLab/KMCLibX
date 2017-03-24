@@ -359,7 +359,7 @@ class KMCProcess(object):
 
             # Setup and sort the backmapping.
             help_index = range(len(move_vector_index))
-            to_sort = numpy.array(zip(help_index, move_vector_index))
+            to_sort = numpy.array(list(zip(help_index, move_vector_index)))
             sorted_indices = to_sort[numpy.argsort(to_sort[:, 1])]
 
             # Construct the new move vectors.
