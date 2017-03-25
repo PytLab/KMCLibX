@@ -1884,7 +1884,7 @@ types = ['A','A','A','A','B','B','A','A','A','B','B','B','B',
          'A','A','B','B','B','B','B','B','B','B','A','A','A',
          'A','B','B','B','B','A','B','B','A']
 
-possible_types = ['A','C','B']
+possible_types = ['A','B','C']
 
 configuration = KMCConfiguration(
     lattice=lattice,
@@ -1922,7 +1922,7 @@ types = ['a','a','a','a','b','b','a','a','a','b','b','b','b',
          'a','a','b','b','b','b','b','b','b','b','a','a','a',
          'a','b','b','b','b','a','b','b','a']
 
-possible_types = ['a','c','b']
+possible_types = ['a','b','c']
 
 sitesmap = KMCSitesMap(
     lattice=lattice,
