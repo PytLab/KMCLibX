@@ -635,7 +635,6 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            #execfile(trajectory_filename, global_dict, local_dict)
             exec(open(trajectory_filename, 'rb').read(), global_dict, local_dict)
 
             # Count the first frame.
@@ -807,7 +806,6 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            #execfile(trajectory_filename, global_dict, local_dict)
             exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Count the first frame.
@@ -901,7 +899,6 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            #execfile(trajectory_filename, global_dict, local_dict)
             exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Count the first frame.
