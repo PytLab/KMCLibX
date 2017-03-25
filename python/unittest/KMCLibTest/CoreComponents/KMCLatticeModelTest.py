@@ -2134,7 +2134,7 @@ model = KMCLatticeModel(
 
         # Check the fast species before redistribution.
         self.assertEqual(4*4*4*2-2, len(affected_indices))
-        ref_affected_indices = range(2, 4*4*4*2)
+        ref_affected_indices = list(range(2, 4*4*4*2))
         ret_affected_indices = sorted(list(affected_indices))
         self.assertListEqual(ref_affected_indices, ret_affected_indices)
 
