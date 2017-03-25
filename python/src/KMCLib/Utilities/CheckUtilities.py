@@ -31,6 +31,11 @@ def checkIndexWithinBounds(index, list, msg=None):
     if msg is None:
         msg = "Index out of range."
 
+    # Check the type of index.
+    if type(index) != int:
+        msg_template = "Type of parameter 'index' should be int not {}"
+        raise Error(msg_template.format(type(index)))
+
     # Stop if outside bounds.
     if (index < 0 or index >= len(list)):
         raise Error(msg)
@@ -190,8 +195,18 @@ def checkSequenceOf(sequence, class_type, msg="The tested object is not a sequen
         raise Error(msg)
 
     # Check that each element is an instance of type KMCProcess.
+    if class_type == int:
+        types_group = (int, numpy.int_)
+    elif class_type == float:
+        types_group = (float, numpy.float_)
+    elif class_type == str:
+        types_group = (str, numpy.str_)
+    else:
+        types_group = (class_type, )
+
     for element in sequence:
-        if not isinstance(element, class_type):
+        matched = any([isinstance(element, t) for t in types_group])
+        if not matched:
             raise Error(msg)
     # Done.
     return sequence
