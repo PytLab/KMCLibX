@@ -301,7 +301,7 @@ class KMCControlParameters(object):
         fast_species = checkSequenceOf(fast_species, str, msg)
 
         # In case that a str is passed in.
-        if not hasattr(fast_species, "__iter__"):
+        if type(fast_species) is str:
             raise Error(msg)
 
         return fast_species
