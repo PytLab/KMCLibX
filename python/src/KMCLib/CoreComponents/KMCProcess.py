@@ -375,7 +375,7 @@ class KMCProcess(object):
             sorted_site_types = ["*"]*len(self.__coordinates)
 
             # Get the sorted site types.
-            for old_index in xrange(len(self.__site_types)):
+            for old_index in range(len(self.__site_types)):
                 new_index = old_to_new_index[old_index]
                 sorted_site_types[new_index] = self.__site_types[old_index]
 
