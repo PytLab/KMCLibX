@@ -9,7 +9,13 @@
 
 import unittest
 import numpy
-import StringIO
+
+from KMCLib import PY2
+
+if PY2:
+    from StringIO import StringIO
+else:
+    from io import StringIO
 
 # Import from the module we test.
 from KMCLib.Analysis.TimeStepDistribution import TimeStepDistribution
@@ -135,7 +141,7 @@ class TimeStepDistributionTest(unittest.TestCase):
         tsd.finalize()
 
         # Print the results to a stream.
-        stream = StringIO.StringIO()
+        stream = StringIO()
         tsd.printResults(stream)
 
         ref_value = """   1.06500         12    0.020033388981636

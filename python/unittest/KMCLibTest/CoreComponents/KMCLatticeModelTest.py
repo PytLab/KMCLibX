@@ -635,7 +635,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename, 'rb').read(), global_dict, local_dict)
 
             # Count the first frame.
             elem = local_dict["types"][0]
@@ -806,7 +806,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Count the first frame.
             elem = local_dict["types"][0]
@@ -899,7 +899,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Count the first frame.
             elem = local_dict["types"][0]
@@ -1884,7 +1884,7 @@ types = ['A','A','A','A','B','B','A','A','A','B','B','B','B',
          'A','A','B','B','B','B','B','B','B','B','A','A','A',
          'A','B','B','B','B','A','B','B','A']
 
-possible_types = ['A','C','B']
+possible_types = ['A','B','C']
 
 configuration = KMCConfiguration(
     lattice=lattice,
@@ -1922,7 +1922,7 @@ types = ['a','a','a','a','b','b','a','a','a','b','b','b','b',
          'a','a','b','b','b','b','b','b','b','b','a','a','a',
          'a','b','b','b','b','a','b','b','a']
 
-possible_types = ['a','c','b']
+possible_types = ['a','b','c']
 
 sitesmap = KMCSitesMap(
     lattice=lattice,
@@ -2134,7 +2134,7 @@ model = KMCLatticeModel(
 
         # Check the fast species before redistribution.
         self.assertEqual(4*4*4*2-2, len(affected_indices))
-        ref_affected_indices = range(2, 4*4*4*2)
+        ref_affected_indices = list(range(2, 4*4*4*2))
         ret_affected_indices = sorted(list(affected_indices))
         self.assertListEqual(ref_affected_indices, ret_affected_indices)
 

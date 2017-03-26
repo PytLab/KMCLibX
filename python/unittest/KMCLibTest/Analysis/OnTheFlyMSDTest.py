@@ -10,7 +10,13 @@
 
 import unittest
 import numpy
-import StringIO
+
+from KMCLib import PY2
+
+if PY2:
+    from StringIO import StringIO
+else:
+    from io import StringIO
 
 # Import from the module we test.
 from KMCLib.Analysis.OnTheFlyMSD import OnTheFlyMSD
@@ -533,7 +539,7 @@ class OnTheFlyMSDTest(unittest.TestCase):
         msd._OnTheFlyMSD__n_eff = [0.1, 1.2, 3.4, 5.5, 6.6, 7.7, 0.8, 9.9, 4.3, 2.1]
 
         # Print the results to a stream.
-        stream = StringIO.StringIO()
+        stream = StringIO()
         msd.printResults(stream)
 
         # Check against reference.

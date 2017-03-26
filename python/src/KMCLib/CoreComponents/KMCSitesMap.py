@@ -192,7 +192,10 @@ class KMCSitesMap(KMCConfiguration):
         possible_types_string = "possible_types = "
         indent = " "*18
         line = "["
-        possible_types = [t for t in list(set(self.possibleTypes().keys())) if t != "*"]
+
+        # Sort possible_types for compatibilty py2 & py3.
+        sorted_possible_types = sorted(list(set(self.possibleTypes().keys())))
+        possible_types = [t for t in sorted_possible_types if t != "*"]
 
         nT = len(possible_types)
         for i, t in enumerate(possible_types):

@@ -67,7 +67,7 @@ def getScriptComponent(script_file_path, component_type):
     global_dict = {}
     local_dict  = {}
     try:
-        execfile(script_file_path, global_dict, local_dict)
+        exec(open(script_file_path).read(), global_dict, local_dict)
     except IOError as e:
         raise Error("The script file '%s' failed to load or does not exist."%(script_file_path))
 

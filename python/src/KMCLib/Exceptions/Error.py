@@ -8,8 +8,10 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
+from KMCLib import PY2
 
-from exceptions import Exception
+if PY2:
+    from exceptions import Exception
 
 
 class Error(Exception):

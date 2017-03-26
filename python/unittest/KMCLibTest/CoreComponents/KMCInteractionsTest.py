@@ -9,10 +9,12 @@
 #
 
 
+from __future__ import division
 import unittest
-import numpy
 import sys
 import os
+
+import numpy
 
 from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
@@ -574,7 +576,7 @@ class KMCInteractionsTest(unittest.TestCase):
         coordinate = (1.2,3.4,5.6)
 
         self.assertAlmostEqual( cpp_interactions.rateCalculator().backendRateCallback(cpp_coords,
-                                                                                      cpp_coords.size()/3,
+                                                                                      cpp_coords.size()//3,
                                                                                       cpp_types1,
                                                                                       cpp_types2,
                                                                                       rate_constant,
@@ -583,7 +585,7 @@ class KMCInteractionsTest(unittest.TestCase):
                                                                                       coordinate[1],
                                                                                       coordinate[2]), ref_rnd, 12 )
         self.assertAlmostEqual( kmc_interactions._KMCInteractions__rate_calculator.backendRateCallback(cpp_coords,
-                                                                                                       cpp_coords.size()/3,
+                                                                                                       cpp_coords.size()//3,
                                                                                                        cpp_types1,
                                                                                                        cpp_types2,
                                                                                                        rate_constant,
@@ -596,7 +598,7 @@ class KMCInteractionsTest(unittest.TestCase):
         # returns the rate given to it.
         cpp_rate_calculator = Backend.RateCalculator()
         self.assertAlmostEqual( cpp_rate_calculator.backendRateCallback(cpp_coords,
-                                                                        cpp_coords.size()/3,
+                                                                        cpp_coords.size()//3,
                                                                         cpp_types1,
                                                                         cpp_types2,
                                                                         rate_constant,
@@ -779,7 +781,7 @@ types = ['a','a','a','a','b','b','a','a','a','b','b','b','b',
          'a','a','b','b','b','b','b','b','b','b','a','a','a',
          'a','b','b','b','b','a','b','b','a']
 
-possible_types = ['a','c','b']
+possible_types = ['a','b','c']
 
 sitesmap = KMCSitesMap(
     lattice=lattice,

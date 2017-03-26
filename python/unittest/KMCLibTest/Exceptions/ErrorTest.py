@@ -10,10 +10,13 @@
 
 import unittest
 
-from exceptions import Exception
+from KMCLib import PY2
 
 # Import from the module we test.
 from KMCLib.Exceptions.Error import Error
+
+if PY2:
+    from exceptions import Exception
 
 
 # Implement the test.

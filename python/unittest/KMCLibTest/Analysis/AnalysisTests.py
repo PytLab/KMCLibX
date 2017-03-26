@@ -9,8 +9,8 @@
 
 import unittest
 
-from OnTheFlyMSDTest import OnTheFlyMSDTest
-from TimeStepDistributionTest import TimeStepDistributionTest
+from .OnTheFlyMSDTest import OnTheFlyMSDTest
+from .TimeStepDistributionTest import TimeStepDistributionTest
 
 def suite():
     suite = unittest.TestSuite(

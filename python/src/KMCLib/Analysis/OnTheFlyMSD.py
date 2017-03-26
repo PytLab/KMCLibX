@@ -270,22 +270,22 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
 
             # Bunch the results together and cutoff.
             cutoff_bin = self.safeCutoff()
-            all_results = zip(self.__time_steps,
-                              self.__results[0],
-                              self.__results[1],
-                              self.__results[2],
-                              self.__results[3],
-                              self.__results[4],
-                              self.__results[5],
-                              self.__results[6],
-                              self.__std_dev[0],
-                              self.__std_dev[1],
-                              self.__std_dev[2],
-                              self.__std_dev[3],
-                              self.__std_dev[4],
-                              self.__std_dev[5],
-                              self.__std_dev[6],
-                              self.__n_eff)[:cutoff_bin]
+            all_results = list(zip(self.__time_steps,
+                                   self.__results[0],
+                                   self.__results[1],
+                                   self.__results[2],
+                                   self.__results[3],
+                                   self.__results[4],
+                                   self.__results[5],
+                                   self.__results[6],
+                                   self.__std_dev[0],
+                                   self.__std_dev[1],
+                                   self.__std_dev[2],
+                                   self.__std_dev[3],
+                                   self.__std_dev[4],
+                                   self.__std_dev[5],
+                                   self.__std_dev[6],
+                                   self.__n_eff))[:cutoff_bin]
             stream.write("%11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s\n"%("TIME ", "MSD_x ", "DSD_y ", "MSD_z ", "MSD_xy ", "MSD_xz ", "MSD_yz ", "MSD_xyz ", "STD_x ", "STD_y ", "STD_z ", "STD_xy ", "STD_xz ", "STD_yz ", "STD_xyz ", "N_eff"))
             for t, x, y, z, xy, xz, yz, xyz, sx, sy, sz, sxy, sxz, syz, sxyz, nf in all_results:
                 stream.write("%11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e\n"%(t, x, y, z, xy, xz, yz, xyz, sx, sy, sz, sxy, sxz, syz, sxyz, nf))

@@ -75,7 +75,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Get the version and creation time.
             read_version  = local_dict["version"]
@@ -121,7 +121,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Get the version and check.
             read_version  = local_dict["version"]
@@ -169,7 +169,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Check the types.
             ret_types = local_dict['types']
@@ -198,7 +198,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Check the types.
             ret_types = local_dict['types']
@@ -259,7 +259,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Check the types.
             ret_types = local_dict['types']
@@ -283,7 +283,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Check.
             ret_types = local_dict['types']
@@ -304,7 +304,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             # Check the types.
             ret_types = local_dict['types']
@@ -338,7 +338,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             ret_types = local_dict['types']
             ref_types = [["A","A","A","A","A","A"],
@@ -359,7 +359,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             ret_types = local_dict['types']
             ref_types = [["A","A","A","A","A","A"],
@@ -404,7 +404,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             ret_types = local_dict['types']
             self.assertEqual( ret_types, empty_list )
@@ -432,7 +432,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(open(trajectory_filename).read(), global_dict, local_dict)
 
             ret_types = local_dict['types']
             self.assertEqual( ret_types, [["ABC", "123"],["123", "ABC"]] )

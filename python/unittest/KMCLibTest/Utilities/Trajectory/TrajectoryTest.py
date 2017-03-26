@@ -64,7 +64,7 @@ class TrajectoryTest(unittest.TestCase):
 
         # Add the missing function.
         def bufferSize(*args, **kwargs):
-            pass
+            return 0
         t._bufferSize = bufferSize
 
         self.assertRaises(AttributeError,

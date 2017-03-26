@@ -552,7 +552,7 @@ types = ['a','a','a','a','b','b','a','a','a','b','b','b','b',
          'a','a','b','b','b','b','b','b','b','b','a','a','a',
          'a','b','b','b','b','a','b','b','a']
 
-possible_types = ['a','c','b']
+possible_types = ['a','b','c']
 
 configuration = KMCConfiguration(
     lattice=lattice,
@@ -613,8 +613,7 @@ lattice = KMCLattice(
 
 types = ['ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure']
 
-possible_types = ['A','CDEFGHI','ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure',
-                  'B']
+possible_types = ['A','B','CDEFGHI','ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure']
 
 config = KMCConfiguration(
     lattice=lattice,
