@@ -21,7 +21,7 @@ include_directories( ${KMCLib_SOURCE_DIR}/src )
 
 # Read config file.
 if (CONFIG)
-    file(READ "${PROJECT_SOURCE_DIR}/config" config)
+    file(READ "${PROJECT_SOURCE_DIR}/${CONFIG}" config)
     string(REGEX MATCH "^PYINCLUDE = (.*)\nPYLIB = (.*)\n+$" path ${config})
 
     # Read PYINCLUDE.
