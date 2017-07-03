@@ -14,7 +14,7 @@ find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
 # Make sure the Python include files and libraries are loaded.
-find_package(PythonLibs REQUIRED)
+#find_package(PythonLibs REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories( ${KMCLib_SOURCE_DIR}/src )
