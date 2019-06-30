@@ -415,6 +415,33 @@ void Test_LatticeMap::testNeighbourIndices()
     // }}}
 }
 
+void Test_LatticeMap::testNeighbourIndices2D()
+{
+    const int basis = 3;
+    std::vector<int> repetitions(3);
+    repetitions[0] = 3;
+    repetitions[1] = 3;
+    repetitions[2] = 1;
+    const std::vector<bool> periodicity(3, false);
+    const LatticeMap map(basis, repetitions, periodicity);
+
+    // Get the central cell index.
+    const int central_index = map.indicesFromCell(1,1,0)[0];
+
+    // Get the neighbours.
+    std::vector<int> neighbours = map.neighbourIndices(central_index);
+
+    // The length of neighbours should be as many as there are cells.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(neighbours.size()), 3*3*3);
+
+    for (int i = 0; i < 3*3*3; ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(neighbours[i], i);
+    }
+
+    // Without sorting
+}
+
 
 // -------------------------------------------------------------------------- //
 //
