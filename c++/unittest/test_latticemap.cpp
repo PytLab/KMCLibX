@@ -434,12 +434,11 @@ void Test_LatticeMap::testNeighbourIndices2D()
     // The length of neighbours should be as many as there are cells.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(neighbours.size()), 3*3*3);
 
+    // Without sorting
     for (int i = 0; i < 3*3*3; ++i)
     {
         CPPUNIT_ASSERT_EQUAL(neighbours[i], i);
     }
-
-    // Without sorting
 }
 
 

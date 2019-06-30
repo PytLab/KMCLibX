@@ -20,6 +20,10 @@
  * ******************************************************************
  */
 
+#include <iostream>
+#include <cmath>
+#include <queue>
+#include <cstdio>
 
 #include "distributor.h"
 #include "configuration.h"
@@ -99,6 +103,51 @@ std::vector<int> RandomDistributor::redistribute(Configuration & configuration) 
     // }}}
 }
 
+bool RandomDistributor::metropolisAccept(int site_index,
+                                         const std::vector<int> env_local_indices,
+                                         const Configuration & configuration,
+                                         const LatticeMap & latticemap,
+                                         double ads_energy) const
+{
+    const std::vector<std::string> & elements = configuration.elements_;
+    const std::vector<int> neighbour_indices = latticemap.neighbourIndices(site_index);
+    std::vector<int> env_global_indices {};
+
+    for (const auto local_idx : env_local_indices)
+    {
+        env_global_indices.push_back(neighbour_indices[local_idx]);
+    }
+
+    // Calculate new adsorption energy
+    for (int env_idx : env_global_indices)
+    {
+        const std::string & env_element = elements[env_idx];
+        if (env_element == "O")
+        {
+            ads_energy += -0.1;
+        }
+        else if (env_element == "C")
+        {
+            ads_energy += 0.2;
+        }
+    }
+
+    // Metropolis Acceptance check.
+    if (ads_energy > 0.0)
+    {
+        const double T = 500.0;
+        const double kB = 8.6173324e-5;
+        double acc_prob = std::exp(static_cast<float>(-ads_energy/(kB*T)));
+        double randn = randomDouble01();
+        if (randn > acc_prob)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // ----------------------------------------------------------------------------
 //
 std::vector<int> RandomDistributor::processRedistribute(Configuration & configuration,
@@ -137,12 +186,12 @@ std::vector<int> RandomDistributor::processRedistribute(Configuration & configur
     const std::vector<int> && space_indices = configuration.fastIndices();
 
     std::vector<int> && affected_indices = scatterSpecies(extracted_species,
-                                                          space_indices,
-                                                          configuration,
-                                                          interactions,
-                                                          sitesmap,
-                                                          latticemap,
-                                                          matcher);
+                                                               space_indices,
+                                                               configuration,
+                                                               interactions,
+                                                               sitesmap,
+                                                               latticemap,
+                                                               matcher);
 
     // Merge all affected indices.
     all_affected_indices.insert(all_affected_indices.end(),
@@ -169,7 +218,7 @@ std::vector<int> RandomDistributor::scatterSpecies(std::vector<std::string> & sp
     // List to collect all affected indices.
     std::vector<int> all_affected_indices = {};
     std::vector<int> shuffle_space_indices;
-
+    
     // Re-scatter the extracted species.
     for (const std::string & sp : species)
     {
@@ -195,7 +244,7 @@ std::vector<int> RandomDistributor::scatterSpecies(std::vector<std::string> & sp
             {
                 // Species and location matching.
                 if ( sp == process_ptr->redistSpecies() && \
-                        process_ptr->isListed(site_index) )
+                        process_ptr->isListed(site_index))
                 {
                     // Throw the species at the index.
                     configuration.performProcess(*process_ptr, site_index);
@@ -240,6 +289,104 @@ std::vector<int> RandomDistributor::scatterSpecies(std::vector<std::string> & sp
     // }}}
 }
 
+// ----------------------------------------------------------------------------
+//
+std::vector<int> RandomDistributor::scatterSpeciesMetro(std::vector<std::string> & species,
+                                                        const std::vector<int> & space_indices,
+                                                        Configuration & configuration,
+                                                        Interactions & interactions,
+                                                        const SitesMap & sitesmap,
+                                                        const LatticeMap & latticemap,
+                                                        const Matcher & matcher) const
+{
+    // {{{
+
+    // List to collect all affected indices.
+    std::vector<int> all_affected_indices = {};
+    // Shuffle the space indices.
+    std::vector<int> shuffle_space_indices = space_indices;
+    shuffleIntVector(shuffle_space_indices);
+    // Space indices queue.
+    std::queue<int, std::deque<int>> space_indices_queue(std::deque<int>(shuffle_space_indices.begin(),
+                                                                         shuffle_space_indices.end()));
+    
+    // Local env indices.
+    std::vector<int> env_local_indices {10, 16, 22, 34, 40, 46};
+    const double ads_energy = -0.74;
+
+    // Re-scatter the extracted species.
+    for (const std::string & sp : species)
+    {
+
+        // Flag for successful species scattering.
+        bool scatter_success = false;
+        //for (const int site_index : shuffle_space_indices)
+        while (!scatter_success)
+        {
+            // Pop up a site index.
+            const int site_index = space_indices_queue.front();
+            space_indices_queue.pop();
+
+            // Get all redistribution process and shuffle them.
+            std::vector<Process *> redist_process_ptrs = interactions.redistProcesses();
+            shuffleProcessPtrVector(redist_process_ptrs);
+
+            // Loop over all redistribution process to check if it can happen here.
+            for ( const auto & process_ptr : redist_process_ptrs )
+            {
+                bool metropolis_accepted = metropolisAccept(site_index,
+                                                            env_local_indices,
+                                                            configuration,
+                                                            latticemap,
+                                                            ads_energy);
+                // Species and location matching.
+                if ( sp == process_ptr->redistSpecies() && \
+                        process_ptr->isListed(site_index) &&\
+                        metropolis_accepted)
+                {
+                    // Throw the species at the index.
+                    configuration.performProcess(*process_ptr, site_index);
+                    // Re-matching the affected indices.
+                    const std::vector<int> & affected_indices = process_ptr->affectedIndices();
+                    const std::vector<int> && matching_indices = \
+                        latticemap.supersetNeighbourIndices(affected_indices,
+                                                            interactions.maxRange());
+                    // Extend all affected indices.
+                    all_affected_indices.insert(all_affected_indices.end(),
+                                                affected_indices.begin(),
+                                                affected_indices.end());
+
+                    // Re-match the affected indices.
+                    matcher.calculateMatching(interactions,
+                                              configuration,
+                                              sitesmap,
+                                              latticemap,
+                                              matching_indices);
+
+                    // Re-classify configuration.
+                    //matcher.classifyConfiguration(interactions,
+                    //                              configuration,
+                    //                              sitesmap,
+                    //                              latticemap,
+                    //                              matching_indices,
+                    //                              {},
+                    //                              slow_indices);
+
+                    // Set flag and jump out.
+                    scatter_success = true;
+                    break;
+                }
+            }
+            if (!scatter_success)
+            {
+                space_indices_queue.push(site_index);
+            }
+        }
+    }
+
+    return all_affected_indices;
+    // }}}
+}
 
 // ----------------------------------------------------------------------------
 //
@@ -365,13 +512,13 @@ std::vector<int> ConstrainedRandomDistributor:: \
         const std::vector<int> & local_space_indices = sub_configs[i].globalIndices();
 
         // Scatter in the local part of configuration.
-        std::vector<int> && affected_indices = scatterSpecies(extracted_local_species,
-                                                              local_space_indices,
-                                                              configuration,
-                                                              interactions,
-                                                              sitesmap,
-                                                              latticemap,
-                                                              matcher);
+        std::vector<int> && affected_indices = scatterSpeciesMetro(extracted_local_species,
+                                                                   local_space_indices,
+                                                                   configuration,
+                                                                   interactions,
+                                                                   sitesmap,
+                                                                   latticemap,
+                                                                   matcher);
         // Collect affected indices.
         all_affected_indices.insert(all_affected_indices.end(),
                                     affected_indices.begin(),

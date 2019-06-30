@@ -88,6 +88,12 @@ public:
      */
     virtual std::vector<int> redistribute(Configuration & configuration) const;
 
+    virtual bool metropolisAccept(int siteIndex,
+                                  const std::vector<int> envIndices,
+                                  const Configuration & configuration,
+                                  const LatticeMap & latticemap,
+                                  const double adsEnergy) const;
+
     /*! \brief Re-distribute the configuration with process performing.
      *  \param configuration  : The configuration which the list of indices refers to.
      *  \param interactions   : The interactions object holding info on possible processes.
@@ -122,6 +128,14 @@ public:
                                             const SitesMap & sitesmap,
                                             const LatticeMap & latticemap,
                                             const Matcher & matcher) const;
+
+    virtual std::vector<int> scatterSpeciesMetro(std::vector<std::string> & species,
+                                                 const std::vector<int> & space_indices,
+                                                 Configuration & configuration,
+                                                 Interactions & interactions,
+                                                 const SitesMap & sitesmap,
+                                                 const LatticeMap & latticemap,
+                                                 const Matcher & matcher) const;
 };
 
 
