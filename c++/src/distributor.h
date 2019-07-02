@@ -91,8 +91,11 @@ public:
     virtual bool metropolisAccept(int siteIndex,
                                   const std::vector<int> envIndices,
                                   const Configuration & configuration,
-                                  const LatticeMap & latticemap,
-                                  const double adsEnergy) const;
+                                  const LatticeMap & latticemap) const;
+
+    virtual double calcInteractionEnergy(const Configuration & configuration,
+                                         const LatticeMap & latticemap,
+                                         const std::vector<int> & env_local_indices) const;
 
     /*! \brief Re-distribute the configuration with process performing.
      *  \param configuration  : The configuration which the list of indices refers to.
