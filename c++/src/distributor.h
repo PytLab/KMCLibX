@@ -178,7 +178,8 @@ public:
                                                     const LatticeMap & latticemap,
                                                     const Matcher & matcher,
                                                     const std::string & replace_species,
-                                                    int x, int y, int z) const;
+                                                    int x, int y, int z,
+                                                    bool metropolis_acceptance = false) const;
 
     /*! \brief Update local part of global Configuration using sub-configuration.
      *  \param global_config (in/out) : The global configuration object.

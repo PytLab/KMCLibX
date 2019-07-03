@@ -494,19 +494,29 @@ std::vector<int> ConstrainedRandomDistributor:: \
                                    const LatticeMap & latticemap,
                                    const Matcher & matcher,
                                    const std::string & replace_species,
-                                   int x, int y, int z) const
+                                   int x, int y, int z,
+                                   bool metropolis_acceptance) const
 {
     // {{{
     
-    // Calculate original interaction energy.
-    std::vector<int> env_local_indices {10, 16, 22, 34, 40, 46};
-    const double ori_energy = calcInteractionEnergy(configuration,
-                                                    latticemap,
-                                                    env_local_indices);
-    // Backup original configuration members
-    std::vector<int> ori_types = configuration.types_;
-    std::vector<int> ori_atom_id = configuration.atom_id_;
-    std::vector<std::string> ori_elements = configuration.elements_;
+    double ori_energy;
+    std::vector<int> env_local_indices;
+    std::vector<int> ori_types;
+    std::vector<int> ori_atom_id;
+    std::vector<std::string> ori_elements;
+
+    if (metropolis_acceptance)
+    {
+        // Calculate original interaction energy.
+        env_local_indices = {10, 16, 22, 34, 40, 46};
+        ori_energy = calcInteractionEnergy(configuration,
+                                           latticemap,
+                                           env_local_indices);
+        // Backup original configuration members
+        ori_types = configuration.types_;
+        ori_atom_id = configuration.atom_id_;
+        ori_elements = configuration.elements_;
+    }
 
     std::vector<SubConfiguration> && sub_configs = configuration.split(latticemap,
                                                                        x, y, z);
@@ -574,32 +584,35 @@ std::vector<int> ConstrainedRandomDistributor:: \
                                     affected_indices.end());
     }
 
-    // Calculate current interaction energy.
-    const double cur_energy = calcInteractionEnergy(configuration,
-                                                    latticemap,
-                                                    env_local_indices);
-    const double delta = cur_energy - ori_energy;
-
-    if (delta > 0.0)
+    if (metropolis_acceptance)
     {
-        const double T = 500.0;
-        const double kB = 8.6173324e-5;
-        double acc_prob = std::exp(static_cast<float>(-delta/(kB*T)));
-        double randn = randomDouble01();
-        if (randn > acc_prob)
-        {
-            // Not accepted, revert configuration.
-            configuration.types_ = ori_types;
-            configuration.atom_id_ = ori_atom_id;
-            configuration.elements_ = ori_elements;
+        // Calculate current interaction energy.
+        const double cur_energy = calcInteractionEnergy(configuration,
+                                                        latticemap,
+                                                        env_local_indices);
+        const double delta = cur_energy - ori_energy;
 
-            // Rematching all affected indices.
-            matcher.calculateMatching(interactions,
-                                      configuration,
-                                      sitesmap,
-                                      latticemap,
-                                      all_affected_indices);
-            return {};
+        if (delta > 0.0)
+        {
+            const double T = 500.0;
+            const double kB = 8.6173324e-5;
+            double acc_prob = std::exp(static_cast<float>(-delta/(kB*T)));
+            double randn = randomDouble01();
+            if (randn > acc_prob)
+            {
+                // Not accepted, revert configuration.
+                configuration.types_ = ori_types;
+                configuration.atom_id_ = ori_atom_id;
+                configuration.elements_ = ori_elements;
+
+                // Rematching all affected indices.
+                matcher.calculateMatching(interactions,
+                                          configuration,
+                                          sitesmap,
+                                          latticemap,
+                                          all_affected_indices);
+                return {};
+            }
         }
     }
 
