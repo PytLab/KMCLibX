@@ -499,7 +499,7 @@ std::vector<int> ConstrainedRandomDistributor:: \
 {
     // {{{
     
-    double ori_energy;
+    double ori_energy = 0.0;
     std::vector<int> env_local_indices;
     std::vector<int> ori_types;
     std::vector<int> ori_atom_id;
