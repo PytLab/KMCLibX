@@ -265,7 +265,11 @@ class KMCInteractions(object):
                                                                       cutoff,
                                                                       cpp_move_origins,
                                                                       cpp_move_vectors,
-                                                                      process_number))
+                                                                      process_number,
+                                                                      cpp_site_types,
+                                                                      fast,
+                                                                      redist,
+                                                                      redist_species))
                 else:
                     cpp_processes.push_back(Backend.Process(cpp_config1,
                                                             cpp_config2,
