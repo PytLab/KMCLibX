@@ -30,6 +30,7 @@ public:
     CPPUNIT_TEST( testIndexFromMoveInfo );
     CPPUNIT_TEST( testIndexFromMoveInfoPeriodic );
     CPPUNIT_TEST( testNeighbourIndices );
+    CPPUNIT_TEST( testNeighbourIndices2D );
     CPPUNIT_TEST( testNeighbourIndicesMinimal );
     CPPUNIT_TEST( testNeighbourIndicesMinimal2 );
     CPPUNIT_TEST( testNeighbourIndicesLong );
@@ -48,6 +49,7 @@ public:
     void testIndexFromMoveInfo();
     void testIndexFromMoveInfoPeriodic();
     void testNeighbourIndices();
+    void testNeighbourIndices2D();
     void testNeighbourIndicesMinimal();
     void testNeighbourIndicesMinimal2();
     void testNeighbourIndicesLong();

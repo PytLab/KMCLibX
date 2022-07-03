@@ -371,6 +371,12 @@ class KMCLatticeModel(object):
                                                                          fast_species,
                                                                          [], # slow indices
                                                                          *nsplits)
+                    elif "MetropolisDistributor" == distributor_type:
+                        affected_indices = cpp_model.processRedistribute(empty_element,
+                                                                         fast_species,
+                                                                         [], # slow indices
+                                                                         *nsplits,
+                                                                         True)
 
                     # Time increase.
                     current_time = self.__cpp_timer.simulationTime()

@@ -18,7 +18,8 @@ endif()
 message( STATUS "Found cppunit:  ${CPPUNIT}")
 
 # Find all test files.
-file( GLOB CppSources test_* )
+#file( GLOB CppSources test_* )
+file( GLOB CppSources test_latticemap.h test_latticemap.cpp )
 
 # Needed for clang.
 add_definitions( -Wno-unused-parameter )

@@ -88,6 +88,15 @@ public:
      */
     virtual std::vector<int> redistribute(Configuration & configuration) const;
 
+    virtual bool metropolisAccept(int siteIndex,
+                                  const std::vector<int> envIndices,
+                                  const Configuration & configuration,
+                                  const LatticeMap & latticemap) const;
+
+    virtual double calcInteractionEnergy(const Configuration & configuration,
+                                         const LatticeMap & latticemap,
+                                         const std::vector<int> & env_local_indices) const;
+
     /*! \brief Re-distribute the configuration with process performing.
      *  \param configuration  : The configuration which the list of indices refers to.
      *  \param interactions   : The interactions object holding info on possible processes.
@@ -122,6 +131,14 @@ public:
                                             const SitesMap & sitesmap,
                                             const LatticeMap & latticemap,
                                             const Matcher & matcher) const;
+
+    virtual std::vector<int> scatterSpeciesMetro(std::vector<std::string> & species,
+                                                 const std::vector<int> & space_indices,
+                                                 Configuration & configuration,
+                                                 Interactions & interactions,
+                                                 const SitesMap & sitesmap,
+                                                 const LatticeMap & latticemap,
+                                                 const Matcher & matcher) const;
 };
 
 
@@ -161,7 +178,8 @@ public:
                                                     const LatticeMap & latticemap,
                                                     const Matcher & matcher,
                                                     const std::string & replace_species,
-                                                    int x, int y, int z) const;
+                                                    int x, int y, int z,
+                                                    bool metropolis_acceptance = false) const;
 
     /*! \brief Update local part of global Configuration using sub-configuration.
      *  \param global_config (in/out) : The global configuration object.

@@ -118,12 +118,22 @@ Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
         if ( process_ptr->fast() )
         {
             fast_process_pointers_.push_back(process_ptr);
+
+            // Pointers for redistribution processes.
+            if ( process_ptr->redistribution() )
+            {
+                redist_process_pointers_.push_back(process_ptr);
+            }
         }
         else
         {
             slow_process_pointers_.push_back(process_ptr);
         }
     }
+
+    // Initialize probablity table after processes are classified.
+    probability_table_.resize(slow_process_pointers_.size(),
+                              std::pair<double, int>(0.0, 0));
 }
 
 
